@@ -1,26 +1,72 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+@theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  --color-purple-50: #f5f3ff;
+  --color-purple-100: #ede9fe;
+  --color-purple-200: #ddd6fe;
+  --color-purple-300: #c4b5fd;
+  --color-purple-400: #a78bfa;
+  --color-purple-500: #8b5cf6;
+  --color-purple-600: #9146ff;
+  --color-purple-700: #7c3aed;
+  --color-purple-800: #6d28d9;
+  --color-purple-900: #5b21b6;
+  --color-purple-950: #2e1065;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #fafafa;
+  --foreground: #09090b;
 }
+
+.dark {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+@variant dark (&:where(.dark, .dark *));
 
 body {
-  background: var(--background);
+
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  @apply antialiased;
+}
+
+/* Saluki Aesthetic: Grain Noise Overlay */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 9999;
+  filter: contrast(150%) brightness(100%);
+  mix-blend-mode: overlay;
+}
+
+/* Premium Glassmorphism */
+.glass {
+  @apply bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl border border-white/20 dark:border-white/5;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1), inset 0 2px 4px 0 rgb(255 255 255 / 0.05);
+}
+
+.glass-dark {
+  @apply bg-zinc-950/80 backdrop-blur-3xl border border-white/5;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(145, 70, 255, 0.1);
+}
+
+/* Smooth Transitions */
+* {
+  @apply transition-colors duration-200;
 }

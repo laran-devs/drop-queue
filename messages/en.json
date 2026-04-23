@@ -1,0 +1,48 @@
+{
+  "Header": {
+    "hub": "Streamer Hub",
+    "hallOfFame": "Hall of Fame",
+    "signOut": "Sign Out",
+    "signIn": "Sign In with Twitch"
+  },
+  "Hub": {
+    "title": "Stream Headquarters",
+    "subtitle": "Manage your active broadcasts, create new sessions, and view your historical queue data.",
+    "startNew": "Start New Session",
+    "sessionTitle": "Session Title...",
+    "goLive": "Go Live",
+    "recordingNow": "Recording Now",
+    "history": "Session History"
+  },
+  "Dashboard": {
+    "activeSession": "Active Session",
+    "endSession": "End Session",
+    "rateCriteria": "Rate Criteria",
+    "lyrics": "Context & Lyrics",
+    "confirm": "Confirm Evolution & Next",
+    "skip": "Skip",
+    "queue": "Queue"
+  },
+  "Settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Appearance",
+    "account": "Account",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "save": "Save changes"
+  },
+  "Profile": {
+    "title": "Public Profile",
+    "private": "Private Profile",
+    "privateDesc": "This user has chosen to keep their profile private.",
+    "stats": "Community Achievements",
+    "submissions": "Total Track Drops",
+    "avgScore": "Vibe Rating",
+    "bangers": "Banger Records",
+    "history": "Submission History",
+    "noHistory": "No bangers found yet."
+  }
+}
+

@@ -1,0 +1,36 @@
+{
+  "Header": {
+    "hub": "Streamer Hub",
+    "hallOfFame": "Ruhmeshalle",
+    "signOut": "Abmelden",
+    "signIn": "Mit Twitch anmelden"
+  },
+  "Hub": {
+    "title": "Stream-Zentrale",
+    "subtitle": "Verwalten Sie Ihre aktiven Übertragungen, erstellen Sie neue Sitzungen und sehen Sie sich Ihre historischen Warteschlangendaten an.",
+    "startNew": "Neue Sitzung starten",
+    "sessionTitle": "Sitzungstitel...",
+    "goLive": "Live gehen",
+    "recordingNow": "Nimmt jetzt auf",
+    "history": "Sitzungsverlauf"
+  },
+  "Dashboard": {
+    "activeSession": "Aktive Sitzung",
+    "endSession": "Sitzung beenden",
+    "rateCriteria": "Bewertungskriterien",
+    "lyrics": "Kontext & Songtext",
+    "confirm": "Bestätigen & Weiter",
+    "skip": "Überspringen",
+    "queue": "Warteschlange"
+  },
+  "Settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "theme": "Erscheinungsbild",
+    "account": "Konto",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System",
+    "save": "Änderungen speichern"
+  }
+}

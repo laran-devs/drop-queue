@@ -1,0 +1,36 @@
+{
+  "Header": {
+    "hub": "Centro de Streamer",
+    "hallOfFame": "Salón de la Fama",
+    "signOut": "Cerrar sesión",
+    "signIn": "Iniciar sesión con Twitch"
+  },
+  "Hub": {
+    "title": "Sede del Stream",
+    "subtitle": "Gestione sus transmisiones activas, cree nuevas sesiones y vea sus datos históricos de la cola.",
+    "startNew": "Iniciar nueva sesión",
+    "sessionTitle": "Título de la sesión...",
+    "goLive": "Transmitir en vivo",
+    "recordingNow": "Grabando ahora",
+    "history": "Historial de sesiones"
+  },
+  "Dashboard": {
+    "activeSession": "Sesión activa",
+    "endSession": "Finalizar sesión",
+    "rateCriteria": "Criterios de calificación",
+    "lyrics": "Contexto y Letras",
+    "confirm": "Confirmar y Siguiente",
+    "skip": "Omitir",
+    "queue": "Cola"
+  },
+  "Settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "theme": "Apariencia",
+    "account": "Cuenta",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema",
+    "save": "Guardar cambios"
+  }
+}

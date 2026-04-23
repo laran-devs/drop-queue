@@ -1,0 +1,36 @@
+{
+  "Header": {
+    "hub": "Centre Streamer",
+    "hallOfFame": "Temple de la Renommée",
+    "signOut": "Déconnexion",
+    "signIn": "Se connecter avec Twitch"
+  },
+  "Hub": {
+    "title": "Siège du Stream",
+    "subtitle": "Gérez vos diffusions actives, créez de nouvelles sessions et consultez vos données historiques de file d'attente.",
+    "startNew": "Démarrer une session",
+    "sessionTitle": "Titre de la session...",
+    "goLive": "Lancer le Live",
+    "recordingNow": "Enregistrement en cours",
+    "history": "Historique des sessions"
+  },
+  "Dashboard": {
+    "activeSession": "Session Active",
+    "endSession": "Terminer la session",
+    "rateCriteria": "Critères d'évaluation",
+    "lyrics": "Contexte et Paroles",
+    "confirm": "Confirmer et Suivant",
+    "skip": "Passer",
+    "queue": "File d'attente"
+  },
+  "Settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "theme": "Apparence",
+    "account": "Compte",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système",
+    "save": "Enregister"
+  }
+}
