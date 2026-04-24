@@ -31,9 +31,9 @@ async function main() {
       take: 1
     });
     console.log("Success! Sessions count:", sessions.length);
-  } catch (err) {
+  } catch (err: any) {
     console.error("DEBUG ERROR:", err);
-    if (err.meta) console.log("META:", err.meta);
+    if (err && typeof err === 'object' && 'meta' in err) console.log("META:", err.meta);
   } finally {
     await prisma.$disconnect();
   }
