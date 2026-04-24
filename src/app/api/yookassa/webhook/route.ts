@@ -67,7 +67,16 @@ export async function POST(req: Request) {
       if (trackId && body.object.metadata?.action === "BUMP_TRACK") {
         const track = await prisma.track.update({
           where: { id: trackId },
-          data: { isPaid: true } 
+          data: { 
+            isPaid: true,
+            status: "QUEUED" 
+          } 
+        });
+
+        // Update transaction record with trackId
+        await prisma.platformTransaction.update({
+          where: { paymentId },
+          data: { trackId }
         });
 
         const session = await prisma.streamSession.findFirst({

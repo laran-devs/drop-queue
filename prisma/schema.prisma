@@ -30,6 +30,7 @@ model User {
   wallet             Wallet?
   viewerTransactions PlatformTransaction[] @relation("ViewerTransactions")
   streamerTransactions PlatformTransaction[] @relation("StreamerTransactions")
+  withdrawalRequests WithdrawalRequest[]
 }
 
 model UserPreferences {
@@ -177,6 +178,7 @@ enum SessionStatus {
 }
 
 enum TrackStatus {
+  PENDING
   QUEUED
   PLAYING
   EVALUATED
@@ -212,6 +214,7 @@ model PlatformTransaction {
   currency    String   @default("RUB")
   status      String   @default("PENDING") 
   paymentId   String   @unique
+  trackId     String?
   description String?
   metadata    Json?    
   createdAt   DateTime @default(now())
@@ -227,4 +230,19 @@ model Wallet {
   currency   String   @default("RUB")
   updatedAt  DateTime @updatedAt
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WithdrawalRequest {
+  id            String   @id @default(cuid())
+  userId        String
+  amount        Float
+  currency      String   @default("RUB")
+  status        String   @default("PENDING") // PENDING, COMPLETED, REJECTED
+  payoutMethod  String   // e.g. "Card", "ЮMoney"
+  payoutDetails String  // card number or wallet ID
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, status])
 }

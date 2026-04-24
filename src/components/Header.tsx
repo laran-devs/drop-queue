@@ -80,7 +80,7 @@ export function Header() {
 
                 <div className="relative h-10 w-10 shrink-0">
                   <div className="relative h-full w-full rounded-xl overflow-hidden border-2 border-white dark:border-zinc-900 shadow-inner bg-zinc-100 dark:bg-zinc-800">
-                    {session.user.image && isValidIdentifier(session.user.image) ? (
+                    {session.user.image ? (
                       <Image
                         src={session.user.image}
                         alt={session.user.name || "User"}

@@ -40,6 +40,7 @@ export async function submitTrack(formData: FormData) {
   }
 
   const { title, url, filePath, trackType, description, lyrics, sessionId, bpm, key } = validatedFields.data;
+  const isPriority = formData.get("isPriority") === "true";
 
   // 2. Fetch the stream session with its specific limits
   const streamSession = await prisma.streamSession.findUnique({
@@ -114,7 +115,7 @@ export async function submitTrack(formData: FormData) {
         submitterId: session.user.id,
         description,
         lyrics,
-        status: "QUEUED",
+        status: isPriority ? "PENDING" : "QUEUED",
         order: nextOrder,
         bpm: bpm || 0,
         key: key || "",
@@ -123,6 +124,14 @@ export async function submitTrack(formData: FormData) {
     });
   });
 
+
+  if (isPriority) {
+    const { createYookassaPayment } = await import("./payment-actions");
+    const payment = await createYookassaPayment(50, track.id, streamSession.streamerId); // Fixed 50 RUB for now
+    if (payment.success) {
+      return { success: true, track, paymentUrl: payment.url };
+    }
+  }
 
   revalidatePath(`/stream/${streamSession.slug}`);
   return { success: true, track, isBacklog };

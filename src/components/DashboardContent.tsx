@@ -23,8 +23,8 @@ import { DashboardHeader } from "./dashboard/DashboardHeader";
 import { ActiveQueue } from "./dashboard/ActiveQueue";
 import { EvaluationPanel } from "./dashboard/EvaluationPanel";
 import { DashboardSettings } from "./dashboard/DashboardSettings";
-import { SessionSummaryCard } from "./dashboard/SessionSummaryCard";
 import { DuelPanel } from "./dashboard/DuelPanel";
+import { WalletPanel } from "./dashboard/WalletPanel";
 import { updateSessionStatus, updateOverlaySettings } from "@/app/actions/session-actions";
 
 interface DashboardContentProps {
@@ -61,6 +61,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   const [presets, setPresets] = useState<{id: string, name: string}[]>([]);
   const [showPresets, setShowPresets] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showWallet, setShowWallet] = useState(false);
   const [showBpm, setShowBpm] = useState(initialSession.showBpmOnOverlay ?? true);
   const [showKey, setShowKey] = useState(initialSession.showKeyOnOverlay ?? true);
   const [allowedPlatforms, setAllowedPlatforms] = useState<string[]>(initialSession.allowedPlatforms ?? []);
@@ -526,13 +527,30 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
         endSession={(id) => endSession(id).then(() => router.push("/"))}
         sessionTime={sessionTime}
         locale={locale}
-        onToggleAnalytics={() => setShowAnalytics(!showAnalytics)}
-        onToggleSettings={() => setShowSettings(!showSettings)}
+        onToggleAnalytics={() => { setShowAnalytics(!showAnalytics); setShowSettings(false); setShowWallet(false); }}
+        onToggleSettings={() => { setShowSettings(!showSettings); setShowAnalytics(false); setShowWallet(false); }}
+        onToggleWallet={() => { setShowWallet(!showWallet); setShowAnalytics(false); setShowSettings(false); }}
         onToggleGuide={() => setShowGuide(!showGuide)}
         showAnalytics={showAnalytics}
         showSettings={showSettings}
+        showWallet={showWallet}
         showGuide={showGuide}
       />
+
+      <AnimatePresence>
+        {showWallet && (
+           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+             <motion.div 
+               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+               className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+               onClick={() => setShowWallet(false)} 
+             />
+             <div className="relative z-10 w-full max-w-4xl">
+               <WalletPanel onClose={() => setShowWallet(false)} />
+             </div>
+           </div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showAnalytics && (

@@ -12,7 +12,8 @@ import {
   Settings as SettingsIcon,
   Play,
   Pause,
-  ArrowRight
+  ArrowRight,
+  Wallet
 } from "lucide-react";
 import { Link } from "@/navigation";
 import { toast } from "sonner";
@@ -37,9 +38,11 @@ interface DashboardHeaderProps {
   onToggleAnalytics: () => void;
   onToggleSettings: () => void;
   onToggleGuide: () => void;
+  onToggleWallet: () => void;
   showAnalytics: boolean;
   showSettings: boolean;
   showGuide: boolean;
+  showWallet: boolean;
 }
 
 export function DashboardHeader({
@@ -55,9 +58,11 @@ export function DashboardHeader({
   onToggleAnalytics,
   onToggleSettings,
   onToggleGuide,
+  onToggleWallet,
   showAnalytics,
   showSettings,
-  showGuide
+  showGuide,
+  showWallet
 }: DashboardHeaderProps) {
   
   const formatTime = (seconds: number) => {
@@ -169,6 +174,7 @@ export function DashboardHeader({
 
             <div className="flex items-center gap-2">
               {[
+                { icon: Wallet, active: showWallet, toggle: onToggleWallet, color: "text-purple-500" },
                 { icon: BarChart2, active: showAnalytics, toggle: onToggleAnalytics, color: "text-blue-500" },
                 { icon: SettingsIcon, active: showSettings, toggle: onToggleSettings, color: "text-zinc-500" },
                 { icon: HelpCircle, active: showGuide, toggle: onToggleGuide, color: "text-amber-500" }
