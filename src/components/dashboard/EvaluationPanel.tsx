@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Music2, Languages, PlayCircle, ExternalLink, MessageSquare, TrendingUp, SkipForward, Ban } from "lucide-react";
 import { Track, Criteria } from "@prisma/client";
 import dynamic from 'next/dynamic';
-const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
+const ReactPlayer = dynamic(() => import('react-player').then(mod => mod.default), { ssr: false });
 
 interface EvaluationPanelProps {
   playingTrack: any;
