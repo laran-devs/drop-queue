@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Swords, Trophy, Ban, PlayCircle } from "lucide-react";
-import ReactPlayer from 'react-player/lazy';
+import dynamic from 'next/dynamic';
+const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
 import { getMediaInfo } from "@/lib/media";
 
 interface DuelPanelProps {
