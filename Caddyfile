@@ -1,0 +1,3 @@
+dropqueue.ru {
+    reverse_proxy web:3000
+}

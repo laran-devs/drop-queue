@@ -26,14 +26,28 @@ services:
       - DATABASE_URL=postgresql://root:password@db:5432/dropqueue?schema=public
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=production
-    ports:
-      - "3000:3000"
+    # Убираем прямой проброс 3000 наружу, Caddy будет проксировать через внутреннюю сеть
+    expose:
+      - "3000"
     depends_on:
       - db
       - redis
     command: npx tsx server.ts
     env_file:
       - .env
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
 
   bot-worker:
     build: .
@@ -51,3 +65,5 @@ services:
 volumes:
   pgdata:
   redisdata:
+  caddy_data:
+  caddy_config:
