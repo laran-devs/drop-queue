@@ -6,14 +6,41 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    if (body.event === "payment.succeeded" && body.object.status === "succeeded") {
+    if (body.event === "payment.succeeded" && body.object?.id) {
       const paymentId = body.object.id;
-      const amount = parseFloat(body.object.amount.value);
-      const streamerId = body.object.metadata?.streamerId;
-      const trackId = body.object.metadata?.trackId;
+
+      // VERIFICATION: Check with YooKassa API to ensure this isn't a spoofed webhook
+      const shopId = process.env.YOOKASSA_SHOP_ID;
+      const secretKey = process.env.YOOKASSA_SECRET_KEY;
+      
+      if (!shopId || !secretKey) {
+        console.error("YooKassa credentials not configured during webhook processing");
+        return NextResponse.json({ error: "Server Configuration Error" }, { status: 500 });
+      }
+
+      const token = Buffer.from(`${shopId}:${secretKey}`).toString("base64");
+      const checkRes = await fetch(`https://api.yookassa.ru/v3/payments/${paymentId}`, {
+        method: "GET",
+        headers: { "Authorization": `Basic ${token}` }
+      });
+
+      if (!checkRes.ok) {
+        console.error(`Failed to verify YooKassa payment ${paymentId}`);
+        return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
+      }
+
+      const paymentData = await checkRes.json();
+      if (paymentData.status !== "succeeded") {
+        console.error(`YooKassa payment ${paymentId} is not actually succeeded. Satus: ${paymentData.status}`);
+        return NextResponse.json({ error: "Payment not succeeded" }, { status: 400 });
+      }
+
+      const amount = parseFloat(paymentData.amount.value);
+      const streamerId = paymentData.metadata?.streamerId;
+      const trackId = paymentData.metadata?.trackId;
 
       if (!streamerId) {
-        return NextResponse.json({ error: "Missing streamerId" }, { status: 400 });
+        return NextResponse.json({ error: "Missing streamerId in metadata" }, { status: 400 });
       }
 
       // 1. Record Transaction

@@ -3,10 +3,52 @@
 import prisma from "@/lib/prisma";
 
 export async function createYookassaPayment(amount: number, trackId: string, streamerId: string) {
-  // Integration point for YooKassa API: `https://api.yookassa.ru/v3/payments`
-  // We mock the successful return URL for demonstration purposes.
-  const paymentId = `mock-${Date.now()}`;
-  const mockPaymentUrl = `https://yoomoney.ru/checkout/payments/v2/contract?orderId=${paymentId}`;
+  const shopId = process.env.YOOKASSA_SHOP_ID;
+  const secretKey = process.env.YOOKASSA_SECRET_KEY;
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+
+  if (!shopId || !secretKey) {
+    throw new Error("YooKassa credentials are not configured");
+  }
+
+  const idempotenceKey = crypto.randomUUID();
+  const token = Buffer.from(`${shopId}:${secretKey}`).toString("base64");
+
+  const response = await fetch("https://api.yookassa.ru/v3/payments", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Idempotence-Key": idempotenceKey,
+      "Authorization": `Basic ${token}`
+    },
+    body: JSON.stringify({
+      amount: {
+        value: amount.toString(),
+        currency: "RUB"
+      },
+      capture: true,
+      confirmation: {
+        type: "redirect",
+        return_url: `${baseUrl}/dashboard` // Or back to the specific stream/leaderboard if you had the path
+      },
+      description: `Priority track bump`,
+      metadata: { trackId, action: "BUMP_TRACK", streamerId }
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    console.error("YooKassa Error:", data);
+    return { success: false, error: data.description || "Failed to create payment" };
+  }
+
+  const paymentId = data.id;
+  const paymentUrl = data.confirmation?.confirmation_url;
+
+  if (!paymentId || !paymentUrl) {
+    return { success: false, error: "Invalid response from YooKassa" };
+  }
   
   await prisma.platformTransaction.create({
     data: {
@@ -18,7 +60,7 @@ export async function createYookassaPayment(amount: number, trackId: string, str
     }
   });
 
-  return { success: true, url: mockPaymentUrl };
+  return { success: true, url: paymentUrl };
 }
 
 export async function simulateWebhook(paymentId: string) {
