@@ -105,3 +105,23 @@ export async function updateDonationSettings(amount: number, currency: string) {
     return { success: false, error: "Failed to update donation settings" };
   }
 }
+
+/**
+ * Updates the user's preferred accent color for overlays and UI.
+ */
+export async function updateAccentColor(color: string) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) throw new Error("Unauthorized");
+
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { accentColor: color }
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update accent color:", error);
+    return { success: false, error: "Failed to update theme color" };
+  }
+}

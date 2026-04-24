@@ -23,7 +23,7 @@ export function SetupWizard() {
     }
   }, [step]);
   
-  const { register, handleSubmit, watch, setValue, trigger, formState: { errors, isSubmitting } } = useForm<SessionConfig>({
+  const { register, handleSubmit, watch, setValue, trigger, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(sessionConfigSchema),
     defaultValues: {
       maxTracksPerUser: 1,
@@ -38,7 +38,7 @@ export function SetupWizard() {
   const allowedPlatforms = watch("allowedPlatforms");
   const currentTheme = watch("overlayTheme");
 
-  const onSubmit: SubmitHandler<SessionConfig> = async (data) => {
+  const onSubmit = async (data: SessionConfig) => {
     // Final check for safety
     const isValid = await trigger();
     if (!isValid) {

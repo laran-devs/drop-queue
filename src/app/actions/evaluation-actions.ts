@@ -170,7 +170,7 @@ export async function endSession(sessionId: string) {
       const avg = t.evaluations.reduce((acc, e) => acc + e.score, 0) / t.evaluations.length;
       return {
         title: t.title,
-        submitterName: t.submitter.name || "Anonymous",
+        submitterName: t.submitter?.name || "Anonymous",
         averageScore: avg,
       };
     })

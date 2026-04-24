@@ -26,7 +26,8 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
         include: { submitter: { select: { id: true, name: true } } }
       },
       criteria: true,
-      streamer: { select: { daSecret: true } }
+      streamer: { select: { daSecret: true } },
+      donations: { orderBy: { createdAt: "desc" } }
     },
   });
 
@@ -40,7 +41,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-16">
       <DashboardContent 
         session={streamSession} 
         userId={session.user.id} 

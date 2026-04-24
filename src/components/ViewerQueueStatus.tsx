@@ -89,8 +89,7 @@ export function ViewerQueueStatus({ sessionId, slug, userId, accentColor }: View
     if (myPosition === 1 && permission === "granted") {
       sendNotification("Your track is UP NEXT! 🎵", {
         body: "Get ready, your submission is at the top of the queue.",
-        tag: "up-next",
-        renotify: true
+        tag: "up-next"
       });
     }
   }, [myPosition, permission, sendNotification]);

@@ -1,7 +1,8 @@
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { redirect, Link } from "@/navigation";
+import { Link } from "@/navigation";
+import { redirect } from "next/navigation";
 import { Trophy, Music, Calendar } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 
@@ -18,6 +19,7 @@ export default async function DashboardHallOfFamePage({
 
   if (!session?.user?.id) {
     redirect("/");
+    return null; // Satisfy TS compiler
   }
 
   // Period filter logic
@@ -63,7 +65,7 @@ export default async function DashboardHallOfFamePage({
     .slice(0, 5);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12 space-y-16">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-16">
       <div className="flex flex-col md:flex-row items-center gap-8 justify-between border-b border-zinc-100 dark:border-zinc-800 pb-12">
         <div className="space-y-4 text-center md:text-left">
            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 text-[10px] font-black uppercase tracking-widest">

@@ -23,7 +23,7 @@ export function Header() {
 
   if (!mounted) return (
     <header className="sticky top-0 z-50 w-full border-b border-zinc-100 dark:border-zinc-900 bg-white/80 dark:bg-black/80 backdrop-blur-xl">
-      <div className="container mx-auto px-6 h-20 flex items-center justify-between" />
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8" />
     </header>
   );
 
@@ -36,7 +36,7 @@ export function Header() {
 
   return (
     <header className="border-b border-zinc-100 bg-white/80 backdrop-blur-md sticky top-0 z-50 dark:border-zinc-800 dark:bg-black/80">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-purple-600 flex items-center justify-center">

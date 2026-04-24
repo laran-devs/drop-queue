@@ -15,7 +15,9 @@ export function OverlayPreview({
   const { 
     showUpNext = true, 
     showSubmitter = true, 
-    showTrackNumber = true 
+    showTrackNumber = true,
+    showBpm = true,
+    showKey = true
   } = settings;
 
   const isCyber = theme === "CYBERPUNK";
@@ -53,7 +55,6 @@ export function OverlayPreview({
           style={{ 
             borderLeftWidth: !isCyber && !isRetro ? "4px" : undefined,
             borderLeftStyle: !isCyber && !isRetro ? "solid" : undefined,
-            borderLeftColor: isCyber ? "#ff00ff" : isRetro ? undefined : accentColor,
             borderColor: isCyber ? "#ff00ff" : isRetro ? "#c0c0c0" : undefined,
             backgroundColor: isRetro ? "#c0c0c0" : undefined,
             borderTopColor: isRetro ? "white" : isCyber ? "#ff00ff" : undefined,
@@ -119,11 +120,26 @@ export function OverlayPreview({
               <h1 className={`${isMin ? "text-lg" : isCyber ? "text-4xl" : isRetro ? "text-2xl font-bold" : "text-3xl"} ${isRetro ? "text-black" : "text-white"} font-black tracking-tighter truncate leading-none uppercase`}>
                 PREVIEW_BANGER_V2
               </h1>
-              {showSubmitter && !isMin && (
-                 <p className={`text-[10px] font-bold mt-1 uppercase tracking-widest ${isCyber ? "text-cyan-400" : isRetro ? "text-zinc-400" : "text-white/50"}`}>
-                   {isRetro ? "BY_USER_" : "Sent by "} LaranDev
-                 </p>
-              )}
+               {showSubmitter && !isMin && (
+                 <div className="flex items-center gap-3 mt-1.5 min-w-0">
+                   <p className={`text-[10px] font-bold uppercase tracking-widest ${isCyber ? "text-cyan-400" : isRetro ? "text-zinc-400" : "text-white/50"} truncate`}>
+                     {isRetro ? "BY_USER_" : "Sent by "} LaranDev
+                   </p>
+                   
+                   <div className="flex items-center gap-2 shrink-0">
+                     {showBpm && (
+                       <span className={`px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-black tabular-nums ${isCyber ? "text-cyan-400 border-cyan-500/30" : isRetro ? "bg-zinc-100 text-zinc-600 border-zinc-200" : "text-white/40"}`}>
+                         128 BPM
+                       </span>
+                     )}
+                     {showKey && (
+                       <span className={`px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[8px] font-black ${isCyber ? "text-pink-400 border-pink-500/30" : isRetro ? "bg-zinc-100 text-zinc-600 border-zinc-200" : "text-white/40"}`}>
+                         Am
+                       </span>
+                     )}
+                   </div>
+                 </div>
+               )}
             </div>
 
             {showUpNext && !isMin && (

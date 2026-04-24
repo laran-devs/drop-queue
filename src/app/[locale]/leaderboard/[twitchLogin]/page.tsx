@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { redirect } from "@/navigation";
+import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { notFound } from "next/navigation";
@@ -53,7 +53,7 @@ export default async function LeaderboardPage({
   });
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12 sm:py-24 space-y-20">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-16 sm:space-y-20">
       <div className="text-center mb-16 space-y-4">
         <div className="flex flex-col items-center gap-4">
            {streamer.image && (

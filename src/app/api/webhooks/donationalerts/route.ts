@@ -93,7 +93,8 @@ export async function POST(req: Request) {
           username: username,
           message: message || "",
           trackTitle: track.title,
-          streamerId: streamer.id
+          streamerId: streamer.id,
+          sessionId: track.sessionId
         }
       })
     ]);

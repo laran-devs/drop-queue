@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { redirect } from "@/navigation";
+import { redirect } from "next/navigation";
 
 export default async function LeaderboardBasePage() {
   const session = await getServerSession(authOptions);

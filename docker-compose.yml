@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dropqueue
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    command: redis-server --appendonly yes
+
+  web:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://root:password@db:5432/dropqueue?schema=public
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+    command: npx tsx server.ts
+    env_file:
+      - .env
+
+  bot-worker:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://root:password@db:5432/dropqueue?schema=public
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=production
+    depends_on:
+      - db
+      - redis
+    command: npx tsx src/bot-worker.ts
+    env_file:
+      - .env
+
+volumes:
+  pgdata:
+  redisdata:

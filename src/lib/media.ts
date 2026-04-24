@@ -1,4 +1,4 @@
-export type MediaType = 'youtube' | 'spotify' | 'file' | 'link';
+export type MediaType = 'youtube' | 'spotify' | 'file' | 'link' | 'soundcloud';
 
 export interface MediaInfo {
   type: MediaType;
@@ -42,7 +42,16 @@ export function getMediaInfo(url: string | null, filePath: string | null): Media
     };
   }
 
-  // 4. Default Case (other links)
+  // 4. SoundCloud Parsing
+  const scMatch = url.match(/(https?:\/\/(soundcloud\.com|snd\.sc)\/.*)/);
+  if (scMatch) {
+    return {
+      type: 'soundcloud',
+      originalUrl: url,
+    };
+  }
+
+  // 5. Default Case (other links)
   return {
     type: 'link',
     originalUrl: url,

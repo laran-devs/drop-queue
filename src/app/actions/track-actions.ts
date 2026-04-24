@@ -15,7 +15,11 @@ export async function getTracksForSession(sessionId: string) {
           select: { name: true }
         }
       },
-      orderBy: { submittedAt: "asc" }
+      orderBy: [
+        { isPaid: "desc" },
+        { isVip: "desc" },
+        { submittedAt: "asc" }
+      ]
     });
     return { success: true, tracks };
   } catch (error) {

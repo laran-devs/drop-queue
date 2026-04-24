@@ -10,6 +10,9 @@ export async function updateSessionSettings(
     showKeyOnOverlay?: boolean;
     allowedPlatforms?: string[];
     enableNormalization?: boolean;
+    autoAdvance?: boolean;
+    trackLimit?: number | null;
+    subOnly?: boolean;
   }
 ) {
   try {

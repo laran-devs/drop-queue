@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Music2, Languages, PlayCircle, ExternalLink, MessageSquare, TrendingUp, SkipForward, Ban } from "lucide-react";
 import { Track, Criteria } from "@prisma/client";
+import ReactPlayer from 'react-player/lazy';
 
 interface EvaluationPanelProps {
   playingTrack: any;
@@ -128,13 +129,17 @@ export function EvaluationPanel({
             <div className={`w-full h-full flex flex-col items-center justify-center gap-6 ${activeTab === "player" ? "" : "hidden"}`}>
               {media && (
                 <>
-                  {media.type === 'youtube' && (
-                    <iframe 
-                      src={media.embedUrl}
-                      className="w-full aspect-video rounded-2xl shadow-2xl border border-zinc-800"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
+                  {(media.type === 'youtube' || media.type === 'soundcloud') && (
+                    <div className="w-full aspect-video rounded-2xl shadow-2xl overflow-hidden border border-zinc-800 z-10 relative">
+                      <ReactPlayer 
+                        url={media.originalUrl} 
+                        width="100%" 
+                        height="100%" 
+                        playing={true} 
+                        controls={true}
+                        onEnded={handleTrackEnd}
+                      />
+                    </div>
                   )}
                   {media.type === 'spotify' && (
                     <iframe 

@@ -64,7 +64,7 @@ export default async function DashboardHub() {
   const t = await getTranslations("Hub");
 
   return (
-    <div className="container mx-auto px-6 py-24 space-y-24">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-16">
       <div className="flex flex-col lg:flex-row justify-between items-start gap-12">
         <div className="max-w-2xl space-y-6">
           <div className="flex items-center gap-3">
@@ -127,7 +127,7 @@ export default async function DashboardHub() {
       </section>
 
       <DashboardExplorer 
-        sessions={mySessions} 
+        sessions={mySessions as any} 
         streamer={{ accentColor: session.user.accentColor as string }}
       />
     </div>

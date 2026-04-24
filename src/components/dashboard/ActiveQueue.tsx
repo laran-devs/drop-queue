@@ -27,6 +27,7 @@ interface ActiveQueueProps {
   setPlaying: (trackId: string) => void;
   accentColor: string;
   trackLimit?: number | null;
+  onStartDuel?: () => void;
 }
 
 export function ActiveQueue({ 
@@ -34,7 +35,8 @@ export function ActiveQueue({
   setTracks, 
   setPlaying, 
   accentColor,
-  trackLimit 
+  trackLimit,
+  onStartDuel
 }: ActiveQueueProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -81,12 +83,19 @@ export function ActiveQueue({
         <h2 className="text-xl font-black uppercase tracking-tighter">
           Queue <span className="opacity-30">({queuedTracks.length})</span>
         </h2>
-        {trackLimit && (
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-             <TrendingUp size={10} className="text-zinc-400" />
-             <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500">Auto-Line: {trackLimit}</span>
-          </div>
-        )}
+        <div className="flex gap-2">
+          {onStartDuel && queuedTracks.length >= 2 && (
+            <button onClick={onStartDuel} className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-all text-[8px] font-black uppercase tracking-widest active:scale-95">
+              ⚔️ Start Duel
+            </button>
+          )}
+          {trackLimit && (
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+               <TrendingUp size={10} className="text-zinc-400" />
+               <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500">Auto-Line: {trackLimit}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Search Bar (3.4) */}
@@ -108,8 +117,8 @@ export function ActiveQueue({
             <AnimatePresence mode="popLayout">
               {filteredTracks.map((t, index) => {
                 const trackIndex = totalEvaluated + index + 1;
-                const isOverLimit = trackLimit && trackIndex > trackLimit;
-                const becomesOverLimitHere = trackLimit && trackIndex === trackLimit + 1;
+                const isOverLimit = trackLimit != null ? trackIndex > trackLimit : false;
+                const becomesOverLimitHere = trackLimit != null ? trackIndex === trackLimit + 1 : false;
 
                 return (
                   <motion.div

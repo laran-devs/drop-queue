@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { redirect } from "@/navigation";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import { Music, BarChart3, Trophy, Clock, Search, Activity } from "lucide-react";
 import { ProfileAnalytics } from "@/components/ProfileAnalytics";
@@ -14,6 +14,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
 
   if (!session?.user?.id) {
     redirect("/");
+    return null; // Satisfy TS compiler
   }
 
   // Fetch user's submission history with evaluations
@@ -73,7 +74,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
 
 
   return (
-    <div className="relative min-h-screen pt-32 pb-20 overflow-x-hidden">
+    <div className="relative min-h-screen py-12 sm:py-20 overflow-x-hidden">
       {/* BACKGROUND ELEMENTS */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-purple-500/10 blur-[120px] rounded-full" />

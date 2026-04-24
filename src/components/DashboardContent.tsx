@@ -9,12 +9,12 @@ import { addCriterion, removeCriterion, submitEvaluation, endSession } from "@/a
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { saveCriteriaPreset, loadCriteriaPreset, getUserPresets } from "@/app/actions/preset-actions";
-import { AnalyticsDashboard } from "@/components/AnalyticsDashboard";
+import { AnalyticsDashboard } from "@/components/dashboard/AnalyticsDashboard";
 import { ListRestart, Save, LayoutTemplate, BarChart2, Settings as SettingsIcon, Headphones, Volume2, VolumeX } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { updateSessionSettings } from "@/app/actions/update-session-settings";
 import { getTracksForSession, startTrack, bumpTrack } from "@/app/actions/track-actions";
-import { updateDASecret } from "@/app/actions/user-actions";
+import { updateDASecret, updateAccentColor } from "@/app/actions/user-actions";
 import { PLATFORMS } from "@/lib/validations";
 import { useLocale } from "next-intl";
 import { getMediaInfo } from "@/lib/media";
@@ -24,13 +24,15 @@ import { ActiveQueue } from "./dashboard/ActiveQueue";
 import { EvaluationPanel } from "./dashboard/EvaluationPanel";
 import { DashboardSettings } from "./dashboard/DashboardSettings";
 import { SessionSummaryCard } from "./dashboard/SessionSummaryCard";
-import { updateSessionStatus } from "@/app/actions/session-actions";
+import { DuelPanel } from "./dashboard/DuelPanel";
+import { updateSessionStatus, updateOverlaySettings } from "@/app/actions/session-actions";
 
 interface DashboardContentProps {
   session: StreamSession & { 
     criteria: Criteria[], 
     tracks: (Track & { submitter: { id: string, name: string | null } | null })[],
-    streamer: { daSecret: string | null }
+    streamer: { daSecret: string | null },
+    donations: any[]
   };
   userId: string;
 }
@@ -66,9 +68,21 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   const [autoAdvance, setAutoAdvance] = useState(initialSession.autoAdvance ?? true);
   const [daSecret, setDASecret] = useState(initialSession.streamer?.daSecret || "");
   const [trackLimit, setTrackLimit] = useState(initialSession.trackLimit ?? null);
+  const [subOnly, setSubOnly] = useState(initialSession.subOnly ?? false);
   const [chatVotes, setChatVotes] = useState<Record<string, { avg: number; total: number }>>({});
   const [evaluations, setEvaluations] = useState<Record<string, number>>({});
+  const [overlaySettings, setOverlaySettings] = useState<Record<string, boolean>>(
+    (initialSession.settings as Record<string, boolean>) || {
+      showUpNext: true,
+      showSubmitter: true,
+      showTrackNumber: true
+    }
+  );
+  const [overlayTheme, setOverlayTheme] = useState(initialSession.overlayTheme || "default");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sessionMode, setSessionMode] = useState<"STANDARD" | "DUEL">(initialSession.sessionMode as any);
+  const [duelTracks, setDuelTracks] = useState<(Track & any)[]>([]);
+  const [duelVotes, setDuelVotes] = useState({ track1Percent: 50, track2Percent: 50, track1Votes: 0, track2Votes: 0, total: 0 });
   const audioRef = useRef<HTMLAudioElement>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const compressorRef = useRef<DynamicsCompressorNode | null>(null);
@@ -112,7 +126,10 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
         trackId, 
         title: track.title,
         trackNumber: track.order,
-        submitterName: track.submitter?.name || "Anonymous"
+        submitterName: track.submitter?.name || "Anonymous",
+        bpm: track.bpm,
+        key: track.key,
+        isPaid: track.isPaid
       });
       setTracks(prev => prev.map(t => ({
         ...t,
@@ -167,34 +184,19 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       setPlaying(data.trackId);
     });
 
+    const cleanupDuel = on("DUEL_UPDATE", (data: any) => {
+      setDuelVotes(data);
+    });
+
     return () => {
       if (cleanup) cleanup();
       if (cleanupVotes) cleanupVotes();
       if (cleanupAuto) cleanupAuto();
+      if (cleanupDuel) cleanupDuel();
     };
   }, [on, initialSession.id, setPlaying]);
 
 
-  // YouTube API listener
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      // Check if the message is from YouTube
-      if (event.origin !== "https://www.youtube.com") return;
-      
-      try {
-        const data = JSON.parse(event.data);
-        // data.info === 0 means "ENDED" in YouTube API
-        if (data.event === "infoDelivery" && data.info && data.info.playerState === 0) {
-          handleTrackEnd();
-        }
-      } catch {
-        // Skip non-JSON messages
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [handleTrackEnd]);
 
   useEffect(() => {
     emit("queue_updated", { slug: initialSession.slug, tracks });
@@ -407,6 +409,55 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [playingTrack, scores, criteria.length, isSubmitting, handleSubmitEvaluation]);
 
+  const handleStartDuel = async () => {
+    const top2 = tracks.filter(t => t.status === "QUEUED")
+      .sort((a, b) => {
+        if (a.isPaid && !b.isPaid) return -1;
+        if (!a.isPaid && b.isPaid) return 1;
+        return 0;
+      }).slice(0, 2);
+
+    if (top2.length < 2) return toast.error("Not enough tracks for a duel.");
+
+    setSessionMode("DUEL");
+    setDuelTracks(top2);
+    setDuelVotes({ track1Percent: 50, track2Percent: 50, track1Votes: 0, track2Votes: 0, total: 0 });
+    emit("SESSION_MODE_CHANGED", { slug: initialSession.slug, mode: "DUEL", tracks: top2 });
+    await updateSessionSettings(initialSession.id, { sessionMode: "DUEL" } as any);
+  };
+
+  const handleFinishDuel = async (winnerId: string, loserId: string) => {
+    setIsSubmitting(true);
+    try {
+       await submitEvaluation(winnerId, { "duel-win": 10 });
+       await skipTrack(loserId, "Eliminated in Duel");
+
+       setTracks(prev => prev.map(t => {
+         if (t.id === winnerId) return { ...t, status: "EVALUATED" as const };
+         if (t.id === loserId) return { ...t, status: "SKIPPED" as const };
+         return t;
+       }));
+       
+       setSessionMode("STANDARD");
+       setDuelTracks([]);
+       emit("SESSION_MODE_CHANGED", { slug: initialSession.slug, mode: "STANDARD" });
+       await updateSessionSettings(initialSession.id, { sessionMode: "STANDARD" } as any);
+       router.refresh();
+       toast.success("Duel Finished!");
+    } catch (e) {
+       toast.error("Failed to finish duel");
+    } finally {
+       setIsSubmitting(false);
+    }
+  };
+
+  const handleCancelDuel = async () => {
+     setSessionMode("STANDARD");
+     setDuelTracks([]);
+     emit("SESSION_MODE_CHANGED", { slug: initialSession.slug, mode: "STANDARD" });
+     await updateSessionSettings(initialSession.id, { sessionMode: "STANDARD" } as any);
+  };
+
   const handleUpdatePlatforms = async (newPlatforms: string[]) => {
     setAllowedPlatforms(newPlatforms);
     await updateSessionSettings(initialSession.id, { allowedPlatforms: newPlatforms });
@@ -428,6 +479,39 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
     setTrackLimit(val);
     await updateSessionSettings(initialSession.id, { trackLimit: val });
     toast.success(`Track limit set to ${val || "∞"}`);
+  };
+
+  const handleUpdateSubOnly = async (val: boolean) => {
+    setSubOnly(val);
+    await updateSessionSettings(initialSession.id, { subOnly: val });
+    toast.success(`Sub-Only Mode ${val ? "enabled" : "disabled"}`);
+  };
+
+  const handleUpdateShowBpm = async (val: boolean) => {
+    setShowBpm(val);
+    await updateSessionSettings(initialSession.id, { showBpmOnOverlay: val });
+    emit("SETTINGS_UPDATED", { slug: initialSession.slug, settings: overlaySettings, showBpmOnOverlay: val });
+    toast.success(`BPM Display ${val ? "enabled" : "disabled"}`);
+  };
+
+  const handleUpdateShowKey = async (val: boolean) => {
+    setShowKey(val);
+    await updateSessionSettings(initialSession.id, { showKeyOnOverlay: val });
+    emit("SETTINGS_UPDATED", { slug: initialSession.slug, settings: overlaySettings, showKeyOnOverlay: val });
+    toast.success(`Key Display ${val ? "enabled" : "disabled"}`);
+  };
+
+  const handleUpdateOverlaySettings = async (newSettings: Record<string, boolean>) => {
+    setOverlaySettings(newSettings);
+    await updateOverlaySettings(initialSession.slug, newSettings);
+    emit("SETTINGS_UPDATED", { slug: initialSession.slug, settings: newSettings });
+  };
+
+  const handleUpdateTheme = async (theme: string) => {
+    setOverlayTheme(theme);
+    await updateSessionSettings(initialSession.id, { overlayTheme: theme } as any);
+    emit("THEME_UPDATED", { slug: initialSession.slug, theme });
+    toast.success(`Theme changed to ${theme}`);
   };
 
   return (
@@ -455,11 +539,9 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
              <div className="pb-10">
                <AnalyticsDashboard 
-                 data={tracks.filter(t => t.status === "EVALUATED").map(t => ({
-                   title: t.title,
-                   score: evaluations[t.id] || 0,
-                   submitter: t.submitter?.name || "Anon"
-                 }))}
+                 tracks={tracks}
+                 evaluations={evaluations}
+                 donations={initialSession.donations}
                  accentColor={accentColor}
                />
                
@@ -519,6 +601,16 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
                    router.refresh();
                  }
                }}
+               subOnly={subOnly}
+               onSubOnlyChange={handleUpdateSubOnly}
+               showBpm={showBpm}
+               onShowBpmChange={handleUpdateShowBpm}
+               showKey={showKey}
+               onShowKeyChange={handleUpdateShowKey}
+               overlaySettings={overlaySettings}
+               onOverlaySettingsChange={handleUpdateOverlaySettings}
+               overlayTheme={overlayTheme}
+               onOverlayThemeChange={handleUpdateTheme}
              />
           </motion.div>
         )}
@@ -549,27 +641,38 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className="lg:col-span-8 space-y-10">
-          <EvaluationPanel 
-            playingTrack={playingTrack}
-            criteria={criteria}
-            scores={scores}
-            setScores={setScores}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            media={media}
-            audioRef={audioRef}
-            handleTrackEnd={handleTrackEnd}
-            handleSubmitEvaluation={handleSubmitEvaluation}
-            handleNext={handleNext}
-            handleSkip={() => {
-              const reason = prompt("Reason for skip:");
-              if (reason) skipTrack(playingTrack!.id, reason).then(() => router.refresh());
-            }}
-            isSubmitting={isSubmitting}
-            accentColor={accentColor}
-            chatVote={playingTrack ? chatVotes[playingTrack.id] : null}
-            autoAdvance={autoAdvance}
-          />
+          {sessionMode === "DUEL" ? (
+             <DuelPanel 
+               tracks={duelTracks}
+               duelVotes={duelVotes}
+               onFinishDuel={handleFinishDuel}
+               onCancelDuel={handleCancelDuel}
+               accentColor={accentColor}
+               isSubmitting={isSubmitting}
+             />
+          ) : (
+             <EvaluationPanel 
+               playingTrack={playingTrack}
+               criteria={criteria}
+               scores={scores}
+               setScores={setScores}
+               activeTab={activeTab}
+               setActiveTab={setActiveTab}
+               media={media}
+               audioRef={audioRef}
+               handleTrackEnd={handleTrackEnd}
+               handleSubmitEvaluation={handleSubmitEvaluation}
+               handleNext={handleNext}
+               handleSkip={() => {
+                 const reason = prompt("Reason for skip:");
+                 if (reason) skipTrack(playingTrack!.id, reason).then(() => router.refresh());
+               }}
+               isSubmitting={isSubmitting}
+               accentColor={accentColor}
+               chatVote={playingTrack ? chatVotes[playingTrack.id] : null}
+               autoAdvance={autoAdvance}
+             />
+          )}
 
           <section className="glass p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800">
             <h2 className="text-sm font-black uppercase tracking-widest mb-6">Queue <span style={{ color: accentColor }}>Focus Points</span></h2>
@@ -596,6 +699,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
             setPlaying={setPlaying}
             accentColor={accentColor}
             trackLimit={trackLimit}
+            onStartDuel={handleStartDuel}
           />
         </div>
       </div>

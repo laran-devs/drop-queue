@@ -8,6 +8,7 @@ import { trackSubmissionSchema, PLATFORMS } from "@/lib/validations";
 
 import { headers } from "next/headers";
 import { submissionLimiter } from "@/lib/rate-limit";
+import { isSubscriber, isVip, isModerator } from "@/lib/twitch-api";
 
 export async function submitTrack(formData: FormData) {
   const session = await getServerSession(authOptions);
@@ -35,7 +36,7 @@ export async function submitTrack(formData: FormData) {
   });
 
   if (!validatedFields.success) {
-    throw new Error(validatedFields.error.errors[0].message);
+    throw new Error(validatedFields.error.issues[0].message);
   }
 
   const { title, url, filePath, trackType, description, lyrics, sessionId, bpm, key } = validatedFields.data;
@@ -48,6 +49,15 @@ export async function submitTrack(formData: FormData) {
 
   if (!streamSession) throw new Error("Session not found");
   if (streamSession.status !== "ACTIVE") throw new Error("Session is not active");
+
+  // 2.5 Sub-Only Check
+  const broadcasterId = streamSession.streamerId;
+  const isPriorityUser = await isVip(broadcasterId, session.user.id) || await isModerator(broadcasterId, session.user.id);
+  const isSub = await isSubscriber(broadcasterId, session.user.id);
+
+  if (streamSession.subOnly && !isSub && !isPriorityUser) {
+    throw new Error("This session is Subscriber-Only. Subscribe to this streamer to participate!");
+  }
 
   // 3. Enforce per-user track limit
   const userTrackCount = await prisma.track.count({
@@ -108,6 +118,7 @@ export async function submitTrack(formData: FormData) {
         order: nextOrder,
         bpm: bpm || 0,
         key: key || "",
+        isVip: isPriorityUser
       },
     });
   });

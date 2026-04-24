@@ -49,7 +49,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
   const { profile } = result;
 
   return (
-    <div className="relative min-h-screen pt-32 pb-20 overflow-x-hidden">
+    <div className="relative min-h-screen py-12 sm:py-20 overflow-x-hidden">
       {/* BACKGROUND ELEMENTS */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-purple-500/10 blur-[120px] rounded-full" />

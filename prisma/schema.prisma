@@ -27,6 +27,9 @@ model User {
   donationCurrency   String             @default("RUB")
   donationLogs       DonationLog[]
   preferences        UserPreferences?
+  wallet             Wallet?
+  viewerTransactions PlatformTransaction[] @relation("ViewerTransactions")
+  streamerTransactions PlatformTransaction[] @relation("StreamerTransactions")
 }
 
 model UserPreferences {
@@ -72,6 +75,7 @@ model StreamSession {
   createdAt            DateTime             @default(now())
   endedAt              DateTime?
   allowDirectUploads   Boolean              @default(false)
+  subOnly              Boolean              @default(false)
   allowedPlatforms     String[]             @default(["YouTube", "Spotify", "Soundcloud"])
   description          String?
   enableHighScoreSound Boolean              @default(false)
@@ -84,6 +88,7 @@ model StreamSession {
   showKeyOnOverlay     Boolean              @default(true)
   slug                 String               @unique
   title                String               @default("New Stream Session")
+  sessionMode          String               @default("STANDARD")
   enableNormalization  Boolean              @default(false)
   autoAdvance          Boolean              @default(true)
   trackLimit           Int?
@@ -91,6 +96,7 @@ model StreamSession {
   topTracks            HistoricalTopTrack[]
   streamer             User                 @relation("StreamerSessions", fields: [streamerId], references: [id])
   tracks               Track[]
+  donations            DonationLog[]
 
   @@index([streamerId, status])
 }
@@ -114,6 +120,7 @@ model Track {
   updatedAt   DateTime      @default(now()) @updatedAt
   chatScore   Float?
   isPaid      Boolean       @default(false)
+  isVip       Boolean       @default(false)
   evaluations Evaluation[]
   session     StreamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   submitter   User?         @relation("ViewerSubmissions", fields: [submitterId], references: [id])
@@ -182,15 +189,42 @@ enum TrackType {
 }
 
 model DonationLog {
-  id          String   @id @default(cuid())
-  amount      Float
-  currency    String   @default("RUB")
-  username    String
-  message     String?
-  trackTitle  String?
-  streamerId  String
-  streamer    User     @relation(fields: [streamerId], references: [id])
-  createdAt   DateTime @default(now())
+  id         String        @id @default(cuid())
+  amount     Float
+  currency   String        @default("RUB")
+  username   String
+  message    String?
+  trackTitle String?
+  streamerId String
+  sessionId  String?
+  createdAt  DateTime      @default(now())
+  streamer   User          @relation(fields: [streamerId], references: [id])
+  session    StreamSession? @relation(fields: [sessionId], references: [id])
 
   @@index([streamerId])
+}
+
+model PlatformTransaction {
+  id          String   @id @default(cuid())
+  userId      String?  
+  streamerId  String   
+  amount      Float
+  currency    String   @default("RUB")
+  status      String   @default("PENDING") 
+  paymentId   String   @unique
+  description String?
+  metadata    Json?    
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  streamer    User     @relation("StreamerTransactions", fields: [streamerId], references: [id])
+  user        User?    @relation("ViewerTransactions", fields: [userId], references: [id])
+}
+
+model Wallet {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  balance    Float    @default(0)
+  currency   String   @default("RUB")
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

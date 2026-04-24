@@ -1,9 +1,29 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { PLATFORMS } from "@/lib/validations";
-import { ToggleLeft, ToggleRight, Radio, Shield, Palette, LayoutGrid, Clock, AlertTriangle, TrendingUp, Plus, Minus } from "lucide-react";
-import { toast } from "sonner";
+import { 
+  ToggleLeft, 
+  ToggleRight, 
+  Radio, 
+  Shield, 
+  Palette, 
+  LayoutGrid, 
+  AlertTriangle, 
+  TrendingUp, 
+  Plus, 
+  Minus,
+  Activity,
+  ChevronRight,
+  User as UserIcon,
+  Hash,
+  Music,
+  Layout,
+  CreditCard
+} from "lucide-react";
+import { TwitterPicker } from "react-color";
+import { OverlayPreview } from "../OverlayPreview";
 
 interface DashboardSettingsProps {
   initialSession: any;
@@ -21,6 +41,16 @@ interface DashboardSettingsProps {
   daSecret?: string;
   onDASecretChange?: (val: string) => void;
   onSaveDASecret?: () => void;
+  subOnly: boolean;
+  onSubOnlyChange: (val: boolean) => void;
+  showBpm: boolean;
+  onShowBpmChange: (val: boolean) => void;
+  showKey: boolean;
+  onShowKeyChange: (val: boolean) => void;
+  overlayTheme: string;
+  onOverlayThemeChange: (val: string) => void;
+  overlaySettings: Record<string, boolean>;
+  onOverlaySettingsChange: (val: Record<string, boolean>) => void;
 }
 
 const COLOR_PRESETS = [
@@ -31,8 +61,14 @@ const COLOR_PRESETS = [
   { name: "Lava Red", value: "#ff4444" },
 ];
 
+const TABS = [
+  { id: "logic", label: "Queue Logic", icon: Shield },
+  { id: "donations", label: "Donations", icon: CreditCard },
+  { id: "appearance", label: "Appearance", icon: Palette },
+  { id: "platforms", label: "Platforms", icon: LayoutGrid },
+];
+
 export function DashboardSettings({
-  initialSession,
   accentColor,
   onColorChange,
   enableNormalization,
@@ -46,187 +82,291 @@ export function DashboardSettings({
   onSimulateDonation,
   daSecret,
   onDASecretChange,
-  onSaveDASecret
+  onSaveDASecret,
+  subOnly,
+  onSubOnlyChange,
+  showBpm,
+  onShowBpmChange,
+  showKey,
+  onShowKeyChange,
+  overlayTheme,
+  onOverlayThemeChange,
+  overlaySettings,
+  onOverlaySettingsChange
 }: DashboardSettingsProps) {
+  const [activeTab, setActiveTab] = useState("logic");
 
   return (
-    <div className="glass p-10 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 space-y-12">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        
-        {/* Management & Logic (3.1, 3.2) */}
-        <div className="space-y-6">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-2">
-            <Shield size={12} />
-            Session Management
-          </h3>
-          <div className="space-y-4">
-            <label className="flex items-center justify-between p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-purple-500/50 transition-all">
-              <div className="space-y-0.5">
-                 <span className="text-xs font-bold">Auto-Advance</span>
-                 <p className="text-[10px] text-zinc-500 font-medium">Next track starts as soon as you rate.</p>
-              </div>
-              <button 
-                onClick={() => onAutoAdvanceChange(!autoAdvance)}
-                className="text-purple-600"
-              >
-                {autoAdvance ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-zinc-500" />}
-              </button>
-            </label>
-
-            <div className="p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <span className="text-xs font-bold">Line in the Sand</span>
-                  <p className="text-[10px] text-zinc-500 font-medium">Limit guaranteed evaluations.</p>
-                </div>
-                <div className="flex items-center gap-1 bg-zinc-200 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-300 dark:border-zinc-800">
-                   <button 
-                     onClick={() => onTrackLimitChange(Math.max(0, (trackLimit || 0) - 1))}
-                     className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-zinc-300 dark:hover:bg-zinc-900 transition-all text-zinc-500"
-                   >
-                     <Minus size={12} />
-                   </button>
-                   {/* Decoy field to trap browser password manager */}
-                   <input type="password" style={{ display: 'none' }} tabIndex={-1} autoComplete="new-password" />
-                   <input 
-                     type="tel"
-                     name="session_limit_phone_style"
-                     id="session_limit_phone_style"
-                     autoComplete="off"
-                     value={(trackLimit ?? "").toString()}
-                     placeholder="∞"
-                     onChange={(e) => {
-                       const val = e.target.value.replace(/[^0-9]/g, "");
-                       onTrackLimitChange(val === "" ? null : parseInt(val));
-                     }}
-                     className="w-24 bg-transparent border-none text-xs font-black text-center outline-none pr-2"
-                   />
-                   <button 
-                     onClick={() => onTrackLimitChange((trackLimit || 0) + 1)}
-                     className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-zinc-300 dark:hover:bg-zinc-900 transition-all text-zinc-500"
-                   >
-                     <Plus size={12} />
-                   </button>
-                </div>
-              </div>
-              {trackLimit && (
-                <div className="flex items-center gap-2 p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[9px] font-bold text-amber-600">
-                  <AlertTriangle size={12} />
-                  Tracks after #{trackLimit} will show backlog warning.
-                </div>
-              )}
-            </div>
-
-            {/* DonationAlerts Placeholder (4.1) */}
-            <div className="p-5 rounded-2xl bg-orange-500/5 border border-orange-500/20 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-orange-500 flex items-center justify-center text-white">
-                  <TrendingUp size={14} />
-                </div>
-                <div>
-                   <h4 className="text-[10px] font-black uppercase tracking-widest">DonationAlerts</h4>
-                   <p className="text-[8px] font-bold text-zinc-500">Enable priority bumping via donations.</p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <input 
-                  type="password"
-                  placeholder="Your Secret DA Token..."
-                  value={daSecret || ""}
-                  onChange={(e) => onDASecretChange?.(e.target.value)}
-                  className="flex-1 glass px-4 py-2 rounded-xl text-[10px] outline-none border border-transparent focus:border-orange-500/50"
-                  autoComplete="new-password"
-                />
-                <button 
-                  onClick={onSaveDASecret}
-                  className="px-3 py-2 rounded-xl bg-purple-600 text-white text-[8px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
-                >
-                  Save
-                </button>
-              </div>
-              <button 
-                onClick={onSimulateDonation}
-                className="w-full py-2 rounded-xl bg-orange-500/10 text-orange-600 text-[8px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all"
-              >
-                Simulate Test Donation
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Audio Processing */}
-        <div className="space-y-6">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-2">
-            <Radio size={12} />
-            Audio Processing
-          </h3>
-          <div className="space-y-4">
-            <label className="flex items-center justify-between p-4 rounded-2xl bg-zinc-100/50 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800 opacity-50 cursor-not-allowed">
-              <div className="space-y-0.5">
-                 <span className="text-xs font-bold flex items-center gap-2">
-                    Loudness Normalization
-                    <span className="px-1.5 py-0.5 rounded-md bg-purple-600/20 text-purple-400 text-[8px] font-black uppercase">Coming Soon</span>
-                 </span>
-                 <p className="text-[10px] text-zinc-500 font-medium">Equalize volume across different tracks.</p>
-              </div>
-              <input 
-                type="checkbox" 
-                checked={false} 
-                className="h-5 w-5 rounded border-zinc-300 text-purple-600 focus:ring-purple-600 accent-purple-600"
-                disabled
-              />
-            </label>
-          </div>
-        </div>
-
-        {/* Platforms Settings */}
-        <div className="space-y-6">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-2">
-            <LayoutGrid size={12} />
-            Allowed Platforms
-          </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {PLATFORMS.map((platform) => (
-              <label key={platform.id} className="flex items-center gap-3 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-purple-500/50 transition-all">
-                <input 
-                  type="checkbox" 
-                  checked={allowedPlatforms.includes(platform.id)}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    const newPlatforms = checked 
-                      ? [...allowedPlatforms, platform.id]
-                      : allowedPlatforms.filter(p => p !== platform.id);
-                    onPlatformsChange(newPlatforms);
-                  }}
-                  className="h-4 w-4 rounded border-zinc-300 text-purple-600 accent-purple-600"
-                />
-                <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">{platform.name}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Aesthetics (Real-time update) */}
-        <div className="lg:col-span-3 pt-8 border-t border-zinc-100 dark:border-zinc-900 flex flex-wrap items-center justify-between gap-6">
-          <div className="space-y-1">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-2">
-              <Palette size={12} />
-              Overlay Theme & Brand
-            </h3>
-            <p className="text-[10px] font-bold text-zinc-400">Updates live across all active stream overlays.</p>
-          </div>
-          <div className="flex p-1.5 glass bg-zinc-100 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-inner">
-            {COLOR_PRESETS.map((color) => (
-              <button
-                key={color.value}
-                onClick={() => onColorChange(color.value)}
-                className={`h-10 w-10 rounded-xl transition-all ${accentColor === color.value ? "scale-110 shadow-lg ring-2 ring-white/50" : "scale-90 opacity-40 hover:opacity-100"}`}
-                style={{ backgroundColor: color.value }}
-              />
-            ))}
-          </div>
-        </div>
+    <div className="glass p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 space-y-10">
+      {/* Tabs Menu */}
+      <div className="flex flex-wrap gap-2 p-1.5 bg-zinc-100 dark:bg-zinc-950/50 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+        {TABS.map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                activeTab === tab.id 
+                  ? "bg-white dark:bg-zinc-800 shadow-sm text-zinc-900 dark:text-white" 
+                  : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+              }`}
+            >
+              <Icon size={12} />
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+           key={activeTab}
+           initial={{ opacity: 0, x: 10 }}
+           animate={{ opacity: 1, x: 0 }}
+           exit={{ opacity: 0, x: -10 }}
+           transition={{ duration: 0.2 }}
+           className="min-h-[300px]"
+        >
+          {activeTab === "logic" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <label className="flex items-center justify-between p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-purple-500/50 transition-all">
+                <div className="space-y-0.5">
+                   <span className="text-xs font-bold">Auto-Advance</span>
+                   <p className="text-[10px] text-zinc-500 font-medium">Rating a track moves queue forward.</p>
+                </div>
+                <button 
+                  onClick={() => onAutoAdvanceChange(!autoAdvance)}
+                  className="text-purple-600"
+                >
+                  {autoAdvance ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-zinc-500" />}
+                </button>
+              </label>
+
+              <label className="flex items-center justify-between p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-purple-500/50 transition-all">
+                <div className="space-y-0.5">
+                   <span className="text-xs font-bold">Sub-Only Mode</span>
+                   <p className="text-[10px] text-zinc-500 font-medium">Submission restricted to subscribers.</p>
+                </div>
+                <button 
+                  onClick={() => onSubOnlyChange(!subOnly)}
+                  className="text-purple-600"
+                >
+                  {subOnly ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-zinc-500" />}
+                </button>
+              </label>
+
+              <div className="p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 space-y-3 col-span-1 md:col-span-2">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <span className="text-xs font-bold">Session Limit (Line in the Sand)</span>
+                    <p className="text-[10px] text-zinc-500 font-medium">Guaranteed spots. Tracks after this show a backlog warning.</p>
+                  </div>
+                  <div className="flex items-center gap-1 bg-zinc-200 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-300 dark:border-zinc-800">
+                    <button 
+                      onClick={() => onTrackLimitChange(Math.max(0, (trackLimit || 0) - 1))}
+                      className="h-9 w-9 rounded-lg flex items-center justify-center hover:bg-zinc-300 dark:hover:bg-zinc-900 transition-all text-zinc-500"
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <input 
+                      type="tel"
+                      value={(trackLimit ?? "").toString()}
+                      placeholder="∞"
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, "");
+                        onTrackLimitChange(val === "" ? null : parseInt(val));
+                      }}
+                      className="w-20 bg-transparent border-none text-xs font-black text-center outline-none"
+                    />
+                    <button 
+                      onClick={() => onTrackLimitChange((trackLimit || 0) + 1)}
+                      className="h-9 w-9 rounded-lg flex items-center justify-center hover:bg-zinc-300 dark:hover:bg-zinc-900 transition-all text-zinc-500"
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-3xl bg-zinc-100/50 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800 opacity-50 relative group">
+                <div className="flex items-center justify-between">
+                   <div className="space-y-0.5">
+                      <span className="text-xs font-bold flex items-center gap-2">
+                         Normalization
+                         <span className="px-1.5 py-0.5 rounded-md bg-purple-600/20 text-purple-400 text-[8px] font-black uppercase">Coming Soon</span>
+                      </span>
+                      <p className="text-[10px] text-zinc-500 font-medium">Equalize track volume output.</p>
+                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "donations" && (
+            <div className="max-w-xl space-y-6">
+              <div className="p-8 rounded-[2rem] bg-orange-500/5 border border-orange-500/20 space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
+                    <TrendingUp size={20} />
+                  </div>
+                  <div>
+                     <h4 className="text-xs font-black uppercase tracking-widest">DonationAlerts Sync</h4>
+                     <p className="text-[10px] font-bold text-zinc-500">Fast-track submissions via donations.</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <p className="text-[10px] font-bold text-zinc-400">Webhook Token</p>
+                  <div className="flex gap-2">
+                    <input 
+                      type="password"
+                      placeholder="Your Secret DA Token..."
+                      value={daSecret || ""}
+                      onChange={(e) => onDASecretChange?.(e.target.value)}
+                      className="flex-1 glass px-5 py-3 rounded-2xl text-xs outline-none border border-transparent focus:border-orange-500/50"
+                    />
+                    <button 
+                      onClick={onSaveDASecret}
+                      className="px-6 py-3 rounded-2xl bg-purple-600 text-white text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+
+                <div className="pt-4 flex flex-col gap-3">
+                   <button 
+                     onClick={onSimulateDonation}
+                     className="w-full py-4 rounded-2xl bg-orange-500/10 text-orange-600 text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all border border-orange-500/20"
+                   >
+                     Test Webhook Integration
+                   </button>
+                   <p className="text-[9px] text-center text-zinc-500 font-medium italic">Make sure your token is exact, otherwise bumps won't trigger.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "appearance" && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+              <div className="space-y-10">
+                <div className="space-y-6">
+                   <div className="flex items-center gap-3 text-purple-600">
+                     <Palette size={20} />
+                     <h3 className="text-xl font-black tracking-tight uppercase">Visual identity</h3>
+                   </div>
+                   <div className="glass p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 space-y-8">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label className="flex items-center justify-between p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 cursor-pointer">
+                           <span className="text-[10px] font-black uppercase">BPM</span>
+                           <button onClick={() => onShowBpmChange(!showBpm)} className="text-purple-600">
+                             {showBpm ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-zinc-500" />}
+                           </button>
+                        </label>
+                        <label className="flex items-center justify-between p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 cursor-pointer">
+                           <span className="text-[10px] font-black uppercase">Key</span>
+                           <button onClick={() => onShowKeyChange(!showKey)} className="text-purple-600">
+                             {showKey ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-zinc-500" />}
+                           </button>
+                        </label>
+                     </div>
+
+                     <div className="space-y-4">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">Accent Color</span>
+                        <div className="flex items-center gap-6">
+                           <div className="h-12 w-12 rounded-2xl shadow-xl border-4 border-white dark:border-zinc-800" style={{ backgroundColor: accentColor }} />
+                           <TwitterPicker 
+                             color={accentColor} 
+                             onChangeComplete={(c) => onColorChange(c.hex)}
+                             triangle="hide"
+                             styles={{ default: { card: { background: 'transparent', border: 'none', boxShadow: 'none' } } }}
+                           />
+                        </div>
+                     </div>
+                   </div>
+                </div>
+
+                <div className="space-y-6">
+                   <div className="flex items-center gap-3 text-purple-600">
+                     <Layout size={20} />
+                     <h3 className="text-xl font-black uppercase tracking-tight">Overlay elements</h3>
+                   </div>
+                   <div className="glass p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 grid grid-cols-1 md:grid-cols-2 gap-4">
+                     {[
+                       { key: "showUpNext", label: "Show Up Next", icon: ChevronRight },
+                       { key: "showSubmitter", label: "Show Submitter", icon: UserIcon },
+                       { key: "showTrackNumber", label: "Track Counter", icon: Hash },
+                     ].map((toggle) => (
+                       <button
+                         key={toggle.key}
+                         onClick={() => onOverlaySettingsChange({ ...overlaySettings, [toggle.key]: !overlaySettings[toggle.key] })}
+                         className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
+                           overlaySettings[toggle.key] 
+                             ? "bg-purple-500/10 border-purple-500/20 text-purple-600 font-bold" 
+                             : "bg-zinc-100 dark:bg-zinc-900 border-transparent text-zinc-400"
+                         }`}
+                       >
+                         <div className="flex items-center gap-3">
+                            <toggle.icon size={16} />
+                            <span className="text-[9px] font-black uppercase tracking-widest">{toggle.label}</span>
+                         </div>
+                         <div className={`h-2 w-2 rounded-full ${overlaySettings[toggle.key] ? "bg-purple-500" : "bg-zinc-300"}`} />
+                       </button>
+                     ))}
+                   </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                 <div className="flex items-center gap-3 text-zinc-400">
+                    <Music size={20} />
+                    <h3 className="text-xl font-black tracking-tight uppercase">Live Preview</h3>
+                 </div>
+                 <div className="bg-zinc-900 rounded-[3rem] p-4 overflow-hidden border-8 border-zinc-950 shadow-2xl">
+                    <OverlayPreview 
+                      theme={overlayTheme} 
+                      accentColor={accentColor} 
+                      settings={{ ...overlaySettings, showBpm, showKey }} 
+                    />
+                 </div>
+                 <p className="text-[10px] text-center text-zinc-400 font-medium px-10">Changes are broadcasted in real-time to your OBS source.</p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "platforms" && (
+            <div className="space-y-6">
+              <div className="space-y-1">
+                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-2">
+                   <LayoutGrid size={12} />
+                   Link Submission Sources
+                 </h3>
+                 <p className="text-[10px] font-bold text-zinc-400">Choose which platforms fans can submit from.</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {PLATFORMS.map((platform) => (
+                  <label key={platform.id} className="flex items-center gap-4 p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-purple-500/50 transition-all">
+                    <input 
+                      type="checkbox" 
+                      checked={allowedPlatforms.includes(platform.id)}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        const newPlatforms = checked 
+                          ? [...allowedPlatforms, platform.id]
+                          : allowedPlatforms.filter(p => p !== platform.id);
+                        onPlatformsChange(newPlatforms);
+                      }}
+                      className="h-5 w-5 rounded border-zinc-300 text-purple-600 accent-purple-600"
+                    />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{platform.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
