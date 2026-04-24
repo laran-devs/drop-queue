@@ -185,7 +185,16 @@ app.prepare().then(async () => {
       }
     });
 
-    socket.on("track_playing", async (data: { slug: string; trackId: string; title: string; submitterName?: string }) => {
+    socket.on("track_playing", async (data: { 
+      slug: string; 
+      trackId: string; 
+      title: string; 
+      trackNumber?: number;
+      submitterName?: string;
+      bpm?: number;
+      key?: string;
+      isPaid?: boolean;
+    }) => {
       const streamerId = streamerSockets.has((socket as any).user?.userId) ? (socket as any).user.userId : null;
       const cachedSlug = streamerId ? await redis.hget("active_sessions", streamerId) : null;
       
