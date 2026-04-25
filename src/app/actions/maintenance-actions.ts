@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { readdir, unlink } from "fs/promises";
+import { readdir, unlink, stat } from "fs/promises";
 import { join } from "path";
 
 /**
@@ -59,9 +59,20 @@ export async function cleanupOrphanedFiles() {
     let deletedCount = 0;
     for (const file of files) {
       if (!dbFileNames.has(file)) {
-        console.log(`[Maintenance] Deleting orphaned file: ${file}`);
-        await unlink(join(uploadDir, file));
-        deletedCount++;
+        const fullPath = join(uploadDir, file);
+        try {
+          const fileStat = await stat(fullPath);
+          const ageInMs = Date.now() - fileStat.mtimeMs;
+          const twoHoursInMs = 2 * 60 * 60 * 1000;
+
+          if (ageInMs > twoHoursInMs) {
+            console.log(`[Maintenance] Deleting orphaned file: ${file} (Age: ${Math.round(ageInMs / 3600000)}h)`);
+            await unlink(fullPath);
+            deletedCount++;
+          }
+        } catch (err) {
+          console.error(`[Maintenance] Failed to stat/delete ${file}:`, err);
+        }
       }
     }
     
