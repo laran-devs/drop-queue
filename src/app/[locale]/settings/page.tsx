@@ -46,6 +46,18 @@ const TABS = [
 ];
 
 export default function SettingsPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+      </div>
+    }>
+      <SettingsContent />
+    </React.Suspense>
+  );
+}
+
+function SettingsContent() {
   const t = useTranslations("Settings");
   const tHeader = useTranslations("Header");
   const locale = useLocale();
