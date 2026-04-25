@@ -7,11 +7,20 @@ export interface MediaInfo {
 }
 
 export function getMediaInfo(url: string | null, filePath: string | null): MediaInfo {
-  // 1. Direct File Case
+  // 1. Direct File Case (Explicit or via URL extension)
+  const isAudioFile = (u: string) => /\.(mp3|wav|ogg|m4a|flac)$|utfs\.io/.test(u);
+
   if (filePath) {
     return {
       type: 'file',
       originalUrl: filePath,
+    };
+  }
+
+  if (url && isAudioFile(url)) {
+    return {
+      type: 'file',
+      originalUrl: url,
     };
   }
 

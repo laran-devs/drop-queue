@@ -156,6 +156,7 @@ export function EvaluationPanel({
                         <PlayCircle size={40} />
                       </div>
                       <audio 
+                        key={media.originalUrl}
                         ref={ref => { (audioRef as any).current = ref; }}
                         controls 
                         autoPlay
