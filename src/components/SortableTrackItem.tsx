@@ -78,7 +78,13 @@ export function SortableTrackItem({
                   Priority
                 </div>
               )}
-              {isOverLimit && !track.isPaid && (
+              {track.status === 'PENDING' && (
+                <div className="flex items-center gap-1 text-[7px] font-black uppercase text-purple-600 bg-purple-500/5 px-2 py-0.5 rounded-full border border-purple-500/20 animate-pulse">
+                  <TrendingUp size={8} />
+                  Ожидает оплаты
+                </div>
+              )}
+              {isOverLimit && !track.isPaid && track.status !== 'PENDING' && (
                 <div className="flex items-center gap-1 text-[7px] font-black uppercase text-red-500 bg-red-500/5 px-2 py-0.5 rounded-full border border-red-500/20">
                   <AlertTriangle size={8} />
                   Backlog
@@ -105,9 +111,11 @@ export function SortableTrackItem({
         <button
           onClick={(e) => {
             e.stopPropagation();
+            if (track.status === 'PENDING') return;
             setPlaying(track.id);
           }}
-          className="h-10 w-10 flex items-center justify-center bg-zinc-100 dark:bg-zinc-900 hover:bg-purple-600 hover:text-white rounded-xl transition-all shadow-sm active:scale-95 group/btn"
+          disabled={track.status === 'PENDING'}
+          className={`h-10 w-10 flex items-center justify-center bg-zinc-100 dark:bg-zinc-900 rounded-xl transition-all shadow-sm active:scale-95 group/btn ${track.status === 'PENDING' ? 'opacity-20 grayscale cursor-not-allowed' : 'hover:bg-purple-600 hover:text-white'}`}
         >
           <Play size={16} className="fill-current" />
         </button>

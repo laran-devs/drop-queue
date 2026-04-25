@@ -46,11 +46,13 @@ export function ActiveQueue({
   );
 
   const queuedTracks = useMemo(() => 
-    tracks.filter(t => t.status === "QUEUED")
+    tracks.filter(t => t.status === "QUEUED" || t.status === "PENDING")
       .sort((a, b) => {
+        // Priority first
         if (a.isPaid && !b.isPaid) return -1;
         if (!a.isPaid && b.isPaid) return 1;
-        return 0;
+        // Then by date
+        return new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime();
       }), 
     [tracks]
   );
