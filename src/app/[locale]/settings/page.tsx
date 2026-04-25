@@ -31,7 +31,7 @@ import {
   Wallet as WalletIcon
 } from "lucide-react";
 import { WalletPanel } from "@/components/dashboard/WalletPanel";
-import { locales } from "@/i18n/request";
+import { locales } from "@/i18n/config";
 import { getUserPreferences, updatePrivacyPreference, updateDonationSettings } from "@/app/actions/user-actions";
 import { toast } from "sonner";
 import { useNotifications } from "@/components/providers/NotificationProvider";
