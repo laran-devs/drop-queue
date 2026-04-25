@@ -45,7 +45,7 @@ export function WalletPanel({ onClose }: { onClose?: () => void }) {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-zinc-950 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden max-w-4xl mx-auto"
+      className="bg-white dark:bg-zinc-950 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full"
     >
       <div className="flex justify-between items-center p-8 border-b border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-900/50">
         <div className="flex items-center gap-3">
@@ -64,9 +64,9 @@ export function WalletPanel({ onClose }: { onClose?: () => void }) {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
         {/* Left: Balance & Form */}
-        <div className="p-8 border-r border-zinc-100 dark:border-zinc-900 md:col-span-1">
+        <div className="p-8 border-r border-zinc-100 dark:border-zinc-900 lg:col-span-1">
           <div className="mb-8">
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Доступный баланс</span>
             <div className="flex items-baseline gap-2 mt-1">

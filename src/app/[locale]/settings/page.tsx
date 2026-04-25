@@ -147,10 +147,10 @@ function SettingsContent() {
   ];
 
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
-      <div className="flex flex-col md:flex-row gap-12">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+      <div className="flex flex-col lg:flex-row gap-16">
         {/* Navigation Sidebar */}
-        <div className="md:w-72 shrink-0 space-y-8">
+        <div className="lg:w-72 shrink-0 space-y-8">
           <div className="space-y-2">
             <h1 className="text-4xl font-black tracking-tight">{t("title")}</h1>
             <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Global Preferences</p>
@@ -187,8 +187,8 @@ function SettingsContent() {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 min-w-0">
-          <AnimatePresence mode="wait">
+        <div className="flex-1 min-w-0 min-h-[600px]">
+          <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={activeTab}
               initial={{ opacity: 0, x: 10 }}
