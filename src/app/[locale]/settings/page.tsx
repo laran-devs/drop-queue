@@ -202,20 +202,20 @@ export default function SettingsPage() {
                           className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
                             locale === lang.code 
                               ? "bg-white dark:bg-zinc-900 border-purple-500 shadow-lg shadow-purple-500/5 ring-1 ring-purple-500" 
-                              : "glass border-zinc-200 dark:border-zinc-800 opacity-40 cursor-not-allowed"
+                              : (lang.code === "en" || lang.code === "ru" ? "glass border-zinc-200 dark:border-zinc-800 hover:border-purple-500/30 cursor-pointer" : "glass border-zinc-200 dark:border-zinc-800 opacity-40 cursor-not-allowed")
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <span className="text-[10px] font-black uppercase tracking-widest opacity-30">{lang.code}</span>
                             <div className="flex flex-col">
                               <span className="font-bold">{lang.name}</span>
-                              {lang.code !== "en" && <span className="text-[8px] font-black text-purple-600 uppercase tracking-widest">Coming Soon</span>}
+                              {lang.code !== "en" && lang.code !== "ru" && <span className="text-[8px] font-black text-purple-600 uppercase tracking-widest">Coming Soon</span>}
                             </div>
                           </div>
                           {locale === lang.code ? (
                             <Check size={16} className="text-purple-500" />
                           ) : (
-                            lang.code === "en" ? (
+                            (lang.code === "en" || lang.code === "ru") ? (
                               <Link href={pathname} locale={lang.code} className="p-2 -m-2 opacity-100">
                                 <ChevronRight size={16} className="text-zinc-400" />
                               </Link>
