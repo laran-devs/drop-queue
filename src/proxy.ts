@@ -5,7 +5,7 @@ import { NextRequest } from 'next/server';
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale: 'en',
-  localePrefix: 'always',
+  localePrefix: 'as-needed',
   localeDetection: false
 });
 

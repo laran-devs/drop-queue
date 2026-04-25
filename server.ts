@@ -21,11 +21,7 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(async () => {
   const httpServer = createServer((req, res) => {
-    if (!req.url) return;
-    const protocol = req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http';
-    const baseUrl = `${protocol}://${req.headers.host}`;
-    const parsedUrl = new URL(req.url, baseUrl);
-    handle(req, res, parsedUrl);
+    handle(req, res);
   });
 
   const io = new Server(httpServer, {
