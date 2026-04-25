@@ -428,6 +428,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
     setDuelVotes({ track1Percent: 50, track2Percent: 50, track1Votes: 0, track2Votes: 0, total: 0 });
     emit("SESSION_MODE_CHANGED", { slug: initialSession.slug, mode: "DUEL", tracks: top2 });
     await updateSessionSettings(initialSession.id, { sessionMode: "DUEL" } as any);
+    */
   };
 
   const handleFinishDuel = async (winnerId: string, loserId: string) => {
