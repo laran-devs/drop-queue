@@ -14,6 +14,7 @@ interface SortableTrackItemProps {
 import { GripVertical, Play, ExternalLink, AlertTriangle, TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "@/navigation";
+import { RankBadge } from "./RankBadge";
 
 export function SortableTrackItem({ 
   track, 
@@ -97,13 +98,16 @@ export function SortableTrackItem({
               {new Date(track.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </p>
             {track.submitter?.name && (
-              <Link 
-                href={`/profile/${track.submitterId}`}
-                className="text-[9px] font-black uppercase tracking-widest text-purple-600 hover:underline flex items-center gap-1"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {track.submitter.name}
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link 
+                  href={`/profile/${track.submitterId}`}
+                  className="text-[9px] font-black uppercase tracking-widest text-purple-600 hover:underline flex items-center gap-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {track.submitter.name}
+                </Link>
+                <RankBadge score={0} />
+              </div>
             )}
           </div>
         </div>

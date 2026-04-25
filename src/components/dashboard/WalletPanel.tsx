@@ -2,14 +2,27 @@
 
 import { useState, useEffect } from "react";
 import { getWalletData, requestWithdrawal } from "@/app/actions/wallet-actions";
-import { Wallet, ArrowUpRight, History, CreditCard, CheckCircle2, Clock, X } from "lucide-react";
+import { Wallet, ArrowUpRight, History, CreditCard, CheckCircle2, Clock, X, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, animate, motionValue } from "framer-motion";
 
 export function WalletPanel({ onClose }: { onClose?: () => void }) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isRequesting, setIsRequesting] = useState(false);
+  const [displayBalance, setDisplayBalance] = useState(0);
+
+  useEffect(() => {
+    if (data?.balance !== undefined) {
+      const controls = motionValue(displayBalance);
+      const animation = animate(controls, data.balance, {
+        duration: 1.5,
+        ease: "easeOut",
+        onUpdate: (latest) => setDisplayBalance(latest)
+      });
+      return animation.stop;
+    }
+  }, [data?.balance]);
 
   useEffect(() => {
     getWalletData()
@@ -67,12 +80,17 @@ export function WalletPanel({ onClose }: { onClose?: () => void }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
         {/* Left: Balance & Form */}
         <div className="p-8 border-r border-zinc-100 dark:border-zinc-900 lg:col-span-1">
-          <div className="mb-8">
-            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Доступный баланс</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-4xl font-black tracking-tighter">{data?.balance || 0}</span>
-              <span className="text-sm font-bold text-zinc-500">{data?.currency || "RUB"}</span>
+          <div className="mb-8 p-6 rounded-[2rem] bg-gradient-to-br from-zinc-900 to-black border border-white/5 shadow-2xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <TrendingUp size={80} className="text-purple-500" />
             </div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 relative z-10">{data?.currency || "RUB"} Balance</span>
+            <div className="flex items-baseline gap-2 mt-1 relative z-10">
+              <span className="text-5xl font-black tracking-tighter text-white tabular-nums">
+                {Math.floor(displayBalance).toLocaleString()}
+              </span>
+            </div>
+            <div className="absolute bottom-0 left-0 h-1 bg-purple-600 shadow-[0_0_20px_rgba(145,70,255,0.5)] transition-all" style={{ width: `${Math.min((data?.balance || 0) / 500 * 100, 100)}%` }} />
           </div>
 
           <form action={handleWithdraw} className="space-y-4">

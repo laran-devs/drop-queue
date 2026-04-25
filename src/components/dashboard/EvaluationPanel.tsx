@@ -1,9 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Music2, Languages, PlayCircle, ExternalLink, MessageSquare, TrendingUp, SkipForward, Ban } from "lucide-react";
-import { Track, Criteria } from "@prisma/client";
 import dynamic from 'next/dynamic';
+import { useState, useEffect } from "react";
+import { RankBadge } from "@/components/RankBadge";
+import { Play, Pause, Volume2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 const ReactPlayer = dynamic(() => import('react-player').then(mod => mod.default), { ssr: false });
 
@@ -26,25 +27,56 @@ interface EvaluationPanelProps {
   autoAdvance?: boolean;
 }
 
-export function EvaluationPanel({
-  playingTrack,
-  criteria,
-  scores,
-  setScores,
-  activeTab,
-  setActiveTab,
-  media,
-  audioRef,
-  handleTrackEnd,
-  handleSubmitEvaluation,
-  handleNext,
-  handleSkip,
-  isSubmitting,
-  accentColor,
-  chatVote,
   autoAdvance = true
 }: EvaluationPanelProps) {
   const t = useTranslations("Dashboard");
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const updateTime = () => setCurrentTime(audio.currentTime);
+    const updateDuration = () => setDuration(audio.duration);
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+
+    audio.addEventListener('timeupdate', updateTime);
+    audio.addEventListener('loadedmetadata', updateDuration);
+    audio.addEventListener('play', onPlay);
+    audio.addEventListener('pause', onPause);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateTime);
+      audio.removeEventListener('loadedmetadata', updateDuration);
+      audio.removeEventListener('play', onPlay);
+      audio.removeEventListener('pause', onPause);
+    };
+  }, [audioRef, playingTrack]);
+
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) audioRef.current.pause();
+      else audioRef.current.play();
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (audioRef.current) {
+      const time = parseFloat(e.target.value);
+      audioRef.current.currentTime = time;
+      setCurrentTime(time);
+    }
+  };
+
+  const formatTime = (time: number) => {
+    if (isNaN(time)) return "0:00";
+    const mins = Math.floor(time / 60);
+    const secs = Math.floor(time % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
   
   if (!playingTrack) return null;
 
@@ -153,20 +185,50 @@ export function EvaluationPanel({
                     />
                   )}
                   {media.type === 'file' && (
-                    <div className="flex flex-col items-center gap-6 w-full py-10 scale-in">
-                      <div className="h-20 w-20 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-600 animate-pulse">
-                        <PlayCircle size={40} />
+                    <div className="flex flex-col items-center gap-8 w-full py-8 scale-in">
+                      <div className="relative group cursor-pointer" onClick={togglePlay}>
+                        <div className="h-24 w-24 rounded-[3rem] bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-900 dark:text-white shadow-2xl transition-all group-hover:scale-110 group-active:scale-95 border-2 border-white dark:border-zinc-800">
+                          {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
+                        </div>
+                        <div className="absolute -inset-2 bg-gradient-to-tr from-purple-500 to-blue-500 rounded-[3.5rem] opacity-20 blur-xl group-hover:opacity-40 transition-opacity -z-10" />
                       </div>
+
+                      <div className="w-full space-y-4 px-4">
+                        <div className="flex items-center justify-between text-[10px] font-black tracking-widest text-zinc-400">
+                          <span>{formatTime(currentTime)}</span>
+                          <div className="flex items-center gap-2">
+                            <RankBadge score={chatVote?.avg || 0} />
+                            <span className="opacity-30 uppercase tracking-tighter">{t("lossless")}</span>
+                          </div>
+                          <span>{formatTime(duration)}</span>
+                        </div>
+                        
+                        <div className="relative h-2 w-full group">
+                          <input 
+                            type="range"
+                            min="0"
+                            max={duration || 100}
+                            value={currentTime}
+                            onChange={handleSeek}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                          />
+                          <div className="h-full w-full bg-zinc-100 dark:bg-zinc-900 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner">
+                            <motion.div 
+                              className="h-full"
+                              style={{ backgroundColor: accentColor, width: `${(currentTime / duration) * 100}%` }}
+                              transition={{ type: "spring", bounce: 0, duration: 0.1 }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
                       <audio 
                         key={media.originalUrl}
                         ref={ref => { (audioRef as any).current = ref; }}
-                        controls 
-                        autoPlay
                         onEnded={handleTrackEnd}
                         src={media.originalUrl} 
-                        className="w-full h-12"
+                        className="hidden"
                       />
-                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{t("lossless")}</p>
                     </div>
                   )}
                   {media.type === 'link' && (

@@ -152,7 +152,7 @@ export function OverlayContent({
       ? "bg-[#c0c0c0] border-t-2 border-l-2 border-white border-b-2 border-r-2 border-zinc-500 shadow-[2px_2px_0_0_black] p-1 w-[600px]"
       : isCyber
         ? "bg-black/90 border-2 shadow-[0_0_30px_rgba(0,255,255,0.2)] p-1 rounded-none w-[700px] h-auto italic overflow-hidden relative"
-        : "bg-[#0a0a0a]/70 backdrop-blur-[24px] saturate-[180%] p-1 rounded-[2.5rem] border border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.6)] w-[640px] h-[110px]";
+        : "bg-[#0a0a0a]/80 backdrop-blur-[32px] saturate-[200%] p-1 rounded-[2.8rem] border border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.8),0_0_40px_rgba(145,70,255,0.15)] w-[640px] h-[110px] relative overflow-hidden group";
 
   const innerClasses = isMin
     ? "flex items-center gap-4"
@@ -160,7 +160,7 @@ export function OverlayContent({
       ? "flex flex-col border border-zinc-400"
       : isCyber
         ? "px-10 py-8 border-4 border-double flex items-center gap-10 overflow-hidden relative"
-        : "h-full px-8 py-6 rounded-[2.3rem] border border-white/5 flex items-center gap-8 overflow-hidden";
+        : "h-full px-8 py-6 rounded-[2.6rem] border border-white/5 flex items-center gap-8 overflow-hidden relative z-10 bg-gradient-to-br from-white/5 to-transparent";
 
   return (
     <div className={containerClasses}>
@@ -311,6 +311,19 @@ export function OverlayContent({
                      style={{ backgroundColor: accentColor }}
                    />
                  )}
+                  {!isCyber && (
+                    <div className="absolute inset-0 flex items-center justify-center gap-[2px] opacity-10">
+                      {[...Array(8)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          animate={{ height: [10, 40, 10] }}
+                          transition={{ duration: 0.5 + Math.random(), repeat: Infinity }}
+                          className="w-[3px] rounded-full"
+                          style={{ backgroundColor: accentColor }}
+                        />
+                      ))}
+                    </div>
+                  )}
               </div>
             )}
 
