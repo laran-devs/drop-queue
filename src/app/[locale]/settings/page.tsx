@@ -196,33 +196,47 @@ export default function SettingsPage() {
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {languages.map((lang) => (
-                        <div
-                          key={lang.code}
-                          className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
-                            locale === lang.code 
-                              ? "bg-white dark:bg-zinc-900 border-purple-500 shadow-lg shadow-purple-500/5 ring-1 ring-purple-500" 
-                              : (lang.code === "en" || lang.code === "ru" ? "glass border-zinc-200 dark:border-zinc-800 hover:border-purple-500/30 cursor-pointer" : "glass border-zinc-200 dark:border-zinc-800 opacity-40 cursor-not-allowed")
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-black uppercase tracking-widest opacity-30">{lang.code}</span>
-                            <div className="flex flex-col">
-                              <span className="font-bold">{lang.name}</span>
-                              {lang.code !== "en" && lang.code !== "ru" && <span className="text-[8px] font-black text-purple-600 uppercase tracking-widest">Coming Soon</span>}
+                      {languages.map((lang) => {
+                        const isAvailable = lang.code === "en" || lang.code === "ru";
+                        const isActive = locale === lang.code;
+                        
+                        const Content = (
+                          <>
+                            <div className="flex items-center gap-3">
+                              <span className="text-[10px] font-black uppercase tracking-widest opacity-30">{lang.code}</span>
+                              <div className="flex flex-col">
+                                <span className="font-bold">{lang.name}</span>
+                                {!isAvailable && <span className="text-[8px] font-black text-purple-600 uppercase tracking-widest">Coming Soon</span>}
+                              </div>
                             </div>
+                            {isActive ? (
+                              <Check size={16} className="text-purple-500" />
+                            ) : (
+                              isAvailable && <ChevronRight size={16} className="text-zinc-400" />
+                            )}
+                          </>
+                        );
+
+                        const className = `flex items-center justify-between p-4 rounded-2xl border transition-all ${
+                          isActive 
+                            ? "bg-white dark:bg-zinc-900 border-purple-500 shadow-lg shadow-purple-500/5 ring-1 ring-purple-500" 
+                            : (isAvailable ? "glass border-zinc-200 dark:border-zinc-800 hover:border-purple-500/30 cursor-pointer" : "glass border-zinc-200 dark:border-zinc-800 opacity-40 cursor-not-allowed")
+                        }`;
+
+                        if (isAvailable && !isActive) {
+                          return (
+                            <Link key={lang.code} href={pathname} locale={lang.code} className={className}>
+                              {Content}
+                            </Link>
+                          );
+                        }
+
+                        return (
+                          <div key={lang.code} className={className}>
+                            {Content}
                           </div>
-                          {locale === lang.code ? (
-                            <Check size={16} className="text-purple-500" />
-                          ) : (
-                            (lang.code === "en" || lang.code === "ru") ? (
-                              <Link href={pathname} locale={lang.code} className="p-2 -m-2 opacity-100">
-                                <ChevronRight size={16} className="text-zinc-400" />
-                              </Link>
-                            ) : null
-                          )}
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </section>
 

@@ -25,10 +25,7 @@ app.prepare().then(async () => {
     const protocol = req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http';
     const baseUrl = `${protocol}://${req.headers.host}`;
     const parsedUrl = new URL(req.url, baseUrl);
-    handle(req, res, {
-      pathname: parsedUrl.pathname,
-      query: Object.fromEntries(parsedUrl.searchParams)
-    } as any);
+    handle(req, res, parsedUrl);
   });
 
   const io = new Server(httpServer, {
