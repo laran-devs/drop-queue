@@ -16,9 +16,10 @@ export function createServerAction<TInput extends z.ZodTypeAny, TOutput>(
   handler: (data: z.infer<TInput>, userId: string) => Promise<TOutput>
 ) {
   return async (data: unknown): Promise<ActionResponse<TOutput>> => {
+    let session = null;
     try {
       // 1. Authentication Check
-      const session = await getServerSession(authOptions);
+      session = await getServerSession(authOptions);
       if (!session?.user?.id) {
         return { success: false, error: "Unauthorized. Please sign in to continue.", code: "UNAUTHORIZED" };
       }

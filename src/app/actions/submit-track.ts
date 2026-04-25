@@ -39,8 +39,8 @@ export const submitTrack = createServerAction(
 
     // 2.5 Sub-Only Check
     const broadcasterId = streamSession.streamerId;
-    const isPriorityUser = await isVip(broadcasterId, session.user.id) || await isModerator(broadcasterId, session.user.id);
-    const isSub = await isSubscriber(broadcasterId, session.user.id);
+    const isPriorityUser = await isVip(broadcasterId, userId) || await isModerator(broadcasterId, userId);
+    const isSub = await isSubscriber(broadcasterId, userId);
 
     if (streamSession.subOnly && !isSub && !isPriorityUser) {
       throw new Error("This session is Subscriber-Only. Subscribe to this streamer to participate!");
@@ -55,7 +55,7 @@ export const submitTrack = createServerAction(
     const userTrackCount = await prisma.track.count({
       where: {
         sessionId: sessionId as string,
-        submitterId: session.user.id
+        submitterId: userId
       }
     });
 
@@ -103,7 +103,7 @@ export const submitTrack = createServerAction(
           filePath: trackType === "FILE" ? filePath : null,
           trackType,
           sessionId: sessionId as string,
-          submitterId: session.user.id,
+          submitterId: userId,
           description,
           lyrics,
           status: isPriority ? "PENDING" : "QUEUED",
