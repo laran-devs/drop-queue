@@ -42,7 +42,7 @@ export function SetupWizard() {
     // Final check for safety
     const isValid = await trigger();
     if (!isValid) {
-      toast.error("Please fix errors before going live");
+      toast.error(t("fixErrors"));
       return;
     }
 
@@ -62,7 +62,7 @@ export function SetupWizard() {
         return;
       }
       console.error("Failed to create session:", err);
-      toast.error("Critical error: Failed to start session. Check logs.");
+      toast.error(t("criticalError"));
     }
   };
 
@@ -85,14 +85,14 @@ export function SetupWizard() {
       {/* Background Noise/Grain could be added here via CSS */}
       <div className="flex justify-between items-center mb-10">
         <div className="space-y-1">
-          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-purple-600">Setup Broadcast</h2>
+          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-purple-600">{t("setupBroadcast")}</h2>
           <div className="flex gap-1">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className={`h-1 w-8 rounded-full transition-all ${step >= i ? 'bg-purple-600' : 'bg-zinc-100 dark:bg-zinc-800'}`} />
             ))}
           </div>
         </div>
-        <span className="text-[10px] font-black opacity-20 uppercase tracking-widest">Step {step}/4</span>
+        <span className="text-[10px] font-black opacity-20 uppercase tracking-widest">{t("stepOf")} {step}/4</span>
       </div>
 
       <form 
@@ -108,7 +108,7 @@ export function SetupWizard() {
         {step === 1 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
             <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-zinc-500">Session Identity</label>
+              <label className="text-xs font-black uppercase tracking-widest text-zinc-500">{t("sessionIdentity")}</label>
               <input 
                 {...register("title")}
                 placeholder={t("sessionTitle")} 
@@ -132,7 +132,7 @@ export function SetupWizard() {
           <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-zinc-500">Tracks per user</label>
+                <label className="text-xs font-black uppercase tracking-widest text-zinc-500">{t("tracksPerUser")}</label>
                 <div className="flex items-center gap-4">
                   <input 
                     type="number"
@@ -142,7 +142,7 @@ export function SetupWizard() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-zinc-500">File size cap (MB)</label>
+                <label className="text-xs font-black uppercase tracking-widest text-zinc-500">{t("fileSizeCap")}</label>
                 <input 
                   type="number"
                   {...register("maxAudioFileSize", { valueAsNumber: true })}
@@ -153,8 +153,8 @@ export function SetupWizard() {
 
             <div className="flex items-center justify-between p-6 bg-zinc-100 dark:bg-zinc-900 rounded-[1.5rem] border border-zinc-200 dark:border-zinc-800 transition-colors pointer-events-auto">
               <div className="space-y-1">
-                <p className="text-xs font-black uppercase tracking-widest">Enable Direct Uploads</p>
-                <p className="text-[10px] text-zinc-500">Allow viewers to send MP3/WAV files</p>
+                <p className="text-xs font-black uppercase tracking-widest">{t("enableDirectUploads")}</p>
+                <p className="text-[10px] text-zinc-500">{t("directUploadsDesc")}</p>
               </div>
               <input 
                 type="checkbox"
@@ -167,7 +167,7 @@ export function SetupWizard() {
 
         {step === 3 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-            <label className="text-xs font-black uppercase tracking-widest text-zinc-500">Allowed Platforms</label>
+            <label className="text-xs font-black uppercase tracking-widest text-zinc-500">{t("allowedPlatforms")}</label>
             <div className="space-y-2">
               {PLATFORMS.map((platform) => (
                 <label
@@ -204,12 +204,12 @@ export function SetupWizard() {
         {step === 4 && (
           <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
             <div className="space-y-4">
-              <label className="text-xs font-black uppercase tracking-widest text-zinc-500">Overlay Theme</label>
+              <label className="text-xs font-black uppercase tracking-widest text-zinc-500">{t("overlayThemeLabel")}</label>
               <div className="grid grid-cols-1 gap-3">
                 {[
-                  { id: "DEFAULT", name: "Default Glass", desc: "Premium frosted glass with accent colors" },
-                  { id: "CYBERPUNK", name: "Cyberpunk", desc: "Neon aesthetics with glitch effects" },
-                  { id: "MINIMALIST", name: "Minimalist", desc: "Clean, ultra-compact for small overlays" }
+                  { id: "DEFAULT", name: t("themeDefaultName"), desc: t("themeDefaultDesc") },
+                  { id: "CYBERPUNK", name: t("themeCyberName"), desc: t("themeCyberDesc") },
+                  { id: "MINIMALIST", name: t("themeMinimalName"), desc: t("themeMinimalDesc") }
                 ].map((th) => (
                   <button
                     key={th.id}
@@ -233,8 +233,8 @@ export function SetupWizard() {
 
             <div className="flex items-center justify-between p-6 bg-zinc-100 dark:bg-zinc-900 rounded-[1.5rem] border border-zinc-200 dark:border-zinc-800 transition-colors pointer-events-auto">
               <div className="space-y-1">
-                <p className="text-xs font-black uppercase tracking-widest">High Score Sound</p>
-                <p className="text-[10px] text-zinc-500">Play victory chime when track scores 9.0+</p>
+                <p className="text-xs font-black uppercase tracking-widest">{t("highScoreSound")}</p>
+                <p className="text-[10px] text-zinc-500">{t("highScoreSoundDesc")}</p>
               </div>
               <input 
                 type="checkbox"
@@ -252,7 +252,7 @@ export function SetupWizard() {
               onClick={prevStep}
               className="px-8 py-5 glass border border-zinc-200 dark:border-zinc-800 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all"
             >
-              Back
+              {t("back")}
             </button>
           )}
           
@@ -262,7 +262,7 @@ export function SetupWizard() {
               onClick={nextStep}
               className="flex-1 px-8 py-5 bg-zinc-900 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all shadow-xl flex items-center justify-center gap-2"
             >
-              Next Step
+              {t("nextStep")}
               <ArrowRight size={14} />
             </button>
           ) : (
@@ -274,10 +274,10 @@ export function SetupWizard() {
                   : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed"
               }`}
             >
-              {isSubmitting ? "Generating..." : (
+              {isSubmitting ? t("generating") : (
                 <>
                   <Zap size={14} className={canSubmit ? "text-yellow-400" : ""} />
-                  {canSubmit ? t("goLive") : "Initializing..."}
+                  {canSubmit ? t("goLive") : t("initializing")}
                 </>
               )}
             </button>

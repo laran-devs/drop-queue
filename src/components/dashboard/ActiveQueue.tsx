@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 
 import { useState, useMemo } from "react";
 import { Track } from "@prisma/client";
@@ -38,6 +39,7 @@ export function ActiveQueue({
   trackLimit,
   onStartDuel
 }: ActiveQueueProps) {
+  const t = useTranslations("Dashboard");
   const [searchQuery, setSearchQuery] = useState("");
 
   const sensors = useSensors(
@@ -83,7 +85,7 @@ export function ActiveQueue({
     <div className="space-y-6">
       <div className="flex items-center justify-between px-2">
         <h2 className="text-xl font-black uppercase tracking-tighter">
-          Queue <span className="opacity-30">({queuedTracks.length})</span>
+          {t("queue")} <span className="opacity-30">({queuedTracks.length})</span>
         </h2>
         <div className="flex gap-2">
           {onStartDuel && (
@@ -91,13 +93,13 @@ export function ActiveQueue({
               onClick={onStartDuel} 
               className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-500/10 border border-zinc-500/20 text-zinc-500 cursor-not-allowed text-[8px] font-black uppercase tracking-widest opacity-50"
             >
-              ⚔️ Duel <span className="opacity-50">Coming Soon</span>
+              ⚔️ {t("duelLabel")} <span className="opacity-50">{t("comingSoon")}</span>
             </button>
           )}
           {trackLimit && (
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                <TrendingUp size={10} className="text-zinc-400" />
-               <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500">Auto-Line: {trackLimit}</span>
+               <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500">{t("autoLine")}: {trackLimit}</span>
             </div>
           )}
         </div>
@@ -108,7 +110,7 @@ export function ActiveQueue({
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={14} />
         <input 
           type="text"
-          placeholder="Search by title or submitter..."
+          placeholder={t("searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-10 pr-4 py-3 bg-zinc-100 dark:bg-zinc-900 border-none rounded-2xl text-[10px] font-bold outline-none focus:ring-2 transition-all"
@@ -142,7 +144,7 @@ export function ActiveQueue({
                         </div>
                         <div className="relative px-4 py-1.5 rounded-full bg-red-500 text-white text-[8px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-red-500/20 active:scale-95 transition-all">
                           <AlertCircle size={10} />
-                          End of guaranteed queue
+                          {t("guaranteedEnd")}
                         </div>
                       </div>
                     )}
@@ -160,7 +162,7 @@ export function ActiveQueue({
 
             {filteredTracks.length === 0 && (
               <div className="glass p-16 rounded-[2rem] border-2 border-dashed border-zinc-100 dark:border-zinc-900 text-center opacity-30 grayscale italic text-[10px] uppercase font-black tracking-widest">
-                {searchQuery ? "No matches found" : "Queue is empty"}
+                {searchQuery ? t("noMatches") : t("queueEmpty")}
               </div>
             )}
           </div>

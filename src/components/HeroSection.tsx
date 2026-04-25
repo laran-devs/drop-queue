@@ -1,10 +1,12 @@
 "use client";
+import { useTranslations } from "next-intl";
 
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { Link } from "@/navigation";
 
 export default function HeroSection() {
+  const t = useTranslations("Landing");
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -31,7 +33,7 @@ export default function HeroSection() {
       >
         <motion.div variants={item} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm">
           <Sparkles size={14} className="text-purple-600 animate-spin-slow" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Revolutionizing stream music</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{t("heroBadge")}</span>
         </motion.div>
 
         <motion.h1 
@@ -45,7 +47,7 @@ export default function HeroSection() {
           variants={item}
           className="text-xl sm:text-2xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto font-medium"
         >
-          The Pulse of Your Stream. Level up your vibe. Connect with your audience through synchronized beats.
+          {t("heroTagline")}
         </motion.p>
 
         <motion.div variants={item} className="flex flex-wrap items-center justify-center gap-4 pt-6">
@@ -53,13 +55,13 @@ export default function HeroSection() {
             href="#discover"
             className="px-10 py-5 bg-purple-600 text-white rounded-[2rem] text-sm font-black uppercase tracking-widest hover:bg-purple-700 hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-purple-500/20"
           >
-            Explore Queues
+            {t("exploreQueues")}
           </Link>
           <Link
             href="/dashboard"
             className="px-10 py-5 glass border border-zinc-200 dark:border-zinc-800 rounded-[2rem] text-sm font-black uppercase tracking-widest hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all"
           >
-            Start Streaming
+            {t("startStreaming")}
           </Link>
         </motion.div>
       </motion.div>

@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 
 import React from "react";
 import {
@@ -26,6 +27,7 @@ interface AnalyticsDashboardProps {
 }
 
 export function AnalyticsDashboard({ data, accentColor }: AnalyticsDashboardProps) {
+  const t = useTranslations("Analytics");
   if (data.length === 0) return null;
 
   // 1. Prepare score distribution data
@@ -45,7 +47,7 @@ export function AnalyticsDashboard({ data, accentColor }: AnalyticsDashboardProp
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full mt-12">
       {/* Score Distribution */}
       <div className="glass p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800">
-        <h3 className="text-sm font-black uppercase tracking-widest mb-6 text-zinc-400">Score Distribution</h3>
+        <h3 className="text-sm font-black uppercase tracking-widest mb-6 text-zinc-400">{t("scoreDistribution")}</h3>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={distribution}>
@@ -81,7 +83,7 @@ export function AnalyticsDashboard({ data, accentColor }: AnalyticsDashboardProp
 
       {/* Session Progress / Trends */}
       <div className="glass p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800">
-        <h3 className="text-sm font-black uppercase tracking-widest mb-6 text-zinc-400">Session Momentum</h3>
+        <h3 className="text-sm font-black uppercase tracking-widest mb-6 text-zinc-400">{t("sessionMomentum")}</h3>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={trends}>

@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 
 import { useSocket } from "@/hooks/use-socket";
 import { useState, useEffect } from "react";
@@ -23,6 +24,7 @@ interface ViewerQueueStatusProps {
 }
 
 export function ViewerQueueStatus({ sessionId, slug, userId, accentColor }: ViewerQueueStatusProps) {
+  const t = useTranslations("Viewer");
   const { socket } = useSocket(undefined, slug);
   const { sendNotification, requestPermission, permission } = useNotifications();
   const [tracks, setTracks] = useState<Track[]>([]);
@@ -52,9 +54,9 @@ export function ViewerQueueStatus({ sessionId, slug, userId, accentColor }: View
 
     const onNotification = (data: any) => {
       if (data.type === "PLAYING_NOW") {
-        sendNotification(`🎵 Now Playing: ${data.title}`, { body: "Your favorite banger is on air!" });
+        sendNotification(`${t("nowPlayingNotif")} ${data.title}`, { body: t("favoriteBanger") });
       } else if (data.type === "TRACK_EVALUATED") {
-        sendNotification(`📝 Result for ${data.title}`, { body: `Score: ${data.score.toFixed(1)}/10` });
+        sendNotification(`${t("resultNotif")} ${data.title}`, { body: `${t("scoreLabel")} ${data.score.toFixed(1)}/10` });
       }
     };
 
@@ -81,18 +83,18 @@ export function ViewerQueueStatus({ sessionId, slug, userId, accentColor }: View
   // Estimate: 4 mins per track
   const estimatedWaitSeconds = myPosition ? (myPosition * 4 * 60) : 0;
   const waitMessage = estimatedWaitSeconds > 60 
-    ? `~${Math.round(estimatedWaitSeconds / 60)} min` 
-    : "Soon!";
+    ? `~${Math.round(estimatedWaitSeconds / 60)} мин` 
+    : t("soon");
 
   // Trigger background notification when track is UP NEXT
   useEffect(() => {
     if (myPosition === 1 && permission === "granted") {
-      sendNotification("Your track is UP NEXT! 🎵", {
-        body: "Get ready, your submission is at the top of the queue.",
+      sendNotification(t("upNextNotif"), {
+        body: t("upNextBody"),
         tag: "up-next"
       });
     }
-  }, [myPosition, permission, sendNotification]);
+  }, [myPosition, permission, sendNotification, t]);
 
   if (isLoading && tracks.length === 0) return null;
 
@@ -112,21 +114,21 @@ export function ViewerQueueStatus({ sessionId, slug, userId, accentColor }: View
                <Users size={24} />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Your Position</p>
-              <h3 className="text-2xl font-black italic">#{myPosition} <span className="text-sm not-italic font-bold text-zinc-500">in queue</span></h3>
+              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{t("yourPosition")}</p>
+              <h3 className="text-2xl font-black italic">#{myPosition} <span className="text-sm not-italic font-bold text-zinc-500">{t("inQueue")}</span></h3>
             </div>
           </div>
           <div className="text-right relative z-10">
              <div className="flex items-center gap-2 justify-end text-zinc-400 mb-1">
                <Timer size={12} />
-               <span className="text-[10px] font-black uppercase tracking-widest">Est. Wait</span>
+               <span className="text-[10px] font-black uppercase tracking-widest">{t("estWait")}</span>
              </div>
              <p className="text-xl font-black text-zinc-900 dark:text-zinc-100">{waitMessage}</p>
           </div>
           <button 
             onClick={() => requestPermission()}
             className={`absolute top-4 right-4 p-2 rounded-xl transition-all ${permission === 'granted' ? 'text-green-500 bg-green-500/10' : 'text-zinc-400 bg-zinc-100 dark:bg-zinc-800'}`}
-            title={permission === 'granted' ? "Notifications Enabled" : "Enable Background Alerts"}
+            title={permission === 'granted' ? t("notifEnabled") : t("enableNotif")}
           >
             <Bell size={14} className={permission === 'granted' ? "" : "animate-bounce"} />
           </button>
@@ -135,8 +137,8 @@ export function ViewerQueueStatus({ sessionId, slug, userId, accentColor }: View
         <div className="glass p-8 rounded-[2.5rem] border border-dashed border-zinc-200 dark:border-zinc-800">
           <EmptyState 
             icon={<Music size={40} strokeWidth={1.5} />}
-            title="Join the stage"
-            description="Your music deserves to be heard. Submit your track using the form above to join the queue."
+            title={t("joinStage")}
+            description={t("joinStageDesc")}
           />
         </div>
       )}
@@ -146,7 +148,7 @@ export function ViewerQueueStatus({ sessionId, slug, userId, accentColor }: View
         <div className="space-y-4">
           <div className="flex items-center gap-2 px-2">
             <Trophy size={14} className="text-yellow-500" />
-            <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Session Top Scorers</h4>
+            <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{t("sessionTop")}</h4>
           </div>
           <div className="grid grid-cols-1 gap-3">
             {evaluatedTracks.map((track, idx) => (

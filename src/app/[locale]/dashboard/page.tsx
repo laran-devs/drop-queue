@@ -69,7 +69,7 @@ export default async function DashboardHub() {
         <div className="max-w-2xl space-y-6">
           <div className="flex items-center gap-3">
              <div className="h-2 w-2 rounded-full bg-purple-600 animate-pulse" />
-             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Control Center</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">{t("controlCenter")}</span>
           </div>
           <h1 className="text-6xl font-black tracking-tighter leading-tight">
             {t("title")}
@@ -104,7 +104,7 @@ export default async function DashboardHub() {
               <div className="h-10 w-10 rounded-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center font-bold text-xs">
                 {activeSession._count.tracks}
               </div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Tracks in queue</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{t("tracksInQueue")}</span>
               <div className="ml-auto h-12 w-12 rounded-full bg-green-500 text-white flex items-center justify-center group-hover:scale-110 transition-all">
                 &rarr;
               </div>
@@ -115,8 +115,8 @@ export default async function DashboardHub() {
 
       <section className="space-y-10">
         <div className="flex items-end justify-between border-b border-zinc-100 dark:border-zinc-900 pb-6">
-           <h2 className="text-3xl font-black uppercase tracking-tighter">Your Statistics</h2>
-           <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Real-time Performance</span>
+           <h2 className="text-3xl font-black uppercase tracking-tighter">{t("yourStats")}</h2>
+           <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{t("performance")}</span>
         </div>
         <StreamerStats 
           totalTracks={totalTracks} 

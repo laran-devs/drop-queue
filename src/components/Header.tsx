@@ -50,7 +50,7 @@ export function Header() {
           <nav className="hidden md:flex items-center gap-6">
             {session && (
               <Link href="/profile" className="text-sm font-medium text-zinc-600 hover:text-purple-600 dark:text-zinc-400 dark:hover:text-purple-400 transition-colors">
-                My Profile
+                {t("profile")}
               </Link>
             )}
             {session && (
@@ -71,7 +71,7 @@ export function Header() {
               <Link 
                 href="/settings"
                 className="p-2 rounded-xl text-zinc-400 hover:text-purple-600 hover:bg-purple-500/10 transition-all"
-                title="Settings"
+                title={t("settings")}
               >
                 <Settings size={20} />
               </Link>
@@ -101,7 +101,7 @@ export function Header() {
                 </div>
                 
                 <div className="flex flex-col overflow-hidden">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-purple-600 leading-none mb-1">Streamer</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-purple-600 leading-none mb-1">{t("streamer")}</span>
                   <span 
                     className="text-xs font-bold text-zinc-900 dark:text-zinc-100 leading-none truncate max-w-[140px]"
                     title={session.user.name || "User"}
@@ -117,7 +117,7 @@ export function Header() {
               <Link 
                 href="/settings"
                 className="p-2 rounded-xl text-zinc-400 hover:text-purple-600 hover:bg-purple-500/10 transition-all"
-                title="Settings"
+                title={t("settings")}
               >
                 <Settings size={20} />
               </Link>

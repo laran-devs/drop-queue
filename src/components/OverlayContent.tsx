@@ -4,6 +4,7 @@ import { useSocket } from "@/hooks/use-socket";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Music, ArrowRight, BarChart3, Radio, TrendingUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface EvaluationData {
   trackId: string;
@@ -26,6 +27,7 @@ export function OverlayContent({
   showBpm?: boolean;
   showKey?: boolean;
 }) {
+  const t = useTranslations("Overlay");
   const { on, isConnected } = useSocket(undefined, slug, token);
 
   const [showBpm, setShowBpm] = useState(initialShowBpm);
@@ -108,7 +110,7 @@ export function OverlayContent({
 
     // 4. Handle Pause/Resume
     cleanups.push(on("QUEUE_PAUSED", () => {
-      setNowPlaying({ title: "Stream Paused" });
+      setNowPlaying({ title: t("streamPaused") });
       setEvaluation(null);
     }));
 
@@ -210,7 +212,7 @@ export function OverlayContent({
               </div>
               <div>
                 <p className={`text-[10px] font-black uppercase tracking-widest ${isCyber ? "text-pink-300" : evaluation.score >= 9 ? "text-amber-400" : "text-white/40"}`}>
-                  {isCyber ? "CRITICAL VIBE" : evaluation.score >= 9 ? "🔥 BANGER ALERT" : "Evaluation"}
+                  {isCyber ? "CRITICAL VIBE" : evaluation.score >= 9 ? t("banger") : t("evaluation")}
                 </p>
                 <div className="flex items-baseline gap-2">
                   <span className={`text-3xl font-black ${isCyber ? "text-pink-500" : evaluation.score >= 9 ? "text-amber-500" : "text-white"}`}>{evaluation.score.toFixed(1)}</span>
@@ -317,7 +319,7 @@ export function OverlayContent({
                 {!isCyber && !isRetro && <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: accentColor, boxShadow: `0 0 10px ${accentColor}` }} />}
                 <div className="flex items-center gap-2">
                   <p className={`text-[9px] font-black uppercase tracking-[0.4em] ${isCyber ? "text-cyan-500 animate-pulse" : isRetro ? "text-zinc-600" : "text-white/30"}`}>
-                    {isCyber ? ">> DIRECT DATA" : isRetro ? "NOW_STREAMING" : "Now Playing"}
+                    {isCyber ? ">> DIRECT DATA" : isRetro ? "NOW_STREAMING" : t("nowPlaying")}
                   </p>
                   {nowPlaying?.isPaid && (
                    <span className={`px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest border flex items-center gap-1 ${
@@ -345,12 +347,12 @@ export function OverlayContent({
                    className="flex flex-col"
                 >
                   <h1 className={`${isMin ? "text-xl" : isCyber ? "text-5xl" : isRetro ? "text-3xl font-bold" : "text-4xl"} ${isRetro ? "text-black font-serif" : "text-white"} font-black tracking-tighter truncate leading-none uppercase`}>
-                    {nowPlaying ? nowPlaying.title : "EMPTY_QUEUE"}
+                    {nowPlaying ? nowPlaying.title : t("awaiting")}
                   </h1>
                     {nowPlaying?.submitterName && !isMin && (
                       <div className="flex items-center gap-3 mt-1.5 min-w-0">
                         <p className={`text-[10px] font-bold uppercase tracking-widest ${isCyber ? "text-cyan-400" : isRetro ? "text-zinc-500" : "text-white/50"} truncate`}>
-                          {isCyber ? "SOURCE_NODE_" : isRetro ? "BY_USER_" : "Sent by "} {nowPlaying.submitterName}
+                          {isCyber ? "SOURCE_NODE_" : isRetro ? "BY_USER_" : t("sentBy") + " "} {nowPlaying.submitterName}
                         </p>
                         
                         <div className="flex items-center gap-2 shrink-0">
@@ -386,7 +388,7 @@ export function OverlayContent({
                     </div>
                     <div className="max-w-[170px]">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <p className={`text-[8px] font-black uppercase tracking-[0.2em] ${isCyber ? "text-cyan-500/40" : "text-white/20"}`}>Next Up</p>
+                        <p className={`text-[8px] font-black uppercase tracking-[0.2em] ${isCyber ? "text-cyan-500/40" : "text-white/20"}`}>{t("nextUp")}</p>
                         {upNext.isPaid && (
                            <span className="text-[7px] font-black text-amber-500 animate-pulse">
                               <TrendingUp size={8} className="inline mr-1" />

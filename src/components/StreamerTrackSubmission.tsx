@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 
 import { useSocket } from "@/hooks/use-socket";
 import { submitTrack } from "@/app/actions/submit-track";
@@ -16,6 +17,7 @@ interface StreamerTrackSubmissionProps {
 }
 
 export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissionProps) {
+  const t = useTranslations("Submit");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionType, setSubmissionType] = useState<"LINK" | "FILE">("LINK");
   const [uploadedFile, setUploadedFile] = useState<{ url: string; bpm?: number; key?: string } | null>(null);
@@ -26,12 +28,12 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) {
-      toast.error("You must be logged in to submit a track.");
+      toast.error(t("logInToSubmit"));
       return;
     }
 
     if (submissionType === "FILE" && !uploadedFile) {
-      toast.error("Please upload an audio file first.");
+      toast.error(t("uploadFileFirst"));
       return;
     }
 
@@ -70,19 +72,19 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
       const { track, paymentUrl, isBacklog } = result.data;
 
       if (paymentUrl) {
-        toast.success("Redirecting to payment...");
+        toast.success(t("redirectPayment"));
         window.location.href = paymentUrl;
         return;
       }
 
       if (isBacklog) {
-        toast.warning("Added to Backlog!", {
-          description: "Your track is beyond the streamer's energy limit and might not be evaluated this stream.",
+        toast.warning(t("addedToBacklog"), {
+          description: t("backlogDesc"),
           duration: 10000,
           icon: "⚠️"
         });
       } else {
-        toast.success("Track submitted successfully!");
+        toast.success(t("success"));
       }
       
       emit("new_track", { slug: session.slug, title: payload.title });
@@ -90,7 +92,7 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
       setUploadedFile(null);
       setIsPriority(false);
     } catch (err) {
-      toast.error("An unexpected error occurred.");
+      toast.error(t("error"));
     } finally {
       setIsSubmitting(false);
     }
@@ -136,8 +138,8 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
             </div>
           </div>
           <div className="space-y-1">
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Stream Submission Portal</span>
-            <h1 className="text-4xl font-black tracking-tight">{session.streamer.name}&apos;s Queue</h1>
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">{t("streamPortal")}</span>
+            <h1 className="text-4xl font-black tracking-tight">{session.streamer.name}{t("queueSuffix")}</h1>
             <p className="text-zinc-500 text-sm font-medium">{session.title}</p>
           </div>
         </div>
@@ -149,14 +151,14 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
               className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${submissionType === "LINK" ? "bg-white dark:bg-zinc-800 shadow-sm" : "opacity-50 hover:opacity-100"}`}
             >
               <Link2 size={14} />
-              Streaming Link
+              {t("streamingLink")}
             </button>
             <button
               onClick={() => setSubmissionType("FILE")}
               className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${submissionType === "FILE" ? "bg-white dark:bg-zinc-800 shadow-sm" : "opacity-50 hover:opacity-100"}`}
             >
               <Music size={14} />
-              Direct Upload
+              {t("directUpload")}
             </button>
           </div>
         )}
@@ -164,11 +166,11 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 mb-2 block">Track Title</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 mb-2 block">{t("trackTitle")}</label>
               <input
                 name="title"
                 required
-                placeholder="Name of the banger..."
+                placeholder={t("trackPlaceholder")}
                 className="w-full glass px-6 py-4 rounded-2xl outline-none border border-transparent focus:border-zinc-300 dark:focus:border-zinc-700 transition-all"
               />
             </div>
@@ -182,7 +184,7 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
                   exit={{ opacity: 0, x: 10 }}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 block">Streaming Link</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 block">{t("streamingLink")}</label>
                     <div className="flex flex-wrap gap-2 pr-2">
                       {session.allowedPlatforms.map(p => (
                         <span key={p} className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500">
@@ -195,7 +197,7 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
                     name="url"
                     required={submissionType === "LINK"}
                     type="url"
-                    placeholder="https://..."
+                    placeholder={t("linkPlaceholder")}
                     className="w-full glass px-6 py-4 rounded-2xl outline-none border border-transparent focus:border-zinc-300 dark:focus:border-zinc-700 transition-all"
                   />
                 </motion.div>
@@ -207,14 +209,14 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
                   exit={{ opacity: 0, x: -10 }}
                   className="space-y-3"
                 >
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 block">Audio File</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 block">{t("fileUpload")}</label>
                   {uploadedFile ? (
                     <div className="glass p-6 rounded-2xl border border-green-500/30 flex items-center gap-4 bg-green-500/5">
                       <div className="h-10 w-10 rounded-full bg-green-500 text-white flex items-center justify-center">
                         <CheckCircle2 size={20} />
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs font-bold truncate">File ready for submission!</p>
+                        <p className="text-xs font-bold truncate">{t("fileReady")}</p>
                         <p className="text-[10px] opacity-70 uppercase font-black">
                           {uploadedFile.bpm ? `BPM: ${uploadedFile.bpm} ` : ""}
                           {uploadedFile.key ? `| KEY: ${uploadedFile.key}` : ""}
@@ -225,7 +227,7 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
                         onClick={() => setUploadedFile(null)}
                         className="text-[10px] font-black uppercase text-red-500 hover:underline"
                       >
-                        Remove
+                        {t("removeFile")}
                       </button>
                     </div>
                   ) : (
@@ -240,21 +242,21 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
             </AnimatePresence>
 
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 mb-2 block">Tell the streamer about it (Optional)</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 mb-2 block">{t("descLabel")}</label>
               <textarea
                 name="description"
                 rows={2}
-                placeholder="Context, vibe, or special requests..."
+                placeholder={t("descPlaceholder")}
                 className="w-full glass px-6 py-4 rounded-2xl outline-none border border-transparent focus:border-zinc-300 dark:focus:border-zinc-700 transition-all resize-none"
               />
             </div>
 
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 mb-2 block">Lyrics (Optional)</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 mb-2 block">{t("lyrics")}</label>
               <textarea
                 name="lyrics"
                 rows={4}
-                placeholder="Paste lyrics here for the streamer to read along..."
+                placeholder={t("lyricsPlaceholder")}
                 className="w-full glass px-6 py-4 rounded-2xl outline-none border border-transparent focus:border-zinc-300 dark:focus:border-zinc-700 transition-all resize-none"
               />
             </div>
@@ -283,12 +285,12 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
               </div>
               <div className="ml-5 flex-1 min-w-0">
                 <label className="font-black text-xs text-zinc-900 dark:text-zinc-100 flex items-center gap-2 uppercase tracking-widest">
-                  Priority Bump 🚀
+                  {t("priorityBump")}
                   <span className="inline-flex items-center rounded-lg bg-yellow-400/20 px-2 py-0.5 text-[8px] font-black text-yellow-600 uppercase">
-                    + 50 RUB
+                    + {session.minDonation || 50} RUB
                   </span>
                 </label>
-                <p className="text-[10px] text-zinc-500 font-bold mt-0.5">Jump to the front of the queue automatically.</p>
+                <p className="text-[10px] text-zinc-500 font-bold mt-0.5">{t("jumpQueue")}</p>
               </div>
               <Zap size={16} className={`transition-all ${isPriority ? "text-purple-600 scale-125" : "text-zinc-300 opacity-20"}`} />
             </div>
@@ -300,12 +302,12 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
             className="w-full py-5 rounded-2xl text-white font-black uppercase tracking-widest shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
             style={{ backgroundColor: accentColor, boxShadow: `0 15px 30px -10px ${accentColor}66` }}
           >
-            {isSubmitting ? "Sending to Queue..." : "Drop in Queue"}
+            {isSubmitting ? t("sending") : t("dropButton")}
           </button>
         </form>
 
         <p className="text-center text-[10px] text-zinc-400 italic">
-          {submissionType === "LINK" ? "Tip: Make sure the link is public!" : "Tip: High quality MP3/WAV preferred!"}
+          {submissionType === "LINK" ? t("publicTip") : t("qualityTip")}
         </p>
 
         <div className="pt-8 border-t border-zinc-100 dark:border-zinc-900">

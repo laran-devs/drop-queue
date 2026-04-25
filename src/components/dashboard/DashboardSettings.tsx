@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -62,11 +63,6 @@ const COLOR_PRESETS = [
   { name: "Lava Red", value: "#ff4444" },
 ];
 
-const TABS = [
-  { id: "logic", label: "Queue Logic", icon: Shield },
-  { id: "appearance", label: "Appearance", icon: Palette },
-  { id: "platforms", label: "Platforms", icon: LayoutGrid },
-];
 
 export function DashboardSettings({
   accentColor,
@@ -98,7 +94,14 @@ export function DashboardSettings({
   minDonation,
   onMinDonationChange
 }: DashboardSettingsProps) {
+  const t = useTranslations("Settings");
   const [activeTab, setActiveTab] = useState("logic");
+
+  const TABS = [
+    { id: "logic", label: t("queueLogic"), icon: Shield },
+    { id: "appearance", label: t("appearance"), icon: Palette },
+    { id: "platforms", label: t("platforms"), icon: LayoutGrid },
+  ];
 
   return (
     <div className="glass p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 space-y-10">
@@ -136,8 +139,8 @@ export function DashboardSettings({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <label className="flex items-center justify-between p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-purple-500/50 transition-all">
                 <div className="space-y-0.5">
-                   <span className="text-xs font-bold">Auto-Advance</span>
-                   <p className="text-[10px] text-zinc-500 font-medium">Rating a track moves queue forward.</p>
+                   <span className="text-xs font-bold">{t("autoAdvance")}</span>
+                   <p className="text-[10px] text-zinc-500 font-medium">{t("autoAdvanceDesc")}</p>
                 </div>
                 <button 
                   onClick={() => onAutoAdvanceChange(!autoAdvance)}
@@ -149,8 +152,8 @@ export function DashboardSettings({
 
               <label className="flex items-center justify-between p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-purple-500/50 transition-all">
                 <div className="space-y-0.5">
-                   <span className="text-xs font-bold">Sub-Only Mode</span>
-                   <p className="text-[10px] text-zinc-500 font-medium">Submission restricted to subscribers.</p>
+                   <span className="text-xs font-bold">{t("subOnly")}</span>
+                   <p className="text-[10px] text-zinc-500 font-medium">{t("subOnlyDesc")}</p>
                 </div>
                 <button 
                   onClick={() => onSubOnlyChange(!subOnly)}
@@ -163,8 +166,8 @@ export function DashboardSettings({
               <div className="p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 space-y-3 col-span-1 md:col-span-2">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <span className="text-xs font-bold">Session Limit (Line in the Sand)</span>
-                    <p className="text-[10px] text-zinc-500 font-medium">Guaranteed spots. Tracks after this show a backlog warning.</p>
+                    <span className="text-xs font-bold">{t("sessionLimit")}</span>
+                    <p className="text-[10px] text-zinc-500 font-medium">{t("sessionLimitDesc")}</p>
                   </div>
                   <div className="flex items-center gap-1 bg-zinc-200 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-300 dark:border-zinc-800">
                     <button 
@@ -196,10 +199,10 @@ export function DashboardSettings({
               <label className="flex items-center justify-between p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-purple-500/50 transition-all">
                 <div className="space-y-0.5">
                    <div className="flex items-center gap-2">
-                     <span className="text-xs font-bold">Paid-Only Mode</span>
+                     <span className="text-xs font-bold">{t("paidOnly")}</span>
                      <Zap size={10} className="text-amber-500" />
                    </div>
-                   <p className="text-[10px] text-zinc-500 font-medium">Only paid (BUMP) tracks are allowed.</p>
+                   <p className="text-[10px] text-zinc-500 font-medium">{t("paidOnlyDesc")}</p>
                 </div>
                 <button 
                   onClick={() => onPaidOnlyChange(!paidOnly)}
@@ -211,8 +214,8 @@ export function DashboardSettings({
 
               <div className="p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
                 <div className="space-y-0.5">
-                   <span className="text-xs font-bold">Min Priority Donation</span>
-                   <p className="text-[10px] text-zinc-500 font-medium">Minimum amount for a priority bump.</p>
+                   <span className="text-xs font-bold">{t("minDonation")}</span>
+                   <p className="text-[10px] text-zinc-500 font-medium">{t("minDonationDesc")}</p>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-950 rounded-xl border border-zinc-300 dark:border-zinc-800">
                   <CreditCard size={14} className="text-zinc-500" />
@@ -230,10 +233,10 @@ export function DashboardSettings({
                 <div className="flex items-center justify-between">
                    <div className="space-y-0.5">
                       <span className="text-xs font-bold flex items-center gap-2">
-                         Normalization
-                         <span className="px-1.5 py-0.5 rounded-md bg-purple-600/20 text-purple-400 text-[8px] font-black uppercase">Coming Soon</span>
+                         {t("normalizationDesc")}
+                         <span className="px-1.5 py-0.5 rounded-md bg-purple-600/20 text-purple-400 text-[8px] font-black uppercase">{t("comingSoon")}</span>
                       </span>
-                      <p className="text-[10px] text-zinc-500 font-medium">Equalize track volume output.</p>
+                      <p className="text-[10px] text-zinc-500 font-medium">{t("normalizationDesc")}</p>
                    </div>
                 </div>
               </div>
@@ -247,7 +250,7 @@ export function DashboardSettings({
                 <div className="space-y-6">
                    <div className="flex items-center gap-3 text-purple-600">
                      <Palette size={20} />
-                     <h3 className="text-xl font-black tracking-tight uppercase">Visual identity</h3>
+                     <h3 className="text-xl font-black tracking-tight uppercase">{t("visualIdentity")}</h3>
                    </div>
                    <div className="glass p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 space-y-8">
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -266,7 +269,7 @@ export function DashboardSettings({
                      </div>
 
                      <div className="space-y-4">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">Accent Color</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">{t("accentColor")}</span>
                         <div className="flex items-center gap-6">
                            <div className="h-12 w-12 rounded-2xl shadow-xl border-4 border-white dark:border-zinc-800" style={{ backgroundColor: accentColor }} />
                            <TwitterPicker 
@@ -283,13 +286,13 @@ export function DashboardSettings({
                 <div className="space-y-6">
                    <div className="flex items-center gap-3 text-purple-600">
                      <Layout size={20} />
-                     <h3 className="text-xl font-black uppercase tracking-tight">Overlay elements</h3>
+                     <h3 className="text-xl font-black uppercase tracking-tight">{t("overlayElements")}</h3>
                    </div>
                    <div className="glass p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 grid grid-cols-1 md:grid-cols-2 gap-4">
                      {[
-                       { key: "showUpNext", label: "Show Up Next", icon: ChevronRight },
-                       { key: "showSubmitter", label: "Show Submitter", icon: UserIcon },
-                       { key: "showTrackNumber", label: "Track Counter", icon: Hash },
+                       { key: "showUpNext", label: t("showUpNext"), icon: ChevronRight },
+                       { key: "showSubmitter", label: t("showSubmitter"), icon: UserIcon },
+                       { key: "showTrackNumber", label: t("trackCounter"), icon: Hash },
                      ].map((toggle) => (
                        <button
                          key={toggle.key}
@@ -314,7 +317,7 @@ export function DashboardSettings({
               <div className="space-y-6">
                  <div className="flex items-center gap-3 text-zinc-400">
                     <Music size={20} />
-                    <h3 className="text-xl font-black tracking-tight uppercase">Live Preview</h3>
+                    <h3 className="text-xl font-black tracking-tight uppercase">{t("livePreview")}</h3>
                  </div>
                  <div className="bg-zinc-900 rounded-[3rem] p-4 overflow-hidden border-8 border-zinc-950 shadow-2xl">
                     <OverlayPreview 
@@ -323,7 +326,7 @@ export function DashboardSettings({
                       settings={{ ...overlaySettings, showBpm, showKey }} 
                     />
                  </div>
-                 <p className="text-[10px] text-center text-zinc-400 font-medium px-10">Changes are broadcasted in real-time to your OBS source.</p>
+                 <p className="text-[10px] text-center text-zinc-400 font-medium px-10">{t("livePreviewDesc")}</p>
               </div>
             </div>
           )}
@@ -333,9 +336,9 @@ export function DashboardSettings({
               <div className="space-y-1">
                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-2">
                    <LayoutGrid size={12} />
-                   Link Submission Sources
+                   {t("linkSources")}
                  </h3>
-                 <p className="text-[10px] font-bold text-zinc-400">Choose which platforms fans can submit from.</p>
+                 <p className="text-[10px] font-bold text-zinc-400">{t("linkSourcesDesc")}</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {PLATFORMS.map((platform) => (

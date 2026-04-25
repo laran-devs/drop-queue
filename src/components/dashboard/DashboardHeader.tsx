@@ -19,6 +19,7 @@ import {
 import { Link } from "@/navigation";
 import { toast } from "sonner";
 import { StreamCarousel } from "@/components/StreamCarousel";
+import { useTranslations } from "next-intl";
 
 interface DashboardHeaderProps {
   session: {
@@ -67,6 +68,8 @@ export function DashboardHeader({
   showSettings,
   showGuide
 }: DashboardHeaderProps) {
+  const t = useTranslations("Dashboard");
+  const h = useTranslations("Header");
   
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
@@ -77,8 +80,8 @@ export function DashboardHeader({
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    toast.success(`${label} copied to clipboard!`, {
-      description: "Ready to paste in OBS or Chat",
+    toast.success(`${label} ${t("copyLink")}!`, {
+      description: t("obsInfo"),
       icon: "📋"
     });
   };
@@ -94,7 +97,7 @@ export function DashboardHeader({
             <div className="flex items-center gap-3 mb-2">
               <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center gap-2">
                 <span className={`h-1.5 w-1.5 rounded-full ${isStreamPaused ? "bg-amber-500" : "bg-red-500 animate-pulse"}`} />
-                {isStreamPaused ? "Stream Paused" : "Live Stream"}
+                {isStreamPaused ? t("streamPaused") : t("streamActive")}
               </span>
               <span className="text-zinc-400 font-mono text-[10px] tabular-nums">{formatTime(sessionTime)}</span>
               <span className="text-zinc-500 font-mono text-xs opacity-30">#{session.slug}</span>
@@ -138,13 +141,13 @@ export function DashboardHeader({
               className={`group px-6 py-3 glass border ${isStreamPaused ? "border-green-500/50 text-green-500" : "border-amber-500/50 text-amber-500"} text-xs font-black uppercase tracking-widest rounded-2xl transition-all flex items-center gap-2`}
             >
               {isStreamPaused ? <Play size={14} /> : <Pause size={14} />}
-              {isStreamPaused ? "Resume Stream" : "Pause Stream"}
+              {isStreamPaused ? t("resumeStream") : t("pauseStream")}
             </button>
             <button 
               onClick={() => endSession(session.id)} 
               className="px-6 py-3 glass border border-red-500/20 text-red-500 text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-red-500/10 transition-all active:scale-95"
             >
-              End Session
+              {t("endSession")}
             </button>
           </div>
         </div>
@@ -157,14 +160,14 @@ export function DashboardHeader({
         <div className="flex flex-wrap items-center justify-between gap-6 glass p-6 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-lg bg-zinc-50/50 dark:bg-zinc-950/50">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Streamer Toolkit</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">{t("streamerToolkit")}</span>
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => copyToClipboard(`${window.location.origin}/${locale}/stream/${session.slug}`, "Submission Link")}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-purple-500 transition-all group"
                 >
                   <Send size={14} className="text-zinc-500 group-hover:text-purple-600" />
-                  <span className="text-xs font-bold">Submit Page</span>
+                  <span className="text-xs font-bold">{t("submitPage")}</span>
                   <Copy size={10} className="opacity-20 group-hover:opacity-100 transition-opacity" />
                 </button>
                 
@@ -176,7 +179,7 @@ export function DashboardHeader({
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-blue-500 transition-all group"
                 >
                   <Monitor size={14} className="text-zinc-500 group-hover:text-blue-600" />
-                  <span className="text-xs font-bold">OBS Source</span>
+                  <span className="text-xs font-bold">{t("obsSource")}</span>
                   <Copy size={10} className="opacity-20 group-hover:opacity-100 transition-opacity" />
                 </button>
 
@@ -185,7 +188,7 @@ export function DashboardHeader({
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-all group"
                 >
                   <Trophy size={14} className="text-purple-600" />
-                  <span className="text-xs font-bold text-purple-700">Records</span>
+                  <span className="text-xs font-bold text-purple-700">{h("hallOfFame")}</span>
                 </Link>
               </div>
             </div>
@@ -200,7 +203,7 @@ export function DashboardHeader({
               className="px-6 py-2.5 rounded-xl bg-purple-600 text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-purple-500/20 hover:scale-[1.03] active:scale-95 transition-all"
             >
               <Share2 size={14} />
-              Share Stream
+              {t("shareStream")}
             </button>
             
             <div className="h-8 w-px bg-zinc-200 dark:bg-zinc-800 mx-1" />

@@ -4,24 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Music2, Languages, PlayCircle, ExternalLink, MessageSquare, TrendingUp, SkipForward, Ban } from "lucide-react";
 import { Track, Criteria } from "@prisma/client";
 import dynamic from 'next/dynamic';
+import { useTranslations } from "next-intl";
 const ReactPlayer = dynamic(() => import('react-player').then(mod => mod.default), { ssr: false });
 
-interface EvaluationPanelProps {
-  playingTrack: any;
-  criteria: Criteria[];
-  scores: Record<string, number>;
-  setScores: (scores: Record<string, number>) => void;
-  activeTab: "player" | "lyrics";
-  setActiveTab: (tab: "player" | "lyrics") => void;
-  media: any;
-  audioRef: React.RefObject<HTMLAudioElement | null>;
-  handleTrackEnd: () => void;
-  handleSubmitEvaluation: () => void;
-  handleNext: () => void;
-  handleSkip: () => void;
-  isSubmitting: boolean;
-  accentColor: string;
-  chatVote?: { avg: number; total: number } | null;
   autoAdvance?: boolean;
 }
 
@@ -43,6 +28,7 @@ export function EvaluationPanel({
   chatVote,
   autoAdvance = true
 }: EvaluationPanelProps) {
+  const t = useTranslations("Dashboard");
   
   if (!playingTrack) return null;
 
@@ -52,7 +38,7 @@ export function EvaluationPanel({
         {/* Rating Section */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Rate Criteria</h3>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">{t("rateCriteria")}</h3>
           </div>
 
           {criteria.length > 0 ? (
@@ -78,7 +64,7 @@ export function EvaluationPanel({
             </div>
           ) : (
             <div className="py-10 border-2 border-dashed border-zinc-100 dark:border-zinc-900 rounded-3xl text-center text-zinc-500 italic text-sm">
-              Add criteria below or select a template
+              {t("noCriteria")}
             </div>
           )}
 
@@ -94,8 +80,8 @@ export function EvaluationPanel({
                   <MessageSquare size={20} />
                 </div>
                 <div>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Chat Consensus</h4>
-                  <p className="text-xs font-bold text-zinc-600 dark:text-zinc-300">Based on {chatVote.total} votes</p>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{t("chatConsensus")}</h4>
+                  <p className="text-xs font-bold text-zinc-600 dark:text-zinc-300">{t("basedOn")} {chatVote.total} {t("votesCount")}</p>
                 </div>
               </div>
               <div className="text-right">
@@ -109,7 +95,7 @@ export function EvaluationPanel({
         {/* Media & Context */}
         <div className="space-y-6 flex flex-col">
           <div className="flex items-center justify-between">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Context & Media</h3>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">{t("lyrics")}</h3>
             <div className="flex bg-zinc-100 dark:bg-zinc-900 p-1 rounded-xl">
               {[
                 { id: "player", icon: Music2 },
@@ -170,13 +156,13 @@ export function EvaluationPanel({
                   {media.type === 'link' && (
                     <div className="flex flex-col items-center justify-center gap-4 text-center py-10">
                       <ExternalLink size={32} className="text-zinc-300" />
-                      <p className="text-sm font-bold opacity-50 italic">Platform not embeddable</p>
+                      <p className="text-sm font-bold opacity-50 italic">{t("notEmbeddable")}</p>
                       <a 
                         href={media.originalUrl} 
                         target="_blank" 
-                        className="px-6 py-2 rounded-xl bg-purple-600 text-white text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all"
+                        className="px-6 py-2 rounded-xl bg-purple-600 text-white text-[10px] font-black uppercase tracking-widest hover:scale-[1.03] transition-all"
                       >
-                        Open Track
+                        {t("openTrack")}
                       </a>
                     </div>
                   )}
@@ -185,7 +171,7 @@ export function EvaluationPanel({
             </div>
 
             <div className={`w-full h-full whitespace-pre-wrap text-xs leading-relaxed text-zinc-500 scrollbar-thin overflow-y-auto p-4 ${activeTab === "lyrics" ? "" : "hidden"}`}>
-              {playingTrack.lyrics || "Lyrics are not available for this track."}
+              {playingTrack.lyrics || t("noLyrics")}
             </div>
           </div>
         </div>
@@ -201,11 +187,11 @@ export function EvaluationPanel({
             {isSubmitting ? (
               <>
                 <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Processing...
+                {t("processing")}
               </>
             ) : (
               <>
-                Submit Evaluation
+                {t("confirm")}
                 <TrendingUp size={18} className="group-hover:translate-x-1 transition-transform" />
               </>
             )}
@@ -216,7 +202,7 @@ export function EvaluationPanel({
             onClick={handleNext}
             className="flex-1 glass border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs font-black uppercase tracking-widest rounded-3xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all active:scale-95 flex items-center justify-center gap-2"
           >
-            Skip
+            {t("skip")}
           </button>
           <button
             onClick={handleSkip}
