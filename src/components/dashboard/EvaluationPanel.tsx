@@ -7,6 +7,22 @@ import dynamic from 'next/dynamic';
 import { useTranslations } from "next-intl";
 const ReactPlayer = dynamic(() => import('react-player').then(mod => mod.default), { ssr: false });
 
+interface EvaluationPanelProps {
+  playingTrack: any;
+  criteria: Criteria[];
+  scores: Record<string, number>;
+  setScores: (scores: Record<string, number>) => void;
+  activeTab: 'player' | 'lyrics';
+  setActiveTab: (tab: 'player' | 'lyrics') => void;
+  media: any;
+  audioRef: React.RefObject<HTMLAudioElement>;
+  handleTrackEnd: () => void;
+  handleSubmitEvaluation: () => void;
+  handleNext: () => void;
+  handleSkip: () => void;
+  isSubmitting: boolean;
+  accentColor: string;
+  chatVote?: { avg: number; total: number };
   autoAdvance?: boolean;
 }
 
