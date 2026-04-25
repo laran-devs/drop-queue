@@ -124,7 +124,7 @@ export function WalletPanel({ onClose }: { onClose: () => void }) {
           </div>
           <div className="flex-1 overflow-y-auto p-0">
             <div className="divide-y divide-zinc-50 dark:divide-zinc-900">
-              {data.transactions.map((tx: any) => (
+              {data?.transactions?.map((tx: any) => (
                 <div key={tx.id} className="p-4 flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors">
                   <div className="flex items-center gap-4">
                     <div className="h-10 w-10 rounded-xl bg-green-500/10 text-green-600 flex items-center justify-center">
@@ -142,7 +142,7 @@ export function WalletPanel({ onClose }: { onClose: () => void }) {
                 </div>
               ))}
 
-              {data.withdrawalRequests.map((req: any) => (
+              {data?.withdrawalRequests?.map((req: any) => (
                 <div key={req.id} className="p-4 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-900/30">
                   <div className="flex items-center gap-4">
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${req.status === 'COMPLETED' ? 'bg-blue-500/10 text-blue-600' : 'bg-amber-500/10 text-amber-600'}`}>
