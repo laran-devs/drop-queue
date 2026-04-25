@@ -147,8 +147,7 @@ function SettingsContent() {
   ];
 
   return (
-  return (
-    <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 min-h-screen [scrollbar-gutter:stable]">
+    <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 pt-4 pb-12 min-h-screen no-scrollbar">
       <div className="flex flex-col lg:flex-row gap-16 w-full items-start">
         {/* Navigation Sidebar */}
         <div className="lg:w-72 shrink-0 space-y-8 sticky top-24 self-start">
