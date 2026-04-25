@@ -218,7 +218,10 @@ function SettingsContent() {
                             whileTap={isAvailable ? { scale: 0.98 } : {}}
                             onClick={() => {
                               if (isAvailable && !isActive) {
-                                router.replace(pathname, { locale: lang.code });
+                                // Hard reload to ensure middleware catches the new locale
+                                const targetLocale = lang.code;
+                                const newPath = targetLocale === 'en' ? pathname : `/${targetLocale}${pathname}`;
+                                window.location.href = newPath;
                               }
                             }}
                             className={`flex items-center justify-between p-4 rounded-2xl border transition-all h-full ${
