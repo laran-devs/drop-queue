@@ -15,6 +15,17 @@
   --color-purple-800: #6d28d9;
   --color-purple-900: #5b21b6;
   --color-purple-950: #2e1065;
+
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 0.3; transform: scale(1) translate(-50%, -50%); }
+    50% { opacity: 0.6; transform: scale(1.05) translate(-50%, -50%); }
+  }
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  --animate-pulse-slow: pulse-slow 8s ease-in-out infinite;
+  --animate-spin-slow: spin-slow 12s linear infinite;
 }
 
 :root {

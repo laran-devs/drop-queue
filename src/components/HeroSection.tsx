@@ -24,7 +24,9 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative pt-32 pb-20 px-4 flex flex-col items-center justify-center text-center overflow-hidden z-10">
+    <section className="relative pt-40 pb-24 px-4 flex flex-col items-center justify-center text-center overflow-hidden z-10 min-h-[80vh]">
+      {/* CENTRAL GLOW */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/5 blur-[120px] rounded-full pointer-events-none -z-10" />
       <motion.div
         variants={container}
         initial="hidden"
@@ -67,10 +69,12 @@ export default function HeroSection() {
       </motion.div>
 
       {/* DECORATIVE ELEMENTS */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none -z-10">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-zinc-100 dark:border-zinc-900 rounded-full opacity-50 scale-150 sm:scale-100" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-zinc-100 dark:border-zinc-900 rounded-full opacity-50 scale-150 sm:scale-100" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-zinc-200 dark:border-zinc-800 rounded-full opacity-30 scale-150 sm:scale-100" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none -z-10 animate-pulse-slow">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] border border-zinc-100 dark:border-zinc-900/50 rounded-full opacity-50" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] border border-zinc-100 dark:border-zinc-900/50 rounded-full opacity-50" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-zinc-100 dark:border-zinc-900/50 rounded-full opacity-50" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-zinc-100 dark:border-zinc-900/50 rounded-full opacity-50" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-zinc-200 dark:border-zinc-800 rounded-full opacity-30" />
       </div>
     </section>
   );

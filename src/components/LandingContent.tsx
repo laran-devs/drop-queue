@@ -18,18 +18,25 @@ export default function LandingContent({ sessions, session }: LandingContentProp
 
   return (
     <div className="relative min-h-screen bg-white dark:bg-black overflow-x-hidden">
+      {/* GRID BACKGROUND PATTERN */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03] dark:opacity-[0.07]" 
+           style={{ backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`, backgroundSize: '40px 40px' }} 
+      />
+
       {/* BACKGROUND DECORATION */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1000px] pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/10 blur-[120px] rounded-full animate-pulse" />
-        <div className="absolute top-[10%] right-[-5%] w-[30%] h-[30%] bg-blue-500/10 blur-[100px] rounded-full animate-pulse delay-700" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-5%] left-[-10%] w-[50%] h-[50%] bg-purple-500/15 blur-[140px] rounded-full animate-pulse" />
+        <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full animate-pulse delay-700" />
+        <div className="absolute top-[50%] left-[-15%] w-[45%] h-[45%] bg-indigo-500/10 blur-[130px] rounded-full animate-pulse delay-1000" />
+        <div className="absolute bottom-[10%] right-[-5%] w-[35%] h-[35%] bg-purple-600/10 blur-[110px] rounded-full animate-pulse delay-500" />
       </div>
 
       {/* HERO SECTION */}
       <HeroSection />
 
       {/* GOAL / PURPOSE SECTION */}
-      <section className="relative z-10 py-24 px-4">
-        <div className="mx-auto max-w-4xl glass p-10 sm:p-16 rounded-[3rem] border border-zinc-200 dark:border-zinc-800 shadow-2xl relative overflow-hidden group">
+      <section className="relative z-10 py-32 px-4">
+        <div className="mx-auto max-w-5xl glass p-10 sm:p-20 rounded-[4rem] border border-zinc-200 dark:border-zinc-800 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_100px_-20px_rgba(145,70,255,0.05)] relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
             <Sparkles size={120} className="text-purple-600" />
           </div>
