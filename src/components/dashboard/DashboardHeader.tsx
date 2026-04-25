@@ -47,7 +47,6 @@ interface DashboardHeaderProps {
   showAnalytics: boolean;
   showSettings: boolean;
   showGuide: boolean;
-  showWallet: boolean;
 }
 
 export function DashboardHeader({
@@ -66,8 +65,7 @@ export function DashboardHeader({
   onToggleWallet,
   showAnalytics,
   showSettings,
-  showGuide,
-  showWallet
+  showGuide
 }: DashboardHeaderProps) {
   
   const formatTime = (seconds: number) => {
@@ -209,7 +207,7 @@ export function DashboardHeader({
 
             <div className="flex items-center gap-2">
               {[
-                { icon: Wallet, active: showWallet, toggle: onToggleWallet, color: "text-purple-500" },
+                { icon: Wallet, active: false, toggle: onToggleWallet, color: "text-purple-500" },
                 { icon: BarChart2, active: showAnalytics, toggle: onToggleAnalytics, color: "text-blue-500" },
                 { icon: SettingsIcon, active: showSettings, toggle: onToggleSettings, color: "text-zinc-500" },
                 { icon: HelpCircle, active: showGuide, toggle: onToggleGuide, color: "text-amber-500" }

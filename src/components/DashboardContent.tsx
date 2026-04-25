@@ -60,7 +60,6 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   const [presets, setPresets] = useState<{id: string, name: string}[]>([]);
   const [showPresets, setShowPresets] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [showWallet, setShowWallet] = useState(false);
   const [showBpm, setShowBpm] = useState(initialSession.showBpmOnOverlay ?? true);
   const [showKey, setShowKey] = useState(initialSession.showKeyOnOverlay ?? true);
   const [allowedPlatforms, setAllowedPlatforms] = useState<string[]>(initialSession.allowedPlatforms ?? []);
@@ -548,11 +547,8 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
         onToggleGuide={() => setShowGuide(!showGuide)}
         showAnalytics={showAnalytics}
         showSettings={showSettings}
-        showWallet={showWallet}
         showGuide={showGuide}
       />
-
-      </AnimatePresence>
 
       <AnimatePresence>
         {showAnalytics && (
