@@ -5,42 +5,28 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { trackSubmissionSchema, PLATFORMS } from "@/lib/validations";
+import { z } from "zod";
 
 import { headers } from "next/headers";
 import { submissionLimiter } from "@/lib/rate-limit";
 import { isSubscriber, isVip, isModerator } from "@/lib/twitch-api";
+import { createServerAction } from "@/lib/safe-action";
 
-export async function submitTrack(formData: FormData) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) throw new Error("Unauthorized");
-
+export const submitTrack = createServerAction(
+  trackSubmissionSchema.extend({
+    isPriority: z.boolean().default(false),
+  }),
+  async (data, userId) => {
     // Rate Limiting
     const h = await headers();
     const ip = h.get("x-forwarded-for") || "unknown";
-    if (!submissionLimiter.check(ip, 5)) { // 5 tracks per min
+    
+    const isAllowed = await submissionLimiter.check(ip, 5); // 5 tracks per min
+    if (!isAllowed) {
       throw new Error("Rate limit exceeded. Please wait a minute before submitting again.");
     }
 
-    // 1. Validate Input
-    const validatedFields = trackSubmissionSchema.safeParse({
-      title: formData.get("title"),
-      url: formData.get("url") || undefined,
-      filePath: formData.get("filePath") || undefined,
-      trackType: formData.get("trackType") || "LINK",
-      description: formData.get("description"),
-      lyrics: formData.get("lyrics"),
-      sessionId: formData.get("sessionId"),
-      bpm: formData.get("bpm") ? Number(formData.get("bpm")) : undefined,
-      key: formData.get("key") || undefined,
-    });
-
-    if (!validatedFields.success) {
-      throw new Error(validatedFields.error.issues[0].message);
-    }
-
-    const { title, url, filePath, trackType, description, lyrics, sessionId, bpm, key } = validatedFields.data;
-    const isPriority = formData.get("isPriority") === "true";
+    const { title, url, filePath, trackType, description, lyrics, sessionId, bpm, key, isPriority } = data;
 
     // 2. Fetch the stream session with its specific limits
     const streamSession = await prisma.streamSession.findUnique({
@@ -134,19 +120,15 @@ export async function submitTrack(formData: FormData) {
       const returnPath = `/stream/${streamSession.slug}`;
       const paymentAmount = streamSession.minDonation || 50;
       const payment = await createYookassaPayment(paymentAmount, track.id, streamSession.streamerId, returnPath);
-      if (payment.success) {
-        return { success: true, track, paymentUrl: payment.url };
-      } else {
-        // If payment creation failed, we still created the track in PENDING state.
-        // We probably should tell the user.
-        return { success: false, error: payment.error || "Payment creation failed. Try again later." };
+      
+      if (!payment.success) {
+        throw new Error(payment.error || "Payment creation failed.");
       }
+      
+      return { track, paymentUrl: payment.url };
     }
 
     revalidatePath(`/stream/${streamSession.slug}`);
-    return { success: true, track, isBacklog };
-  } catch (err: any) {
-    console.error("Submit error:", err);
-    return { success: false, error: err.message || "An unexpected error occurred." };
+    return { track, isBacklog };
   }
-}
+);

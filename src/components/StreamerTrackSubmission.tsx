@@ -47,32 +47,50 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
     }
 
     try {
-      const result = await submitTrack(formData);
-      if (result.success) {
-        if (result.paymentUrl) {
-          toast.success("Redirecting to payment...");
-          window.location.href = result.paymentUrl;
-          return;
-        }
+      const payload = {
+        title: String(formData.get("title")),
+        url: formData.get("url") ? String(formData.get("url")) : undefined,
+        filePath: uploadedFile?.url,
+        trackType: submissionType,
+        description: String(formData.get("description")),
+        lyrics: String(formData.get("lyrics")),
+        sessionId: session.id,
+        bpm: uploadedFile?.bpm,
+        key: uploadedFile?.key,
+        isPriority: isPriority,
+      };
 
-        if (result.isBacklog) {
-          toast.warning("Added to Backlog!", {
-            description: "Your track is beyond the streamer's energy limit and might not be evaluated this stream.",
-            duration: 10000,
-            icon: "⚠️"
-          });
-        } else {
-          toast.success("Track submitted successfully!");
-        }
-        
-        emit("new_track", { slug: session.slug, title: formData.get("title") });
-        (e.target as HTMLFormElement).reset();
-        setUploadedFile(null);
-        setIsPriority(false);
+      const result = await submitTrack(payload);
+      
+      if (!result.success) {
+        toast.error(result.error);
+        return;
       }
+
+      const { track, paymentUrl, isBacklog } = result.data;
+
+      if (paymentUrl) {
+        toast.success("Redirecting to payment...");
+        window.location.href = paymentUrl;
+        return;
+      }
+
+      if (isBacklog) {
+        toast.warning("Added to Backlog!", {
+          description: "Your track is beyond the streamer's energy limit and might not be evaluated this stream.",
+          duration: 10000,
+          icon: "⚠️"
+        });
+      } else {
+        toast.success("Track submitted successfully!");
+      }
+      
+      emit("new_track", { slug: session.slug, title: payload.title });
+      (e.target as HTMLFormElement).reset();
+      setUploadedFile(null);
+      setIsPriority(false);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to submit track.";
-      toast.error(message);
+      toast.error("An unexpected error occurred.");
     } finally {
       setIsSubmitting(false);
     }

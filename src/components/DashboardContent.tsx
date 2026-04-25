@@ -469,14 +469,24 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
 
   const handleUpdateNormalization = async (val: boolean) => {
     setEnableNormalization(val);
-    await updateSessionSettings(initialSession.id, { enableNormalization: val });
-    toast.success(`Normalization ${val ? "enabled" : "disabled"}`);
+    const res = await updateSessionSettings({ sessionId: initialSession.id, data: { enableNormalization: val } });
+    if (res.success) {
+      toast.success(`Normalization ${val ? "enabled" : "disabled"}`);
+    } else {
+      setEnableNormalization(!val);
+      toast.error(res.error);
+    }
   };
 
   const handleUpdateAutoAdvance = async (val: boolean) => {
     setAutoAdvance(val);
-    await updateSessionSettings(initialSession.id, { autoAdvance: val });
-    toast.success(`Auto-advance ${val ? "enabled" : "disabled"}`);
+    const res = await updateSessionSettings({ sessionId: initialSession.id, data: { autoAdvance: val } });
+    if (res.success) {
+      toast.success(`Auto-advance ${val ? "enabled" : "disabled"}`);
+    } else {
+      setAutoAdvance(!val);
+      toast.error(res.error);
+    }
   };
 
   const handleUpdateTrackLimit = async (val: number | null) => {
@@ -487,14 +497,24 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
 
   const handleUpdateSubOnly = async (val: boolean) => {
     setSubOnly(val);
-    await updateSessionSettings(initialSession.id, { subOnly: val });
-    toast.success(`Sub-Only Mode ${val ? "enabled" : "disabled"}`);
+    const res = await updateSessionSettings({ sessionId: initialSession.id, data: { subOnly: val } });
+    if (res.success) {
+      toast.success(`Sub-Only Mode ${val ? "enabled" : "disabled"}`);
+    } else {
+      setSubOnly(!val);
+      toast.error(res.error);
+    }
   };
 
   const handleUpdatePaidOnly = async (val: boolean) => {
     setPaidOnly(val);
-    await updateSessionSettings(initialSession.id, { paidOnly: val });
-    toast.success(`Paid-Only Mode ${val ? "enabled" : "disabled"}`);
+    const res = await updateSessionSettings({ sessionId: initialSession.id, data: { paidOnly: val } });
+    if (res.success) {
+      toast.success(`Paid-Only Mode ${val ? "enabled" : "disabled"}`);
+    } else {
+      setPaidOnly(!val);
+      toast.error(res.error);
+    }
   };
 
   const handleUpdateMinDonation = async (val: number) => {
@@ -504,29 +524,51 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
 
   const handleUpdateShowBpm = async (val: boolean) => {
     setShowBpm(val);
-    await updateSessionSettings(initialSession.id, { showBpmOnOverlay: val });
-    emit("SETTINGS_UPDATED", { slug: initialSession.slug, settings: overlaySettings, showBpmOnOverlay: val });
-    toast.success(`BPM Display ${val ? "enabled" : "disabled"}`);
+    const res = await updateSessionSettings({ sessionId: initialSession.id, data: { showBpmOnOverlay: val } });
+    if (res.success) {
+      emit("SETTINGS_UPDATED", { slug: initialSession.slug, settings: overlaySettings, showBpmOnOverlay: val });
+      toast.success(`BPM Display ${val ? "enabled" : "disabled"}`);
+    } else {
+      setShowBpm(!val);
+      toast.error(res.error);
+    }
   };
 
   const handleUpdateShowKey = async (val: boolean) => {
     setShowKey(val);
-    await updateSessionSettings(initialSession.id, { showKeyOnOverlay: val });
-    emit("SETTINGS_UPDATED", { slug: initialSession.slug, settings: overlaySettings, showKeyOnOverlay: val });
-    toast.success(`Key Display ${val ? "enabled" : "disabled"}`);
+    const res = await updateSessionSettings({ sessionId: initialSession.id, data: { showKeyOnOverlay: val } });
+    if (res.success) {
+      emit("SETTINGS_UPDATED", { slug: initialSession.slug, settings: overlaySettings, showKeyOnOverlay: val });
+      toast.success(`Key Display ${val ? "enabled" : "disabled"}`);
+    } else {
+      setShowKey(!val);
+      toast.error(res.error);
+    }
   };
 
   const handleUpdateOverlaySettings = async (newSettings: Record<string, boolean>) => {
+    const oldSettings = overlaySettings;
     setOverlaySettings(newSettings);
-    await updateOverlaySettings(initialSession.slug, newSettings);
-    emit("SETTINGS_UPDATED", { slug: initialSession.slug, settings: newSettings });
+    const res = await updateOverlaySettings(initialSession.slug, newSettings);
+    if (res.success) {
+      emit("SETTINGS_UPDATED", { slug: initialSession.slug, settings: newSettings });
+    } else {
+      setOverlaySettings(oldSettings);
+      toast.error("Failed to update overlay settings");
+    }
   };
 
   const handleUpdateTheme = async (theme: string) => {
+    const oldTheme = overlayTheme;
     setOverlayTheme(theme);
-    await updateSessionSettings(initialSession.id, { overlayTheme: theme } as any);
-    emit("THEME_UPDATED", { slug: initialSession.slug, theme });
-    toast.success(`Theme changed to ${theme}`);
+    const res = await updateSessionSettings({ sessionId: initialSession.id, data: { overlayTheme: theme } });
+    if (res.success) {
+      emit("THEME_UPDATED", { slug: initialSession.slug, theme });
+      toast.success(`Theme changed to ${theme}`);
+    } else {
+      setOverlayTheme(oldTheme);
+      toast.error(res.error);
+    }
   };
 
   return (

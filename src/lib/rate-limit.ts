@@ -1,44 +1,61 @@
-import { LRUCache } from "lru-cache";
+import redis from "./redis";
 
 /**
- * A simple in-memory rate limiter using LRUCache.
+ * A distributed rate limiter using Redis.
  */
-class RateLimiter {
-  private cache: LRUCache<string, number>;
+class RedisRateLimiter {
+  private prefix: string;
+  private windowSeconds: number;
 
-  constructor(options: { max: number; ttl: number }) {
-    this.cache = new LRUCache({
-      max: options.max, // Maximum number of unique keys (IPs)
-      ttl: options.ttl, // Time window in milliseconds
-    });
+  constructor(prefix: string, windowSeconds: number = 60) {
+    this.prefix = prefix;
+    this.windowSeconds = windowSeconds;
   }
 
   /**
    * Checks if the request should be limited.
-   * @param key The unique key for the client (e.g., IP address)
+   * @param key The unique key for the client (e.g., IP or user ID)
    * @param limit The maximum number of requests allowed in the window
-   * @returns boolean true if the request is allowed, false if limited
+   * @returns Promise<boolean> true if request is allowed, false if limited
    */
-  public check(key: string, limit: number): boolean {
-    const currentCount = this.cache.get(key) || 0;
+  public async check(key: string, limit: number): Promise<boolean> {
+    const fullKey = `ratelimit:${this.prefix}:${key}`;
     
-    if (currentCount >= limit) {
-      return false;
-    }
+    try {
+      const currentCount = await redis.incr(fullKey);
 
-    this.cache.set(key, currentCount + 1);
-    return true;
+      if (currentCount === 1) {
+        // First request in the window, set expiration
+        await redis.expire(fullKey, this.windowSeconds);
+      }
+
+      if (currentCount > limit) {
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("[RATE_LIMIT_ERROR]:", error);
+      // Fail open in case of Redis issues to not block users
+      return true; 
+    }
+  }
+
+  /**
+   * Returns current count and remaining requests
+   */
+  public async getStatus(key: string) {
+    const fullKey = `ratelimit:${this.prefix}:${key}`;
+    const count = await redis.get(fullKey);
+    const ttl = await redis.ttl(fullKey);
+    return {
+      count: parseInt(count || "0"),
+      ttl: ttl > 0 ? ttl : 0
+    };
   }
 }
 
-// Default limiter: 10 requests per minute
-export const submissionLimiter = new RateLimiter({
-  max: 500,
-  ttl: 60 * 1000,
-});
-
-// Stricter limiter for file uploads: 3 uploads per minute
-export const uploadLimiter = new RateLimiter({
-  max: 200,
-  ttl: 60 * 1000,
-});
+// Global limiters
+export const submissionLimiter = new RedisRateLimiter("submission", 60);
+export const uploadLimiter = new RedisRateLimiter("upload", 60);
+export const authLimiter = new RedisRateLimiter("auth", 60 * 5); // 5 min for auth attempts
