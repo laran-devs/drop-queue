@@ -90,6 +90,8 @@ model StreamSession {
   slug                 String               @unique
   title                String               @default("New Stream Session")
   sessionMode          String               @default("STANDARD")
+  paidOnly             Boolean              @default(false)
+  minDonation          Float                @default(50.0)
   enableNormalization  Boolean              @default(false)
   autoAdvance          Boolean              @default(true)
   trackLimit           Int?

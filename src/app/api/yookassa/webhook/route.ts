@@ -5,6 +5,7 @@ import { pubClient } from "@/lib/redis";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    console.log("[YooKassa Webhook] Received event:", body.event, "for object:", body.object?.id);
 
     if (body.event === "payment.succeeded" && body.object?.id) {
       const paymentId = body.object.id;
@@ -30,8 +31,10 @@ export async function POST(req: Request) {
       }
 
       const paymentData = await checkRes.json();
+      console.log("[YooKassa Webhook] Payment verified with status:", paymentData.status);
+      
       if (paymentData.status !== "succeeded") {
-        console.error(`YooKassa payment ${paymentId} is not actually succeeded. Satus: ${paymentData.status}`);
+        console.error(`YooKassa payment ${paymentId} is not actually succeeded. Status: ${paymentData.status}`);
         return NextResponse.json({ error: "Payment not succeeded" }, { status: 400 });
       }
 
@@ -64,7 +67,8 @@ export async function POST(req: Request) {
       });
 
       // 3. Process the action (Bump track)
-      if (trackId && body.object.metadata?.action === "BUMP_TRACK") {
+      if (trackId && (paymentData.metadata?.action === "BUMP_TRACK" || body.object.metadata?.action === "BUMP_TRACK")) {
+        console.log("[YooKassa Webhook] Bumping track:", trackId);
         const track = await prisma.track.update({
           where: { id: trackId },
           data: { 
@@ -72,6 +76,8 @@ export async function POST(req: Request) {
             status: "QUEUED" 
           } 
         });
+
+        console.log("[YooKassa Webhook] Track updated successfully:", track.title);
 
         // Update transaction record with trackId
         await prisma.platformTransaction.update({

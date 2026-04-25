@@ -86,9 +86,12 @@ export function ActiveQueue({
           Queue <span className="opacity-30">({queuedTracks.length})</span>
         </h2>
         <div className="flex gap-2">
-          {onStartDuel && queuedTracks.length >= 2 && (
-            <button onClick={onStartDuel} className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-all text-[8px] font-black uppercase tracking-widest active:scale-95">
-              ⚔️ Start Duel
+          {onStartDuel && (
+            <button 
+              onClick={onStartDuel} 
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-500/10 border border-zinc-500/20 text-zinc-500 cursor-not-allowed text-[8px] font-black uppercase tracking-widest opacity-50"
+            >
+              ⚔️ Duel <span className="opacity-50">Coming Soon</span>
             </button>
           )}
           {trackLimit && (

@@ -5,6 +5,7 @@ import { useTheme } from "next-themes";
 import { useTranslations, useLocale } from "next-intl";
 import { Link, usePathname } from "@/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Globe, 
@@ -26,8 +27,10 @@ import {
   AlertTriangle,
   User as UserIcon,
   ShieldCheck,
-  Zap
+  Zap,
+  Wallet as WalletIcon
 } from "lucide-react";
+import { WalletPanel } from "@/components/dashboard/WalletPanel";
 import { locales } from "@/i18n/request";
 import { getUserPreferences, updatePrivacyPreference, updateDonationSettings } from "@/app/actions/user-actions";
 import { toast } from "sonner";
@@ -37,6 +40,7 @@ import { cleanupOrphanedFiles } from "@/app/actions/maintenance-actions";
 const TABS = [
   { id: "general", label: "General", icon: Globe },
   { id: "privacy", label: "Privacy & Security", icon: Lock },
+  { id: "wallet", label: "Wallet & Payouts", icon: WalletIcon },
   { id: "advanced", label: "Advanced", icon: Database },
   { id: "account", label: "Account", icon: UserIcon },
 ];
@@ -48,9 +52,10 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const { data: session } = useSession();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { sendNotification } = useNotifications();
   
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "general");
   const [notifPermission, setNotifPermission] = useState<NotificationPermission>("default");
   const [isPublic, setIsPublic] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -423,6 +428,17 @@ export default function SettingsPage() {
                        {tHeader("signOut")}
                      </button>
                   </div>
+                </div>
+              )}
+              {activeTab === "wallet" && (
+                <div className="space-y-8">
+                  <div className="flex items-center gap-3 text-purple-600">
+                    <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                      <WalletIcon size={18} />
+                    </div>
+                    <h2 className="text-lg font-bold tracking-tight">Financial Dashboard</h2>
+                  </div>
+                  <WalletPanel onClose={() => {}} />
                 </div>
               )}
             </motion.div>

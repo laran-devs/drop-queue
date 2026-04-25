@@ -13,6 +13,9 @@ export async function updateSessionSettings(
     autoAdvance?: boolean;
     trackLimit?: number | null;
     subOnly?: boolean;
+    paidOnly?: boolean;
+    minDonation?: number;
+    overlayTheme?: string;
   }
 ) {
   try {

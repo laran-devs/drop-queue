@@ -20,7 +20,8 @@ import {
   Hash,
   Music,
   Layout,
-  CreditCard
+  CreditCard,
+  Zap
 } from "lucide-react";
 import { TwitterPicker } from "react-color";
 import { OverlayPreview } from "../OverlayPreview";
@@ -47,6 +48,10 @@ interface DashboardSettingsProps {
   onOverlayThemeChange: (val: string) => void;
   overlaySettings: Record<string, boolean>;
   onOverlaySettingsChange: (val: Record<string, boolean>) => void;
+  paidOnly: boolean;
+  onPaidOnlyChange: (val: boolean) => void;
+  minDonation: number;
+  onMinDonationChange: (val: number) => void;
 }
 
 const COLOR_PRESETS = [
@@ -87,7 +92,11 @@ export function DashboardSettings({
   overlayTheme,
   onOverlayThemeChange,
   overlaySettings,
-  onOverlaySettingsChange
+  onOverlaySettingsChange,
+  paidOnly,
+  onPaidOnlyChange,
+  minDonation,
+  onMinDonationChange
 }: DashboardSettingsProps) {
   const [activeTab, setActiveTab] = useState("logic");
 
@@ -181,6 +190,39 @@ export function DashboardSettings({
                       <Plus size={14} />
                     </button>
                   </div>
+                </div>
+              </div>
+
+              <label className="flex items-center justify-between p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-purple-500/50 transition-all">
+                <div className="space-y-0.5">
+                   <div className="flex items-center gap-2">
+                     <span className="text-xs font-bold">Paid-Only Mode</span>
+                     <Zap size={10} className="text-amber-500" />
+                   </div>
+                   <p className="text-[10px] text-zinc-500 font-medium">Only paid (BUMP) tracks are allowed.</p>
+                </div>
+                <button 
+                  onClick={() => onPaidOnlyChange(!paidOnly)}
+                  className="text-purple-600"
+                >
+                  {paidOnly ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-zinc-500" />}
+                </button>
+              </label>
+
+              <div className="p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+                <div className="space-y-0.5">
+                   <span className="text-xs font-bold">Min Priority Donation</span>
+                   <p className="text-[10px] text-zinc-500 font-medium">Minimum amount for a priority bump.</p>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-950 rounded-xl border border-zinc-300 dark:border-zinc-800">
+                  <CreditCard size={14} className="text-zinc-500" />
+                  <input 
+                    type="number"
+                    value={minDonation}
+                    onChange={(e) => onMinDonationChange(parseFloat(e.target.value) || 0)}
+                    className="w-16 bg-transparent border-none text-xs font-black outline-none text-right"
+                  />
+                  <span className="text-[8px] font-black opacity-30">RUB</span>
                 </div>
               </div>
 

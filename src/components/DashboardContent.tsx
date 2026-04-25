@@ -24,7 +24,6 @@ import { ActiveQueue } from "./dashboard/ActiveQueue";
 import { EvaluationPanel } from "./dashboard/EvaluationPanel";
 import { DashboardSettings } from "./dashboard/DashboardSettings";
 import { DuelPanel } from "./dashboard/DuelPanel";
-import { WalletPanel } from "./dashboard/WalletPanel";
 import { updateSessionStatus, updateOverlaySettings } from "@/app/actions/session-actions";
 
 interface DashboardContentProps {
@@ -69,6 +68,8 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   const [autoAdvance, setAutoAdvance] = useState(initialSession.autoAdvance ?? true);
   const [trackLimit, setTrackLimit] = useState(initialSession.trackLimit ?? null);
   const [subOnly, setSubOnly] = useState(initialSession.subOnly ?? false);
+  const [paidOnly, setPaidOnly] = useState(initialSession.paidOnly ?? false);
+  const [minDonation, setMinDonation] = useState(initialSession.minDonation ?? 50);
   const [chatVotes, setChatVotes] = useState<Record<string, { avg: number; total: number }>>({});
   const [evaluations, setEvaluations] = useState<Record<string, number>>({});
   const [overlaySettings, setOverlaySettings] = useState<Record<string, boolean>>(
@@ -410,6 +411,9 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   }, [playingTrack, scores, criteria.length, isSubmitting, handleSubmitEvaluation]);
 
   const handleStartDuel = async () => {
+    toast.info("Duel Mode is coming soon! Stay tuned.");
+    return;
+    /*
     const top2 = tracks.filter(t => t.status === "QUEUED")
       .sort((a, b) => {
         if (a.isPaid && !b.isPaid) return -1;
@@ -487,6 +491,17 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
     toast.success(`Sub-Only Mode ${val ? "enabled" : "disabled"}`);
   };
 
+  const handleUpdatePaidOnly = async (val: boolean) => {
+    setPaidOnly(val);
+    await updateSessionSettings(initialSession.id, { paidOnly: val });
+    toast.success(`Paid-Only Mode ${val ? "enabled" : "disabled"}`);
+  };
+
+  const handleUpdateMinDonation = async (val: number) => {
+    setMinDonation(val);
+    await updateSessionSettings(initialSession.id, { minDonation: val });
+  };
+
   const handleUpdateShowBpm = async (val: boolean) => {
     setShowBpm(val);
     await updateSessionSettings(initialSession.id, { showBpmOnOverlay: val });
@@ -526,9 +541,9 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
         endSession={(id) => endSession(id).then(() => router.push("/"))}
         sessionTime={sessionTime}
         locale={locale}
-        onToggleAnalytics={() => { setShowAnalytics(!showAnalytics); setShowSettings(false); setShowWallet(false); }}
-        onToggleSettings={() => { setShowSettings(!showSettings); setShowAnalytics(false); setShowWallet(false); }}
-        onToggleWallet={() => { setShowWallet(!showWallet); setShowAnalytics(false); setShowSettings(false); }}
+        onToggleAnalytics={() => { setShowAnalytics(!showAnalytics); setShowSettings(false); }}
+        onToggleSettings={() => { setShowSettings(!showSettings); setShowAnalytics(false); }}
+        onToggleWallet={() => router.push(`/${locale}/settings?tab=wallet`)}
         onToggleGuide={() => setShowGuide(!showGuide)}
         showAnalytics={showAnalytics}
         showSettings={showSettings}
@@ -536,19 +551,6 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
         showGuide={showGuide}
       />
 
-      <AnimatePresence>
-        {showWallet && (
-           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-             <motion.div 
-               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-               className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
-               onClick={() => setShowWallet(false)} 
-             />
-             <div className="relative z-10 w-full max-w-4xl">
-               <WalletPanel onClose={() => setShowWallet(false)} />
-             </div>
-           </div>
-        )}
       </AnimatePresence>
 
       <AnimatePresence>
@@ -605,6 +607,10 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
                onOverlaySettingsChange={handleUpdateOverlaySettings}
                overlayTheme={overlayTheme}
                onOverlayThemeChange={handleUpdateTheme}
+               paidOnly={paidOnly}
+               onPaidOnlyChange={handleUpdatePaidOnly}
+               minDonation={minDonation}
+               onMinDonationChange={handleUpdateMinDonation}
              />
           </motion.div>
         )}

@@ -6,7 +6,7 @@ import { Wallet, ArrowUpRight, History, CreditCard, CheckCircle2, Clock, X } fro
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function WalletPanel({ onClose }: { onClose: () => void }) {
+export function WalletPanel({ onClose }: { onClose?: () => void }) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isRequesting, setIsRequesting] = useState(false);
@@ -57,9 +57,11 @@ export function WalletPanel({ onClose }: { onClose: () => void }) {
             <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Управление выплатами</p>
           </div>
         </div>
-        <button onClick={onClose} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
-          <X size={20} />
-        </button>
+        {onClose && (
+          <button onClick={onClose} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
+            <X size={20} />
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
