@@ -5,8 +5,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PLATFORMS } from "@/lib/validations";
 import { 
-  ToggleLeft, 
-  ToggleRight, 
+  Zap,
+  Loader2,
   Radio, 
   Shield, 
   Palette, 
@@ -21,8 +21,7 @@ import {
   Hash,
   Music,
   Layout,
-  CreditCard,
-  Zap
+  CreditCard
 } from "lucide-react";
 import { TwitterPicker } from "react-color";
 import { OverlayPreview } from "../OverlayPreview";
@@ -53,6 +52,7 @@ interface DashboardSettingsProps {
   onPaidOnlyChange: (val: boolean) => void;
   minDonation: number;
   onMinDonationChange: (val: number) => void;
+  pendingFields: Set<string>;
 }
 
 const COLOR_PRESETS = [
@@ -92,7 +92,8 @@ export function DashboardSettings({
   paidOnly,
   onPaidOnlyChange,
   minDonation,
-  onMinDonationChange
+  onMinDonationChange,
+  pendingFields
 }: DashboardSettingsProps) {
   const t = useTranslations("Settings");
   const [activeTab, setActiveTab] = useState("logic");
@@ -137,37 +138,46 @@ export function DashboardSettings({
         >
           {activeTab === "logic" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <label className="flex items-center justify-between p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-purple-500/50 transition-all">
-                <div className="space-y-0.5">
-                   <span className="text-xs font-bold">{t("autoAdvance")}</span>
-                   <p className="text-[10px] text-zinc-500 font-medium">{t("autoAdvanceDesc")}</p>
+              <label className={`flex items-center justify-between p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 transition-all ${pendingFields.has("autoAdvance") ? "opacity-50 pointer-events-none" : "cursor-pointer hover:border-purple-500/50"}`}>
+                <div className="flex items-center gap-3">
+                   <div className="space-y-0.5">
+                      <span className="text-xs font-bold">{t("autoAdvance")}</span>
+                      <p className="text-[10px] text-zinc-500 font-medium">{t("autoAdvanceDesc")}</p>
+                   </div>
+                   {pendingFields.has("autoAdvance") && <Loader2 size={12} className="animate-spin text-purple-600" />}
                 </div>
                 <button 
                   onClick={() => onAutoAdvanceChange(!autoAdvance)}
-                  className="text-purple-600"
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${autoAdvance ? "bg-purple-600" : "bg-zinc-300 dark:bg-zinc-800"}`}
                 >
-                  {autoAdvance ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-zinc-500" />}
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autoAdvance ? "translate-x-6" : "translate-x-1"}`} />
                 </button>
               </label>
 
-              <label className="flex items-center justify-between p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-purple-500/50 transition-all">
-                <div className="space-y-0.5">
-                   <span className="text-xs font-bold">{t("subOnly")}</span>
-                   <p className="text-[10px] text-zinc-500 font-medium">{t("subOnlyDesc")}</p>
+              <label className={`flex items-center justify-between p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 transition-all ${pendingFields.has("subOnly") ? "opacity-50 pointer-events-none" : "cursor-pointer hover:border-purple-500/50"}`}>
+                <div className="flex items-center gap-3">
+                   <div className="space-y-0.5">
+                      <span className="text-xs font-bold">{t("subOnly")}</span>
+                      <p className="text-[10px] text-zinc-500 font-medium">{t("subOnlyDesc")}</p>
+                   </div>
+                   {pendingFields.has("subOnly") && <Loader2 size={12} className="animate-spin text-purple-600" />}
                 </div>
                 <button 
                   onClick={() => onSubOnlyChange(!subOnly)}
-                  className="text-purple-600"
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${subOnly ? "bg-purple-600" : "bg-zinc-300 dark:bg-zinc-800"}`}
                 >
-                  {subOnly ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-zinc-500" />}
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${subOnly ? "translate-x-6" : "translate-x-1"}`} />
                 </button>
               </label>
 
-              <div className="p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 space-y-3 col-span-1 md:col-span-2">
+              <div className={`p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 space-y-3 col-span-1 md:col-span-2 transition-all ${pendingFields.has("trackLimit") ? "opacity-50" : ""}`}>
                 <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <span className="text-xs font-bold">{t("sessionLimit")}</span>
-                    <p className="text-[10px] text-zinc-500 font-medium">{t("sessionLimitDesc")}</p>
+                  <div className="flex items-center gap-3">
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-bold">{t("sessionLimit")}</span>
+                      <p className="text-[10px] text-zinc-500 font-medium">{t("sessionLimitDesc")}</p>
+                    </div>
+                    {pendingFields.has("trackLimit") && <Loader2 size={12} className="animate-spin text-purple-600" />}
                   </div>
                   <div className="flex items-center gap-1 bg-zinc-200 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-300 dark:border-zinc-800">
                     <button 
@@ -196,26 +206,32 @@ export function DashboardSettings({
                 </div>
               </div>
 
-              <label className="flex items-center justify-between p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-purple-500/50 transition-all">
-                <div className="space-y-0.5">
-                   <div className="flex items-center gap-2">
-                     <span className="text-xs font-bold">{t("paidOnly")}</span>
-                     <Zap size={10} className="text-amber-500" />
+              <label className={`flex items-center justify-between p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 transition-all ${pendingFields.has("paidOnly") ? "opacity-50 pointer-events-none" : "cursor-pointer hover:border-purple-500/50"}`}>
+                <div className="flex items-center gap-3">
+                   <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                         <span className="text-xs font-bold">{t("paidOnly")}</span>
+                         <Zap size={10} className="text-amber-500" />
+                      </div>
+                      <p className="text-[10px] text-zinc-500 font-medium">{t("paidOnlyDesc")}</p>
                    </div>
-                   <p className="text-[10px] text-zinc-500 font-medium">{t("paidOnlyDesc")}</p>
+                   {pendingFields.has("paidOnly") && <Loader2 size={12} className="animate-spin text-purple-600" />}
                 </div>
                 <button 
                   onClick={() => onPaidOnlyChange(!paidOnly)}
-                  className="text-purple-600"
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${paidOnly ? "bg-purple-600" : "bg-zinc-300 dark:bg-zinc-800"}`}
                 >
-                  {paidOnly ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-zinc-500" />}
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${paidOnly ? "translate-x-6" : "translate-x-1"}`} />
                 </button>
               </label>
 
-              <div className="p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
-                <div className="space-y-0.5">
-                   <span className="text-xs font-bold">{t("minDonation")}</span>
-                   <p className="text-[10px] text-zinc-500 font-medium">{t("minDonationDesc")}</p>
+              <div className={`p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between transition-all ${pendingFields.has("minDonation") ? "opacity-50" : ""}`}>
+                <div className="flex items-center gap-3">
+                   <div className="space-y-0.5">
+                      <span className="text-xs font-bold">{t("minDonation")}</span>
+                      <p className="text-[10px] text-zinc-500 font-medium">{t("minDonationDesc")}</p>
+                   </div>
+                   {pendingFields.has("minDonation") && <Loader2 size={12} className="animate-spin text-purple-600" />}
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-950 rounded-xl border border-zinc-300 dark:border-zinc-800">
                   <CreditCard size={14} className="text-zinc-500" />
@@ -226,18 +242,6 @@ export function DashboardSettings({
                     className="w-16 bg-transparent border-none text-xs font-black outline-none text-right"
                   />
                   <span className="text-[8px] font-black opacity-30">RUB</span>
-                </div>
-              </div>
-
-              <div className="p-5 rounded-3xl bg-zinc-100/50 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800 opacity-50 relative group">
-                <div className="flex items-center justify-between">
-                   <div className="space-y-0.5">
-                      <span className="text-xs font-bold flex items-center gap-2">
-                         {t("normalizationDesc")}
-                         <span className="px-1.5 py-0.5 rounded-md bg-purple-600/20 text-purple-400 text-[8px] font-black uppercase">{t("comingSoon")}</span>
-                      </span>
-                      <p className="text-[10px] text-zinc-500 font-medium">{t("normalizationDesc")}</p>
-                   </div>
                 </div>
               </div>
             </div>
@@ -268,18 +272,21 @@ export function DashboardSettings({
                         </label>
                      </div>
 
-                     <div className="space-y-4">
+                      <div className={`space-y-4 transition-all ${pendingFields.has("overlayTheme") ? "opacity-50 pointer-events-none" : ""}`}>
                         <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">{t("accentColor")}</span>
                         <div className="flex items-center gap-6">
                            <div className="h-12 w-12 rounded-2xl shadow-xl border-4 border-white dark:border-zinc-800" style={{ backgroundColor: accentColor }} />
-                           <TwitterPicker 
-                             color={accentColor} 
-                             onChangeComplete={(c) => onColorChange(c.hex)}
-                             triangle="hide"
-                             styles={{ default: { card: { background: 'transparent', border: 'none', boxShadow: 'none' } } }}
-                           />
+                           <div className="flex items-center gap-3">
+                             <TwitterPicker 
+                               color={accentColor} 
+                               onChangeComplete={(color) => onColorChange(color.hex)}
+                               triangle="hide"
+                               colors={COLOR_PRESETS.map(c => c.value)}
+                             />
+                             {pendingFields.has("overlayTheme") && <Loader2 size={16} className="animate-spin text-purple-600" />}
+                           </div>
                         </div>
-                     </div>
+                      </div>
                    </div>
                 </div>
 
@@ -297,17 +304,15 @@ export function DashboardSettings({
                        <button
                          key={toggle.key}
                          onClick={() => onOverlaySettingsChange({ ...overlaySettings, [toggle.key]: !overlaySettings[toggle.key] })}
-                         className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
-                           overlaySettings[toggle.key] 
-                             ? "bg-purple-500/10 border-purple-500/20 text-purple-600 font-bold" 
-                             : "bg-zinc-100 dark:bg-zinc-900 border-transparent text-zinc-400"
-                         }`}
+                         className={`flex items-center justify-between p-5 rounded-3xl border transition-all ${overlaySettings[toggle.key] ? "bg-white dark:bg-zinc-800 border-purple-500 ring-1 ring-purple-500 text-purple-600" : "glass border-zinc-200 dark:border-zinc-800 opacity-60 text-zinc-400"}`}
                        >
                          <div className="flex items-center gap-3">
-                            <toggle.icon size={16} />
-                            <span className="text-[9px] font-black uppercase tracking-widest">{toggle.label}</span>
+                           <div className="h-8 w-8 rounded-lg bg-zinc-100 dark:bg-zinc-950 flex items-center justify-center">
+                             <toggle.icon size={16} className={overlaySettings[toggle.key] ? "text-purple-500" : "text-zinc-500"} />
+                           </div>
+                           <span className="text-[10px] font-black uppercase tracking-widest">{toggle.label}</span>
                          </div>
-                         <div className={`h-2 w-2 rounded-full ${overlaySettings[toggle.key] ? "bg-purple-500" : "bg-zinc-300"}`} />
+                         <div className={`h-2 w-2 rounded-full ${overlaySettings[toggle.key] ? "bg-purple-500 animate-pulse" : "bg-zinc-300"}`} />
                        </button>
                      ))}
                    </div>

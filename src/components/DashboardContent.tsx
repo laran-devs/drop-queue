@@ -60,6 +60,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   const [presets, setPresets] = useState<{id: string, name: string}[]>([]);
   const [showPresets, setShowPresets] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [pendingSettings, setPendingSettings] = useState<Set<string>>(new Set());
   const [showBpm, setShowBpm] = useState(initialSession.showBpmOnOverlay ?? true);
   const [showKey, setShowKey] = useState(initialSession.showKeyOnOverlay ?? true);
   const [allowedPlatforms, setAllowedPlatforms] = useState<string[]>(initialSession.allowedPlatforms ?? []);
@@ -468,6 +469,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   };
 
   const handleUpdateNormalization = async (val: boolean) => {
+    setPendingSettings(prev => new Set(prev).add("normalization"));
     setEnableNormalization(val);
     const res = await updateSessionSettings({ sessionId: initialSession.id, data: { enableNormalization: val } });
     if (res.success) {
@@ -476,9 +478,15 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       setEnableNormalization(!val);
       toast.error(res.error);
     }
+    setPendingSettings(prev => {
+      const next = new Set(prev);
+      next.delete("normalization");
+      return next;
+    });
   };
 
   const handleUpdateAutoAdvance = async (val: boolean) => {
+    setPendingSettings(prev => new Set(prev).add("autoAdvance"));
     setAutoAdvance(val);
     const res = await updateSessionSettings({ sessionId: initialSession.id, data: { autoAdvance: val } });
     if (res.success) {
@@ -487,15 +495,32 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       setAutoAdvance(!val);
       toast.error(res.error);
     }
+    setPendingSettings(prev => {
+      const next = new Set(prev);
+      next.delete("autoAdvance");
+      return next;
+    });
   };
 
   const handleUpdateTrackLimit = async (val: number | null) => {
+    setPendingSettings(prev => new Set(prev).add("trackLimit"));
     setTrackLimit(val);
-    await updateSessionSettings(initialSession.id, { trackLimit: val });
-    toast.success(`Track limit set to ${val || "∞"}`);
+    const res = await updateSessionSettings({ sessionId: initialSession.id, data: { trackLimit: val } });
+    if (!res.success) {
+      setTrackLimit(initialSession.trackLimit);
+      toast.error(res.error);
+    } else {
+      toast.success(`Track limit set to ${val || "∞"}`);
+    }
+    setPendingSettings(prev => {
+      const next = new Set(prev);
+      next.delete("trackLimit");
+      return next;
+    });
   };
 
   const handleUpdateSubOnly = async (val: boolean) => {
+    setPendingSettings(prev => new Set(prev).add("subOnly"));
     setSubOnly(val);
     const res = await updateSessionSettings({ sessionId: initialSession.id, data: { subOnly: val } });
     if (res.success) {
@@ -504,9 +529,15 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       setSubOnly(!val);
       toast.error(res.error);
     }
+    setPendingSettings(prev => {
+      const next = new Set(prev);
+      next.delete("subOnly");
+      return next;
+    });
   };
 
   const handleUpdatePaidOnly = async (val: boolean) => {
+    setPendingSettings(prev => new Set(prev).add("paidOnly"));
     setPaidOnly(val);
     const res = await updateSessionSettings({ sessionId: initialSession.id, data: { paidOnly: val } });
     if (res.success) {
@@ -515,14 +546,30 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       setPaidOnly(!val);
       toast.error(res.error);
     }
+    setPendingSettings(prev => {
+      const next = new Set(prev);
+      next.delete("paidOnly");
+      return next;
+    });
   };
 
   const handleUpdateMinDonation = async (val: number) => {
+    setPendingSettings(prev => new Set(prev).add("minDonation"));
     setMinDonation(val);
-    await updateSessionSettings(initialSession.id, { minDonation: val });
+    const res = await updateSessionSettings({ sessionId: initialSession.id, data: { minDonation: val } });
+    if (!res.success) {
+      setMinDonation(initialSession.minDonation || 50);
+      toast.error(res.error);
+    }
+    setPendingSettings(prev => {
+      const next = new Set(prev);
+      next.delete("minDonation");
+      return next;
+    });
   };
 
   const handleUpdateShowBpm = async (val: boolean) => {
+    setPendingSettings(prev => new Set(prev).add("showBpm"));
     setShowBpm(val);
     const res = await updateSessionSettings({ sessionId: initialSession.id, data: { showBpmOnOverlay: val } });
     if (res.success) {
@@ -532,9 +579,15 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       setShowBpm(!val);
       toast.error(res.error);
     }
+    setPendingSettings(prev => {
+      const next = new Set(prev);
+      next.delete("showBpm");
+      return next;
+    });
   };
 
   const handleUpdateShowKey = async (val: boolean) => {
+    setPendingSettings(prev => new Set(prev).add("showKey"));
     setShowKey(val);
     const res = await updateSessionSettings({ sessionId: initialSession.id, data: { showKeyOnOverlay: val } });
     if (res.success) {
@@ -544,6 +597,11 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       setShowKey(!val);
       toast.error(res.error);
     }
+    setPendingSettings(prev => {
+      const next = new Set(prev);
+      next.delete("showKey");
+      return next;
+    });
   };
 
   const handleUpdateOverlaySettings = async (newSettings: Record<string, boolean>) => {
@@ -559,6 +617,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   };
 
   const handleUpdateTheme = async (theme: string) => {
+    setPendingSettings(prev => new Set(prev).add("overlayTheme"));
     const oldTheme = overlayTheme;
     setOverlayTheme(theme);
     const res = await updateSessionSettings({ sessionId: initialSession.id, data: { overlayTheme: theme } });
@@ -569,6 +628,11 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       setOverlayTheme(oldTheme);
       toast.error(res.error);
     }
+    setPendingSettings(prev => {
+      const next = new Set(prev);
+      next.delete("overlayTheme");
+      return next;
+    });
   };
 
   return (
@@ -650,6 +714,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
                onPaidOnlyChange={handleUpdatePaidOnly}
                minDonation={minDonation}
                onMinDonationChange={handleUpdateMinDonation}
+               pendingFields={pendingSettings}
              />
           </motion.div>
         )}
