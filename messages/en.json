@@ -102,6 +102,11 @@
   },
   "Settings": {
     "title": "Session Settings",
+    "language": "Language",
+    "theme": "Interface Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
     "general": "General",
     "overlay": "Overlay",
     "monetization": "Monetization",
