@@ -37,10 +37,6 @@ interface DashboardSettingsProps {
   onTrackLimitChange: (val: number | null) => void;
   autoAdvance: boolean;
   onAutoAdvanceChange: (val: boolean) => void;
-  onSimulateDonation?: () => void;
-  daSecret?: string;
-  onDASecretChange?: (val: string) => void;
-  onSaveDASecret?: () => void;
   subOnly: boolean;
   onSubOnlyChange: (val: boolean) => void;
   showBpm: boolean;

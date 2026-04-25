@@ -14,7 +14,7 @@ import { ListRestart, Save, LayoutTemplate, BarChart2, Settings as SettingsIcon,
 import { EmptyState } from "@/components/ui/EmptyState";
 import { updateSessionSettings } from "@/app/actions/update-session-settings";
 import { getTracksForSession, startTrack, bumpTrack } from "@/app/actions/track-actions";
-import { updateDASecret, updateAccentColor } from "@/app/actions/user-actions";
+import { updateAccentColor } from "@/app/actions/user-actions";
 import { PLATFORMS } from "@/lib/validations";
 import { useLocale } from "next-intl";
 import { getMediaInfo } from "@/lib/media";
@@ -31,7 +31,7 @@ interface DashboardContentProps {
   session: StreamSession & { 
     criteria: Criteria[], 
     tracks: (Track & { submitter: { id: string, name: string | null } | null })[],
-    streamer: { daSecret: string | null },
+    streamer: { image: string | null, name: string | null },
     donations: any[]
   };
   userId: string;
@@ -67,7 +67,6 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   const [allowedPlatforms, setAllowedPlatforms] = useState<string[]>(initialSession.allowedPlatforms ?? []);
   const [enableNormalization, setEnableNormalization] = useState(initialSession.enableNormalization ?? false);
   const [autoAdvance, setAutoAdvance] = useState(initialSession.autoAdvance ?? true);
-  const [daSecret, setDASecret] = useState(initialSession.streamer?.daSecret || "");
   const [trackLimit, setTrackLimit] = useState(initialSession.trackLimit ?? null);
   const [subOnly, setSubOnly] = useState(initialSession.subOnly ?? false);
   const [chatVotes, setChatVotes] = useState<Record<string, { avg: number; total: number }>>({});
@@ -596,29 +595,6 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
                onAutoAdvanceChange={handleUpdateAutoAdvance}
                trackLimit={trackLimit}
                onTrackLimitChange={handleUpdateTrackLimit}
-               daSecret={daSecret}
-               onDASecretChange={setDASecret}
-               onSaveDASecret={async () => {
-                 const res = await updateDASecret(daSecret);
-                 if (res.success) {
-                   toast.success("Security token saved!");
-                 } else {
-                   toast.error(res.error || "Failed to save token");
-                 }
-               }}
-               onSimulateDonation={async () => {
-                 const targetTrack = tracks.find(t => t.status === "QUEUED" && !t.isPaid);
-                 if (!targetTrack) {
-                   toast.error("No queued tracks to bump!");
-                   return;
-                 }
-                 const res = await bumpTrack(targetTrack.id);
-                 if (res.success) {
-                   toast.success(`$5 Donation for "${targetTrack.title}"!`, { icon: "💰" });
-                   emit("TRACK_BUMPED", { slug: initialSession.slug, trackId: targetTrack.id });
-                   router.refresh();
-                 }
-               }}
                subOnly={subOnly}
                onSubOnlyChange={handleUpdateSubOnly}
                showBpm={showBpm}
