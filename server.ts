@@ -10,7 +10,7 @@ import { redis, pubClient, subClient } from "./src/lib/redis";
 
 // Relative path to the prisma client singleton
 import prisma from "./src/lib/prisma";
-import { archiveStaleSessions, cleanupOrphanedFiles } from "./src/app/actions/maintenance-actions";
+import { archiveStaleSessions, cleanupOrphanedFiles } from "./src/lib/maintenance";
 
 import { verifySocketSession } from "./src/lib/socket-auth";
 
@@ -345,14 +345,9 @@ app.prepare().then(async () => {
 
     // Automated Maintenance (Every 6 hours)
     const SIX_HOURS = 6 * 60 * 60 * 1000;
-    setInterval(async () => {
-      console.log("[Maintenance] Starting automated tasks...");
-      try {
-        await archiveStaleSessions();
-        await cleanupOrphanedFiles();
-      } catch (err) {
-        console.error("[Maintenance] Error in automated background task:", err);
-      }
+    setInterval(() => {
+      archiveStaleSessions().catch(err => console.error("[Maintenance] Auto-archive failed:", err));
+      cleanupOrphanedFiles().catch(err => console.error("[Maintenance] Auto-cleanup failed:", err));
     }, SIX_HOURS);
   });
 }).catch((err) => {
