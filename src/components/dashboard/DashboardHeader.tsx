@@ -163,7 +163,7 @@ export function DashboardHeader({
               <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">{t("streamerToolkit")}</span>
               <div className="flex items-center gap-2">
                 <button 
-                  onClick={() => copyToClipboard(`${window.location.origin}/${locale}/stream/${session.slug}`, "Submission Link")}
+                  onClick={() => copyToClipboard(`${window.location.origin}/${locale}/stream/${session.slug}`, t("submissionLink"))}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-purple-500 transition-all group"
                 >
                   <Send size={14} className="text-zinc-500 group-hover:text-purple-600" />
@@ -174,7 +174,7 @@ export function DashboardHeader({
                 <button 
                   onClick={() => {
                     const url = `${window.location.origin}/${locale}/overlay/${session.slug}${session.overlayToken ? `?token=${session.overlayToken}` : ""}`;
-                    copyToClipboard(url, "OBS Overlay");
+                    copyToClipboard(url, t("obsOverlay"));
                   }}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-blue-500 transition-all group"
                 >
@@ -197,8 +197,8 @@ export function DashboardHeader({
           <div className="flex items-center gap-2">
             <button 
               onClick={() => {
-                const text = `Join my stream and drop your tracks at: ${window.location.origin}/${locale}/stream/${session.slug} 🎵 #DropQueue`;
-                copyToClipboard(text, "Invite message");
+                const text = t("inviteText", { url: `${window.location.origin}/${locale}/stream/${session.slug}` });
+                copyToClipboard(text, t("inviteMessage"));
               }}
               className="px-6 py-2.5 rounded-xl bg-purple-600 text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-purple-500/20 hover:scale-[1.03] active:scale-95 transition-all"
             >

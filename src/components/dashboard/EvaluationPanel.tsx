@@ -166,7 +166,7 @@ export function EvaluationPanel({
                         src={media.originalUrl} 
                         className="w-full h-12"
                       />
-                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Lossless Audio Quality</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{t("lossless")}</p>
                     </div>
                   )}
                   {media.type === 'link' && (

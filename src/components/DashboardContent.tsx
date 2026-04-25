@@ -10,13 +10,13 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { saveCriteriaPreset, loadCriteriaPreset, getUserPresets } from "@/app/actions/preset-actions";
 import { AnalyticsDashboard } from "@/components/dashboard/AnalyticsDashboard";
-import { ListRestart, Save, LayoutTemplate, BarChart2, Settings as SettingsIcon, Headphones, Volume2, VolumeX } from "lucide-react";
+import { ListRestart, Save, LayoutTemplate, BarChart2, Settings as SettingsIcon, Headphones, Volume2, VolumeX, CheckCircle, ExternalLink, Info } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { updateSessionSettings } from "@/app/actions/update-session-settings";
 import { getTracksForSession, startTrack, bumpTrack } from "@/app/actions/track-actions";
 import { updateAccentColor } from "@/app/actions/user-actions";
 import { PLATFORMS } from "@/lib/validations";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { getMediaInfo } from "@/lib/media";
 
 import { DashboardHeader } from "./dashboard/DashboardHeader";
@@ -45,6 +45,7 @@ const COLOR_PRESETS = [
 ];
 
 export function DashboardContent({ session: initialSession, userId }: DashboardContentProps) {
+  const t = useTranslations("Dashboard");
   const router = useRouter();
   const locale = useLocale();
   const [tracks, setTracks] = useState<(Track & { submitter: { id: string, name: string | null } | null })[]>(initialSession.tracks);
@@ -116,7 +117,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    toast.success(`${label} copied to clipboard!`);
+    toast.success(`${label} ${t("copied")}!`);
   };
 
   const setPlaying = useCallback((trackId: string) => {
@@ -127,7 +128,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
         trackId, 
         title: track.title,
         trackNumber: track.order,
-        submitterName: track.submitter?.name || "Anonymous",
+        submitterName: track.submitter?.name || t("anonymous"),
         bpm: track.bpm,
         key: track.key,
         isPaid: track.isPaid
@@ -148,20 +149,20 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       setPlaying(nextTrack.id);
     } else {
       setTracks(prev => prev.map(t => t.status === "PLAYING" ? { ...t, status: "EVALUATED" as const } : t));
-      toast.info("No more tracks in queue.");
+      toast.info(t("noMoreTracks"));
     }
   }, [tracks, setPlaying]);
 
   const handleTrackEnd = useCallback(() => {
     console.log("Track ended.");
-    toast.info("Track playback finished.", { icon: "🏁" });
-  }, []);
+    toast.info(t("trackFinished"), { icon: "🏁" });
+  }, [t]);
 
   // Handle Real-Time Updates (New Tracks)
   useEffect(() => {
     const cleanup = on("TRACK_ADDED", async (data: { title: string }) => {
       console.log(`Real-time update: Track added - ${data.title}`);
-      toast.info(`New track submitted: ${data.title}`, {
+      toast.info(`${t("newTrackSubmitted")}: ${data.title}`, {
         icon: "🎵",
         duration: 5000,
       });
@@ -181,7 +182,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
     // 3.1 Auto-Advance listener
     const cleanupAuto = on("AUTO_PREPARE_NEXT", (data: { trackId: string }) => {
       console.log("[Socket] Received AutoAdvance trigger");
-      toast.info("Auto-advancing to next track...", { duration: 3000 });
+      toast.info(t("autoAdvancing"), { duration: 3000 });
       setPlaying(data.trackId);
     });
 
@@ -206,7 +207,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   useEffect(() => {
     const cleanup = on("NOTIFICATION", (data: { type: string; message: string }) => {
       if (data.type === "NEW_TRACK") {
-        toast.message("New Track Submission!", { description: data.message, icon: "🎵" });
+        toast.message(t("newTrackSubmission"), { description: data.message, icon: "🎵" });
         router.refresh(); // Refresh server components
         // Immediate local refresh
         getTracksForSession(initialSession.id).then(res => {
@@ -215,7 +216,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       }
 
       if (data.type === "DONATION_BUMP") {
-        toast.success(data.message || "New Donation Bump!", { icon: "💰", duration: 8000 });
+        toast.success(data.message || t("donationBump"), { icon: "💰", duration: 8000 });
         // Refresh tracks to show the priority status
         getTracksForSession(initialSession.id).then(res => {
           if (res.success && res.tracks) setTracks(res.tracks as any);
@@ -308,10 +309,10 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
     
     if (newState) {
       emit("QUEUE_PAUSED", { slug: initialSession.slug });
-      toast.info("Stream paused");
+      toast.info(t("streamPaused"));
     } else {
       emit("QUEUE_RESUMED", { slug: initialSession.slug });
-      toast.success("Stream resumed");
+      toast.success(t("streamResumed"));
     }
   };
 
@@ -322,7 +323,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       if (result.success && result.criterion) {
         setCriteria(prev => [...prev, result.criterion!]);
         setNewCriteriaName("");
-        toast.success("Criterion added");
+        toast.success(t("criterionAdded"));
       } else {
         toast.error(result.error || "Failed to add criterion");
       }
@@ -336,17 +337,16 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   const handleSavePreset = async () => {
     const name = prompt("Enter a name for this preset:");
     if (!name) return;
-    const result = await saveCriteriaPreset(name, initialSession.id);
     if (result.success) {
       setPresets(prev => [...prev, { id: result.preset!.id, name: result.preset!.name }]);
-      toast.success("Preset saved successfully");
+      toast.success(t("presetSaved"));
     }
   };
 
   const handleLoadPreset = async (id: string) => {
     const result = await loadCriteriaPreset(id, initialSession.id);
     if (result.success) {
-      toast.success("Preset loaded. Refreshing...");
+      toast.success(t("presetLoaded"));
       router.refresh();
     }
   };
@@ -358,7 +358,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   const handleSubmitEvaluation = async () => {
     if (!playingTrack || isSubmitting) return;
     if (Object.keys(scores).length < criteria.length) {
-      toast.error("Please rate all criteria.");
+      toast.error(t("rateAll"));
       return;
     }
 
@@ -382,7 +382,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
           return updated;
         });
         
-        toast.success(`Evaluation saved: ${averageScore.toFixed(1)}/10`);
+        toast.success(`${t("evalSaved")}: ${averageScore.toFixed(1)}/10`);
       }
     } catch (error) {
       toast.error("Failed to save evaluation.");
@@ -411,7 +411,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   }, [playingTrack, scores, criteria.length, isSubmitting, handleSubmitEvaluation]);
 
   const handleStartDuel = async () => {
-    toast.info("Duel Mode is coming soon! Stay tuned.");
+    toast.info(t("duelComingSoon"));
     return;
     /*
     const top2 = tracks.filter(t => t.status === "QUEUED")
@@ -448,7 +448,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
        emit("SESSION_MODE_CHANGED", { slug: initialSession.slug, mode: "STANDARD" });
        await updateSessionSettings(initialSession.id, { sessionMode: "STANDARD" } as any);
        router.refresh();
-       toast.success("Duel Finished!");
+       toast.success(t("duelFinished"));
     } catch (e) {
        toast.error("Failed to finish duel");
     } finally {
@@ -670,8 +670,8 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
                {topTracks.length > 0 && (
                  <div className="pt-20 border-t border-zinc-100 dark:border-zinc-900 flex flex-col items-center gap-10">
                    <div className="text-center space-y-2">
-                     <h2 className="text-2xl font-black uppercase tracking-tighter">Session Champions</h2>
-                     <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Share this summary with your community</p>
+                     <h2 className="text-2xl font-black uppercase tracking-tighter">{t("sessionChampions")}</h2>
+                     <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{t("shareSummary")}</p>
                    </div>
                    <SessionSummaryCard 
                      session={initialSession}
@@ -724,12 +724,12 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
         {showGuide && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-10">
             <div className="glass p-10 rounded-[2.5rem] border border-purple-500/20 bg-purple-500/5 space-y-8">
-              <h2 className="text-2xl font-black uppercase tracking-tighter">Quick Setup Guide</h2>
+              <h2 className="text-2xl font-black uppercase tracking-tighter">{t("quickSetup")}</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
-                  { step: "01", title: "Setup OBS", desc: "Add the OBS Source URL as a Browser Source in OBS." },
-                  { step: "02", title: "Invite Fans", desc: "Share your Submit Page link in your chat or bio." },
-                  { step: "03", title: "Listen & Rate", desc: "Rate tracks to auto-advance and update the overlay." }
+                  { step: "01", title: t("setupObs"), desc: t("setupObsDesc") },
+                  { step: "02", title: t("inviteFans"), desc: t("inviteFansDesc") },
+                  { step: "03", title: t("listenRate"), desc: t("listenRateDesc") }
                 ].map((item) => (
                   <div key={item.step} className="space-y-2">
                     <span className="text-xl font-black text-purple-600/30">{item.step}</span>
@@ -779,10 +779,10 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
           )}
 
           <section className="glass p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800">
-            <h2 className="text-sm font-black uppercase tracking-widest mb-6">Queue <span style={{ color: accentColor }}>Focus Points</span></h2>
+            <h2 className="text-sm font-black uppercase tracking-widest mb-6">{t("focusPoints")} <span style={{ color: accentColor }}>&</span></h2>
             <div className="flex gap-4 mb-6">
-              <input type="text" value={newCriteriaName} onChange={(e) => setNewCriteriaName(e.target.value)} placeholder="New focus point..." className="flex-1 glass px-6 py-3 rounded-2xl outline-none text-sm" />
-              <button onClick={handleAddCriteria} className="px-8 py-3 rounded-2xl text-white font-black text-xs uppercase" style={{ backgroundColor: accentColor }}>Add</button>
+              <input type="text" value={newCriteriaName} onChange={(e) => setNewCriteriaName(e.target.value)} placeholder={t("newFocusPoint")} className="flex-1 glass px-6 py-3 rounded-2xl outline-none text-sm" />
+              <button onClick={handleAddCriteria} className="px-8 py-3 rounded-2xl text-white font-black text-xs uppercase" style={{ backgroundColor: accentColor }}>{t("add")}</button>
             </div>
             <div className="flex flex-wrap gap-2">
               {criteria.map(c => (
@@ -791,7 +791,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
                   <button onClick={() => removeCriterion(c.id).then(r => r.success && setCriteria(p => p.filter(x => x.id !== c.id)))} className="ml-2 h-6 w-6 rounded-lg hover:bg-red-500 hover:text-white transition-all opacity-50 hover:opacity-100">&times;</button>
                 </div>
               ))}
-              {criteria.length > 0 && <button onClick={handleSavePreset} className="px-4 py-2 rounded-2xl border border-dashed border-zinc-300 text-[10px] font-black uppercase tracking-widest ml-4">Save Preset</button>}
+              {criteria.length > 0 && <button onClick={handleSavePreset} className="px-4 py-2 rounded-2xl border border-dashed border-zinc-300 text-[10px] font-black uppercase tracking-widest ml-4">{t("savePreset")}</button>}
             </div>
           </section>
         </div>
