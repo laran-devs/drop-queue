@@ -227,6 +227,9 @@ export default function SettingsPage() {
                             ) : (
                               isAvailable && <ChevronRight size={16} className="text-zinc-400" />
                             )}
+                          </motion.div>
+                        );
+
                         return (
                           <div key={lang.code}>
                             {Content}
