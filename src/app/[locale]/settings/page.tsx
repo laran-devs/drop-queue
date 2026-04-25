@@ -54,7 +54,8 @@ export default function SettingsPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { sendNotification } = useNotifications();
-  
+  const router = useRouter();
+
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "general");
   const [notifPermission, setNotifPermission] = useState<NotificationPermission>("default");
   const [isPublic, setIsPublic] = useState(true);
@@ -201,11 +202,19 @@ export default function SettingsPage() {
                         const isActive = locale === lang.code;
                         
                         const Content = (
-                          <div className={`flex items-center justify-between p-4 rounded-2xl border transition-all h-full ${
-                            isActive 
-                              ? "bg-white dark:bg-zinc-900 border-purple-500 shadow-lg shadow-purple-500/5 ring-1 ring-purple-500" 
-                              : (isAvailable ? "glass border-zinc-200 dark:border-zinc-800 hover:border-purple-500/30 cursor-pointer" : "glass border-zinc-200 dark:border-zinc-800 opacity-40 cursor-not-allowed")
-                          }`}>
+                          <motion.div 
+                            whileTap={isAvailable ? { scale: 0.98 } : {}}
+                            onClick={() => {
+                              if (isAvailable && !isActive) {
+                                router.replace(pathname, { locale: lang.code });
+                              }
+                            }}
+                            className={`flex items-center justify-between p-4 rounded-2xl border transition-all h-full ${
+                              isActive 
+                                ? "bg-white dark:bg-zinc-900 border-purple-500 shadow-lg shadow-purple-500/5 ring-1 ring-purple-500" 
+                                : (isAvailable ? "glass border-zinc-200 dark:border-zinc-800 hover:border-purple-500/30 cursor-pointer active:bg-zinc-100 dark:active:bg-zinc-800" : "glass border-zinc-200 dark:border-zinc-800 opacity-40 cursor-not-allowed")
+                            }`}
+                          >
                             <div className="flex items-center gap-3">
                               <span className="text-[10px] font-black uppercase tracking-widest opacity-30">{lang.code}</span>
                               <div className="flex flex-col">
@@ -218,17 +227,6 @@ export default function SettingsPage() {
                             ) : (
                               isAvailable && <ChevronRight size={16} className="text-zinc-400" />
                             )}
-                          </div>
-                        );
-
-                        if (isAvailable && !isActive) {
-                          return (
-                            <Link key={lang.code} href={pathname} locale={lang.code}>
-                              {Content}
-                            </Link>
-                          );
-                        }
-
                         return (
                           <div key={lang.code}>
                             {Content}
