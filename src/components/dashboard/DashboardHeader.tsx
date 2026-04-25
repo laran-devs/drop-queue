@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Link } from "@/navigation";
 import { toast } from "sonner";
+import Image from "next/image";
 import { StreamCarousel } from "@/components/StreamCarousel";
 
 interface DashboardHeaderProps {
@@ -26,6 +27,10 @@ interface DashboardHeaderProps {
     title: string;
     createdAt: Date;
     overlayToken?: string | null;
+    streamer?: {
+      name: string | null;
+      image: string | null;
+    }
   };
   tracks: any[];
   playingTrackId: string | null;
@@ -96,7 +101,23 @@ export function DashboardHeader({
               <span className="text-zinc-400 font-mono text-[10px] tabular-nums">{formatTime(sessionTime)}</span>
               <span className="text-zinc-500 font-mono text-xs opacity-30">#{session.slug}</span>
             </div>
-            <h1 className="text-5xl font-black tracking-tighter">{session.title}</h1>
+            
+            <div className="flex items-center gap-6">
+              {session.streamer?.image && (
+                <div className="relative h-16 w-16 shrink-0">
+                  <Image 
+                    src={session.streamer.image} 
+                    alt={session.streamer.name || "Streamer"} 
+                    fill
+                    className="rounded-2xl border-2 border-white dark:border-zinc-800 shadow-xl object-cover"
+                  />
+                  <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-lg bg-green-500 border-2 border-white dark:border-zinc-800 flex items-center justify-center">
+                    <div className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                  </div>
+                </div>
+              )}
+              <h1 className="text-5xl font-black tracking-tighter">{session.title}</h1>
+            </div>
           </div>
 
           <div className="flex items-center gap-4">

@@ -26,7 +26,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
         include: { submitter: { select: { id: true, name: true } } }
       },
       criteria: true,
-      streamer: { select: { daSecret: true } },
+      streamer: { select: { daSecret: true, image: true, name: true } },
       donations: { orderBy: { createdAt: "desc" } }
     },
   });

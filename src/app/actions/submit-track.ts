@@ -127,7 +127,8 @@ export async function submitTrack(formData: FormData) {
 
   if (isPriority) {
     const { createYookassaPayment } = await import("./payment-actions");
-    const payment = await createYookassaPayment(50, track.id, streamSession.streamerId); // Fixed 50 RUB for now
+    const returnPath = `/stream/${streamSession.slug}`;
+    const payment = await createYookassaPayment(50, track.id, streamSession.streamerId, returnPath); // Fixed 50 RUB for now
     if (payment.success) {
       return { success: true, track, paymentUrl: payment.url };
     }

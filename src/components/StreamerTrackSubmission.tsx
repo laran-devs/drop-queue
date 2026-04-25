@@ -7,7 +7,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { AudioUploadZone } from "./AudioUploadZone";
-import { Link2, Music, CheckCircle2 } from "lucide-react";
+import { Link2, Music, CheckCircle2, Zap } from "lucide-react";
+import Image from "next/image";
 import { ViewerQueueStatus } from "./ViewerQueueStatus";
 
 interface StreamerTrackSubmissionProps {
@@ -19,6 +20,7 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionType, setSubmissionType] = useState<"LINK" | "FILE">("LINK");
   const [uploadedFile, setUploadedFile] = useState<{ url: string; bpm?: number; key?: string } | null>(null);
+  const [isPriority, setIsPriority] = useState(false);
   const { emit } = useSocket(undefined, session.slug);
   const accentColor = session.streamer.accentColor;
 
@@ -38,6 +40,7 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
     const formData = new FormData(e.currentTarget);
     formData.append("sessionId", session.id);
     formData.append("trackType", submissionType);
+    formData.append("isPriority", isPriority.toString());
     if (uploadedFile) {
       formData.append("filePath", uploadedFile.url);
       if (uploadedFile.bpm) formData.append("bpm", String(uploadedFile.bpm));
@@ -47,6 +50,12 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
     try {
       const result = await submitTrack(formData);
       if (result.success) {
+        if (result.paymentUrl) {
+          toast.success("Redirecting to payment...");
+          window.location.href = result.paymentUrl;
+          return;
+        }
+
         if (result.isBacklog) {
           toast.warning("Added to Backlog!", {
             description: "Your track is beyond the streamer's energy limit and might not be evaluated this stream.",
@@ -60,6 +69,7 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
         emit("new_track", { slug: session.slug, title: formData.get("title") });
         (e.target as HTMLFormElement).reset();
         setUploadedFile(null);
+        setIsPriority(false);
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to submit track.";
@@ -78,10 +88,27 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
       <div className="absolute -top-24 -right-24 h-64 w-64 blur-[100px] rounded-full opacity-10" style={{ backgroundColor: accentColor }} />
       
       <div className="relative z-10 space-y-8">
-        <div className="text-center space-y-2">
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Stream Submission Portal</span>
-          <h1 className="text-4xl font-black tracking-tight">{session.streamer.name}&apos;s Queue</h1>
-          <p className="text-zinc-500 text-sm">{session.title}</p>
+        <div className="text-center space-y-4">
+          {session.streamer.image && (
+            <div className="relative inline-block">
+              <div className="relative h-20 w-20 mx-auto">
+                <Image 
+                  src={session.streamer.image} 
+                  alt={session.streamer.name || "Streamer"} 
+                  fill
+                  className="rounded-[2rem] border-4 border-white dark:border-zinc-900 shadow-2xl object-cover"
+                />
+                <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-lg bg-green-500 border-2 border-white dark:border-zinc-900 shadow-sm flex items-center justify-center">
+                  <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="space-y-1">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Stream Submission Portal</span>
+            <h1 className="text-4xl font-black tracking-tight">{session.streamer.name}&apos;s Queue</h1>
+            <p className="text-zinc-500 text-sm font-medium">{session.title}</p>
+          </div>
         </div>
 
         {session.allowDirectUploads && (
@@ -199,6 +226,40 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
                 placeholder="Paste lyrics here for the streamer to read along..."
                 className="w-full glass px-6 py-4 rounded-2xl outline-none border border-transparent focus:border-zinc-300 dark:focus:border-zinc-700 transition-all resize-none"
               />
+            </div>
+
+            {/* Priority Bump Option */}
+            <div 
+              onClick={() => setIsPriority(!isPriority)}
+              className={`relative flex items-center p-6 rounded-3xl border-2 transition-all cursor-pointer group overflow-hidden ${
+                isPriority 
+                  ? "border-purple-500 bg-purple-500/5 shadow-lg shadow-purple-500/10" 
+                  : "border-zinc-100 dark:border-zinc-900 hover:border-zinc-200 dark:hover:border-zinc-800"
+              }`}
+            >
+              <div className="absolute top-0 right-0 p-2 opacity-5 scale-150 rotate-12">
+                <Zap size={60} fill="currentColor" />
+              </div>
+              
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-900 group-hover:scale-110 transition-transform">
+                <input
+                  type="checkbox"
+                  checked={isPriority}
+                  onChange={(e) => setIsPriority(e.target.checked)}
+                  className="h-5 w-5 rounded-lg border-zinc-300 text-purple-600 focus:ring-purple-600 cursor-pointer accent-purple-600"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+              <div className="ml-5 flex-1 min-w-0">
+                <label className="font-black text-xs text-zinc-900 dark:text-zinc-100 flex items-center gap-2 uppercase tracking-widest">
+                  Priority Bump 🚀
+                  <span className="inline-flex items-center rounded-lg bg-yellow-400/20 px-2 py-0.5 text-[8px] font-black text-yellow-600 uppercase">
+                    + 50 RUB
+                  </span>
+                </label>
+                <p className="text-[10px] text-zinc-500 font-bold mt-0.5">Jump to the front of the queue automatically.</p>
+              </div>
+              <Zap size={16} className={`transition-all ${isPriority ? "text-purple-600 scale-125" : "text-zinc-300 opacity-20"}`} />
             </div>
           </div>
 

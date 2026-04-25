@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma";
 
-export async function createYookassaPayment(amount: number, trackId: string, streamerId: string) {
+export async function createYookassaPayment(amount: number, trackId: string, streamerId: string, returnPath: string = "/dashboard") {
   const shopId = process.env.YOOKASSA_SHOP_ID;
   const secretKey = process.env.YOOKASSA_SECRET_KEY;
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
@@ -29,7 +29,7 @@ export async function createYookassaPayment(amount: number, trackId: string, str
       capture: true,
       confirmation: {
         type: "redirect",
-        return_url: `${baseUrl}/dashboard` // Or back to the specific stream/leaderboard if you had the path
+        return_url: `${baseUrl}${returnPath}`
       },
       description: `Priority track bump`,
       metadata: { trackId, action: "BUMP_TRACK", streamerId }
