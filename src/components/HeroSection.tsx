@@ -24,7 +24,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative pt-40 pb-24 px-4 flex flex-col items-center justify-center text-center overflow-hidden z-10 min-h-[80vh]">
+    <section className="relative pt-24 pb-24 px-4 flex flex-col items-center justify-center text-center overflow-hidden z-10 min-h-[70vh]">
       {/* CENTRAL GLOW */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/5 blur-[120px] rounded-full pointer-events-none -z-10" />
       <motion.div
@@ -33,10 +33,6 @@ export default function HeroSection() {
         animate="show"
         className="max-w-4xl space-y-10"
       >
-        <motion.div variants={item} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <Sparkles size={14} className="text-purple-600 animate-spin-slow" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{t("heroBadge")}</span>
-        </motion.div>
 
         <motion.h1 
           variants={item}

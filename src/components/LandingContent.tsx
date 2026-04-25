@@ -35,7 +35,7 @@ export default function LandingContent({ sessions, session }: LandingContentProp
       <HeroSection />
 
       {/* GOAL / PURPOSE SECTION */}
-      <section className="relative z-10 py-32 px-4">
+      <section className="relative z-10 py-20 px-4">
         <div className="mx-auto max-w-5xl glass p-10 sm:p-20 rounded-[4rem] border border-zinc-200 dark:border-zinc-800 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_100px_-20px_rgba(145,70,255,0.05)] relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
             <Sparkles size={120} className="text-purple-600" />
