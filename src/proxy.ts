@@ -20,12 +20,7 @@ export default function proxy(req: NextRequest) {
     return new Response('Malformed Request', { status: 400 });
   }
 
-  // LEGACY REDIRECT: Redirect /ru to /en
-  if (req.nextUrl.pathname.startsWith('/ru')) {
-    const url = req.nextUrl.clone();
-    url.pathname = url.pathname.replace(/^\/ru/, '/en');
-    return Response.redirect(url, 301);
-  }
+  // Russian locale is now fully supported
 
   const response = intlMiddleware(req);
 
