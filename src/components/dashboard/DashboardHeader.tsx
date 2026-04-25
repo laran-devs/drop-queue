@@ -13,11 +13,11 @@ import {
   Play,
   Pause,
   ArrowRight,
-  Wallet
+  Wallet,
+  User
 } from "lucide-react";
 import { Link } from "@/navigation";
 import { toast } from "sonner";
-import Image from "next/image";
 import { StreamCarousel } from "@/components/StreamCarousel";
 
 interface DashboardHeaderProps {
@@ -103,19 +103,33 @@ export function DashboardHeader({
             </div>
             
             <div className="flex items-center gap-6">
-              {session.streamer?.image && (
-                <div className="relative h-16 w-16 shrink-0">
-                  <Image 
+              <div className="relative h-16 w-16 shrink-0">
+                {session.streamer?.image ? (
+                  <img 
                     src={session.streamer.image} 
                     alt={session.streamer.name || "Streamer"} 
-                    fill
-                    className="rounded-2xl border-2 border-white dark:border-zinc-800 shadow-xl object-cover"
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full rounded-2xl border-2 border-white dark:border-zinc-800 shadow-xl object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      const parent = (e.target as HTMLImageElement).parentElement;
+                      if (parent) {
+                        const fallback = parent.querySelector('.avatar-fallback');
+                        if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                      }
+                    }}
                   />
-                  <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-lg bg-green-500 border-2 border-white dark:border-zinc-800 flex items-center justify-center">
-                    <div className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                  </div>
+                ) : null}
+                <div 
+                  className="avatar-fallback h-full w-full rounded-2xl border-2 border-white dark:border-zinc-800 shadow-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400"
+                  style={{ display: session.streamer?.image ? 'none' : 'flex' }}
+                >
+                  <User size={24} />
                 </div>
-              )}
+                <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-lg bg-green-500 border-2 border-white dark:border-zinc-800 flex items-center justify-center">
+                  <div className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                </div>
+              </div>
               <h1 className="text-5xl font-black tracking-tighter">{session.title}</h1>
             </div>
           </div>

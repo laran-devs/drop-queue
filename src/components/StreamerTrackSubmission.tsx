@@ -7,8 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { AudioUploadZone } from "./AudioUploadZone";
-import { Link2, Music, CheckCircle2, Zap } from "lucide-react";
-import Image from "next/image";
+import { Link2, Music, CheckCircle2, Zap, User } from "lucide-react";
 import { ViewerQueueStatus } from "./ViewerQueueStatus";
 
 interface StreamerTrackSubmissionProps {
@@ -89,21 +88,35 @@ export function StreamerTrackSubmission({ session, user }: StreamerTrackSubmissi
       
       <div className="relative z-10 space-y-8">
         <div className="text-center space-y-4">
-          {session.streamer.image && (
-            <div className="relative inline-block">
-              <div className="relative h-20 w-20 mx-auto">
-                <Image 
+          <div className="relative inline-block">
+            <div className="relative h-20 w-20 mx-auto">
+              {session.streamer.image ? (
+                <img 
                   src={session.streamer.image} 
                   alt={session.streamer.name || "Streamer"} 
-                  fill
-                  className="rounded-[2rem] border-4 border-white dark:border-zinc-900 shadow-2xl object-cover"
+                  referrerPolicy="no-referrer"
+                  className="h-full w-full rounded-[2rem] border-4 border-white dark:border-zinc-900 shadow-2xl object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                    const parent = (e.target as HTMLImageElement).parentElement;
+                    if (parent) {
+                      const fallback = parent.querySelector('.avatar-fallback');
+                      if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                    }
+                  }}
                 />
-                <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-lg bg-green-500 border-2 border-white dark:border-zinc-900 shadow-sm flex items-center justify-center">
-                  <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
-                </div>
+              ) : null}
+              <div 
+                className="avatar-fallback h-full w-full rounded-[2rem] border-4 border-white dark:border-zinc-900 shadow-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400"
+                style={{ display: session.streamer.image ? 'none' : 'flex' }}
+              >
+                <User size={32} />
+              </div>
+              <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-lg bg-green-500 border-2 border-white dark:border-zinc-900 shadow-sm flex items-center justify-center">
+                <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
               </div>
             </div>
-          )}
+          </div>
           <div className="space-y-1">
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Stream Submission Portal</span>
             <h1 className="text-4xl font-black tracking-tight">{session.streamer.name}&apos;s Queue</h1>

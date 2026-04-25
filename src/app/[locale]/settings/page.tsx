@@ -36,7 +36,6 @@ import { cleanupOrphanedFiles } from "@/app/actions/maintenance-actions";
 
 const TABS = [
   { id: "general", label: "General", icon: Globe },
-  { id: "donations", label: "Transactions", icon: Zap },
   { id: "privacy", label: "Privacy & Security", icon: Lock },
   { id: "advanced", label: "Advanced", icon: Database },
   { id: "account", label: "Account", icon: UserIcon },
@@ -57,9 +56,6 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isCleaning, setIsCleaning] = useState(false);
-  const [minDonation, setMinDonation] = useState<number>(50);
-  const [currency, setCurrency] = useState("RUB");
-  const [daSecret, setDaSecret] = useState("");
 
   useEffect(() => {
     setMounted(true);
@@ -69,11 +65,6 @@ export default function SettingsPage() {
     
     getUserPreferences().then(data => {
       if (data?.prefs) setIsPublic(data.prefs.isPublic);
-      if (data?.user) {
-        setMinDonation(data.user.minDonationAmount || 50);
-        setCurrency(data.user.donationCurrency || "RUB");
-        setDaSecret(data.user.daSecret || "");
-      }
     });
   }, []);
 
@@ -102,19 +93,6 @@ export default function SettingsPage() {
     }
   };
 
-  const handleUpdateDonationSettings = async () => {
-    setLoading(true);
-    try {
-      const result = await updateDonationSettings(minDonation, currency);
-      if (result.success) {
-        toast.success("Donation settings updated");
-      }
-    } catch (err) {
-      toast.error("Failed to update settings");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCleanup = async () => {
     if (!confirm("This will permanently delete all uploaded files that are not linked to any track. Proceed?")) return;
@@ -303,76 +281,6 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              {activeTab === "donations" && (
-                <div className="space-y-8">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-600">
-                      <Zap size={18} />
-                    </div>
-                    <h2 className="text-lg font-bold tracking-tight">Donations & Bumps</h2>
-                  </div>
-
-                  <div className="glass p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 space-y-8">
-                    <div className="grid grid-cols-1 gap-8">
-                      <div className="space-y-2">
-                        <p className="font-bold">Minimum Bump Amount</p>
-                        <p className="text-xs text-zinc-500 mb-4">
-                          The minimum donation amount required to automatically move a track to the front of the queue.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4">
-                           <div className="flex items-center gap-3 flex-1">
-                              <div className="flex-1 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 flex">
-                                 {["RUB", "USD", "EUR"].map((c) => (
-                                   <button
-                                     key={c}
-                                     onClick={() => setCurrency(c)}
-                                     className={`flex-1 py-3 rounded-lg text-[10px] font-black transition-all ${
-                                       currency === c 
-                                         ? "bg-white dark:bg-zinc-800 shadow-sm text-zinc-900 dark:text-white" 
-                                         : "text-zinc-500 opacity-50 hover:opacity-100"
-                                     }`}
-                                   >
-                                     {c}
-                                   </button>
-                                 ))}
-                              </div>
-                              <input 
-                                type="number"
-                                value={minDonation}
-                                onChange={(e) => setMinDonation(Number(e.target.value))}
-                                className="w-32 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 font-black text-center"
-                              />
-                           </div>
-                           <button 
-                             onClick={handleUpdateDonationSettings}
-                             className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-8 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] hover:opacity-80 transition-all shadow-xl shadow-zinc-500/10"
-                           >
-                             Save Settings
-                           </button>
-                        </div>
-                      </div>
-
-                      <div className="pt-8 border-t border-zinc-100 dark:border-zinc-900 space-y-4">
-                        <div className="flex items-center gap-2">
-                           <ShieldCheck size={16} className="text-blue-500" />
-                           <p className="font-bold">Webhook Security Token</p>
-                        </div>
-                        <p className="text-xs text-zinc-500">
-                          {daSecret ? "Your security token is already configured in the database." : "You need to generate a token to enable DonationAlerts integration."}
-                        </p>
-                        <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl">
-                           <p className="text-[10px] text-blue-600/80 font-medium leading-relaxed">
-                             DonationAlerts -{'>'} Webhooks -{'>'} Add this URL: <br/>
-                             <code className="bg-blue-500/10 px-2 py-0.5 rounded mt-2 block font-mono text-[9px] truncate">
-                               {typeof window !== "undefined" ? `${window.location.protocol}//${window.location.host}/api/webhooks/donationalerts?token=${daSecret || "YOUR_TOKEN"}` : ""}
-                             </code>
-                           </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {activeTab === "privacy" && (
                 <div className="space-y-8">

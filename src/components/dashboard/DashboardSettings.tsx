@@ -63,7 +63,6 @@ const COLOR_PRESETS = [
 
 const TABS = [
   { id: "logic", label: "Queue Logic", icon: Shield },
-  { id: "donations", label: "Donations", icon: CreditCard },
   { id: "appearance", label: "Appearance", icon: Palette },
   { id: "platforms", label: "Platforms", icon: LayoutGrid },
 ];
@@ -203,50 +202,6 @@ export function DashboardSettings({
             </div>
           )}
 
-          {activeTab === "donations" && (
-            <div className="max-w-xl space-y-6">
-              <div className="p-8 rounded-[2rem] bg-orange-500/5 border border-orange-500/20 space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
-                    <TrendingUp size={20} />
-                  </div>
-                  <div>
-                     <h4 className="text-xs font-black uppercase tracking-widest">DonationAlerts Sync</h4>
-                     <p className="text-[10px] font-bold text-zinc-500">Fast-track submissions via donations.</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <p className="text-[10px] font-bold text-zinc-400">Webhook Token</p>
-                  <div className="flex gap-2">
-                    <input 
-                      type="password"
-                      placeholder="Your Secret DA Token..."
-                      value={daSecret || ""}
-                      onChange={(e) => onDASecretChange?.(e.target.value)}
-                      className="flex-1 glass px-5 py-3 rounded-2xl text-xs outline-none border border-transparent focus:border-orange-500/50"
-                    />
-                    <button 
-                      onClick={onSaveDASecret}
-                      className="px-6 py-3 rounded-2xl bg-purple-600 text-white text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </div>
-
-                <div className="pt-4 flex flex-col gap-3">
-                   <button 
-                     onClick={onSimulateDonation}
-                     className="w-full py-4 rounded-2xl bg-orange-500/10 text-orange-600 text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all border border-orange-500/20"
-                   >
-                     Test Webhook Integration
-                   </button>
-                   <p className="text-[9px] text-center text-zinc-500 font-medium italic">Make sure your token is exact, otherwise bumps won't trigger.</p>
-                </div>
-              </div>
-            </div>
-          )}
 
           {activeTab === "appearance" && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">

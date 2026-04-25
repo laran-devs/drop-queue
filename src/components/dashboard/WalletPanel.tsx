@@ -12,10 +12,16 @@ export function WalletPanel({ onClose }: { onClose: () => void }) {
   const [isRequesting, setIsRequesting] = useState(false);
 
   useEffect(() => {
-    getWalletData().then(res => {
-      setData(res);
-      setLoading(false);
-    });
+    getWalletData()
+      .then(res => {
+        setData(res);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Wallet error:", err);
+        toast.error("Failed to load wallet data");
+        setLoading(false);
+      });
   }, []);
 
   const handleWithdraw = async (formData: FormData) => {
@@ -47,8 +53,8 @@ export function WalletPanel({ onClose }: { onClose: () => void }) {
             <Wallet size={24} />
           </div>
           <div>
-            <h2 className="text-2xl font-black tracking-tight">Earnings Hub</h2>
-            <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Manage your payouts</p>
+            <h2 className="text-2xl font-black tracking-tight">Кошелёк</h2>
+            <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Управление выплатами</p>
           </div>
         </div>
         <button onClick={onClose} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
@@ -60,50 +66,50 @@ export function WalletPanel({ onClose }: { onClose: () => void }) {
         {/* Left: Balance & Form */}
         <div className="p-8 border-r border-zinc-100 dark:border-zinc-900 md:col-span-1">
           <div className="mb-8">
-            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Available Balance</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Доступный баланс</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-4xl font-black tracking-tighter">{data.balance}</span>
-              <span className="text-sm font-bold text-zinc-500">{data.currency}</span>
+              <span className="text-4xl font-black tracking-tighter">{data?.balance || 0}</span>
+              <span className="text-sm font-bold text-zinc-500">{data?.currency || "RUB"}</span>
             </div>
           </div>
 
           <form action={handleWithdraw} className="space-y-4">
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2">Amount to Withdraw</label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2">Сумма к выводу</label>
               <input 
                 name="amount" 
                 type="number" 
-                placeholder="Min 500" 
+                placeholder="Мин. 500" 
                 className="w-full bg-zinc-100 dark:bg-zinc-900 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-purple-600 transition-all outline-none"
                 required
               />
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2">Payout Method</label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2">Способ выплаты</label>
               <select name="payoutMethod" className="w-full bg-zinc-100 dark:bg-zinc-900 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-purple-600 transition-all outline-none">
-                <option value="Card">Bank Card (RU)</option>
+                <option value="Card">Банковская карта (RU)</option>
                 <option value="ЮMoney">ЮMoney</option>
                 <option value="Crypto">USDT (TRC20)</option>
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2">Account Details</label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2">Реквизиты</label>
               <input 
                 name="payoutDetails" 
                 type="text" 
-                placeholder="Card number or Wallet ID" 
+                placeholder="Номер карты или кошелька" 
                 className="w-full bg-zinc-100 dark:bg-zinc-900 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-purple-600 transition-all outline-none"
                 required
               />
             </div>
             <button 
-              disabled={isRequesting || data.balance < 500}
+              disabled={isRequesting || (data?.balance || 0) < 500}
               className="w-full py-4 rounded-xl bg-purple-600 text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale disabled:hover:scale-100"
             >
-              {isRequesting ? "Processing..." : "Request Payout"}
+              {isRequesting ? "Обработка..." : "Запросить выплату"}
             </button>
-            {data.balance < 500 && (
-              <p className="text-[10px] text-center text-zinc-500 font-medium">Minimum withdrawal is 500 {data.currency}</p>
+            {(data?.balance || 0) < 500 && (
+              <p className="text-[10px] text-center text-zinc-500 font-medium">Минимальная сумма — 500 {data?.currency || "RUB"}</p>
             )}
           </form>
         </div>
@@ -113,7 +119,7 @@ export function WalletPanel({ onClose }: { onClose: () => void }) {
           <div className="p-6 border-b border-zinc-100 dark:border-zinc-900">
             <div className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-zinc-400">
               <History size={14} />
-              Recent Activity
+              История активности
             </div>
           </div>
           <div className="flex-1 overflow-y-auto p-0">
@@ -126,12 +132,12 @@ export function WalletPanel({ onClose }: { onClose: () => void }) {
                     </div>
                     <div>
                       <p className="text-sm font-bold">{tx.description || "Priority Bump"}</p>
-                      <p className="text-[10px] text-zinc-500">{new Date(tx.createdAt).toLocaleString()}</p>
+                      <p className="text-[10px] text-zinc-500">{new Date(tx.createdAt).toLocaleString('ru-RU')}</p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-black text-green-600">+{tx.amount} {tx.currency}</p>
-                    <p className="text-[10px] text-zinc-400 font-bold uppercase">Success</p>
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase">Успешно</p>
                   </div>
                 </div>
               ))}
@@ -143,8 +149,8 @@ export function WalletPanel({ onClose }: { onClose: () => void }) {
                       <CreditCard size={18} />
                     </div>
                     <div>
-                      <p className="text-sm font-bold">Payout Request ({req.payoutMethod})</p>
-                      <p className="text-[10px] text-zinc-500">{new Date(req.createdAt).toLocaleString()}</p>
+                      <p className="text-sm font-bold">Выплата ({req.payoutMethod})</p>
+                      <p className="text-[10px] text-zinc-500">{new Date(req.createdAt).toLocaleString('ru-RU')}</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -157,9 +163,9 @@ export function WalletPanel({ onClose }: { onClose: () => void }) {
                 </div>
               ))}
 
-              {data.transactions.length === 0 && data.withdrawalRequests.length === 0 && (
+              {(!data?.transactions?.length && !data?.withdrawalRequests?.length) && (
                 <div className="p-12 text-center">
-                  <p className="text-sm text-zinc-500">No activity yet. Start your stream to earn!</p>
+                  <p className="text-sm text-zinc-500">Пока нет активности. Начните стрим, чтобы заработать!</p>
                 </div>
               )}
             </div>
