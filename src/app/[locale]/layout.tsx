@@ -51,7 +51,7 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col antialiased" suppressHydrationWarning>
 
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <NotificationProvider>
                 <SessionProvider>
