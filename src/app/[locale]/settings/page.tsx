@@ -201,12 +201,16 @@ export default function SettingsPage() {
                         const isActive = locale === lang.code;
                         
                         const Content = (
-                          <>
+                          <div className={`flex items-center justify-between p-4 rounded-2xl border transition-all h-full ${
+                            isActive 
+                              ? "bg-white dark:bg-zinc-900 border-purple-500 shadow-lg shadow-purple-500/5 ring-1 ring-purple-500" 
+                              : (isAvailable ? "glass border-zinc-200 dark:border-zinc-800 hover:border-purple-500/30 cursor-pointer" : "glass border-zinc-200 dark:border-zinc-800 opacity-40 cursor-not-allowed")
+                          }`}>
                             <div className="flex items-center gap-3">
                               <span className="text-[10px] font-black uppercase tracking-widest opacity-30">{lang.code}</span>
                               <div className="flex flex-col">
                                 <span className="font-bold">{lang.name}</span>
-                                {!isAvailable && <span className="text-[8px] font-black text-purple-600 uppercase tracking-widest">Coming Soon</span>}
+                                {!isAvailable && <span className="text-[8px] font-black text-purple-600 uppercase tracking-widest">{t("comingSoon")}</span>}
                               </div>
                             </div>
                             {isActive ? (
@@ -214,25 +218,19 @@ export default function SettingsPage() {
                             ) : (
                               isAvailable && <ChevronRight size={16} className="text-zinc-400" />
                             )}
-                          </>
+                          </div>
                         );
-
-                        const className = `flex items-center justify-between p-4 rounded-2xl border transition-all ${
-                          isActive 
-                            ? "bg-white dark:bg-zinc-900 border-purple-500 shadow-lg shadow-purple-500/5 ring-1 ring-purple-500" 
-                            : (isAvailable ? "glass border-zinc-200 dark:border-zinc-800 hover:border-purple-500/30 cursor-pointer" : "glass border-zinc-200 dark:border-zinc-800 opacity-40 cursor-not-allowed")
-                        }`;
 
                         if (isAvailable && !isActive) {
                           return (
-                            <Link key={lang.code} href={pathname} locale={lang.code} className={className}>
+                            <Link key={lang.code} href={pathname} locale={lang.code}>
                               {Content}
                             </Link>
                           );
                         }
 
                         return (
-                          <div key={lang.code} className={className}>
+                          <div key={lang.code}>
                             {Content}
                           </div>
                         );
