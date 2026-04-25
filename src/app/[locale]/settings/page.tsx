@@ -150,7 +150,7 @@ function SettingsContent() {
     <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-20 min-h-screen overflow-y-scroll">
       <div className="flex flex-col lg:flex-row gap-16 w-full items-start">
         {/* Navigation Sidebar */}
-        <div className="lg:w-72 shrink-0 space-y-8">
+        <div className="lg:w-72 shrink-0 space-y-8 sticky top-32 self-start">
           <div className="space-y-2">
             <h1 className="text-4xl font-black tracking-tight">{t("title")}</h1>
             <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Global Preferences</p>
