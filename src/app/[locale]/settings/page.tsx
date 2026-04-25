@@ -147,8 +147,8 @@ function SettingsContent() {
   ];
 
   return (
-    <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
-      <div className="flex flex-col lg:flex-row gap-16 w-full">
+    <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-20 min-h-screen overflow-y-scroll">
+      <div className="flex flex-col lg:flex-row gap-16 w-full items-start">
         {/* Navigation Sidebar */}
         <div className="lg:w-72 shrink-0 space-y-8">
           <div className="space-y-2">
