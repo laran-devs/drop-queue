@@ -337,6 +337,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   const handleSavePreset = async () => {
     const name = prompt("Enter a name for this preset:");
     if (!name) return;
+    const result = await saveCriteriaPreset(name, criteria.map(c => c.name));
     if (result.success) {
       setPresets(prev => [...prev, { id: result.preset!.id, name: result.preset!.name }]);
       toast.success(t("presetSaved"));
