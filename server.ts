@@ -4,6 +4,8 @@ import { createServer } from "http";
 import { parse } from "url";
 import next from "next";
 import { Server } from "socket.io";
+import fs from "fs";
+import path from "path";
 // Redis adapter and clients
 import { createAdapter } from "@socket.io/redis-adapter";
 import { redis, pubClient, subClient } from "./src/lib/redis";
@@ -22,7 +24,25 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(async () => {
   const httpServer = createServer((req, res) => {
-    handle(req, res);
+    const parsedUrl = parse(req.url!, true);
+    const { pathname } = parsedUrl;
+
+    // Handle static uploads manually to bypass Next.js production cache
+    if (pathname?.startsWith("/uploads/")) {
+      const filePath = path.join(process.cwd(), "public", pathname);
+      if (fs.existsSync(filePath)) {
+        const stat = fs.statSync(filePath);
+        res.writeHead(200, {
+          "Content-Type": "audio/mpeg",
+          "Content-Length": stat.size,
+        });
+        const readStream = fs.createReadStream(filePath);
+        readStream.pipe(res);
+        return;
+      }
+    }
+
+    handle(req, res, parsedUrl);
   });
 
   const io = new Server(httpServer, {
