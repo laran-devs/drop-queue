@@ -21,7 +21,9 @@ import {
   Hash,
   Music,
   Layout,
-  CreditCard
+  CreditCard,
+  ToggleRight,
+  ToggleLeft
 } from "lucide-react";
 import { TwitterPicker } from "react-color";
 import { OverlayPreview } from "../OverlayPreview";
