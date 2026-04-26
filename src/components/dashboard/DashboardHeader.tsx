@@ -60,6 +60,8 @@ export function DashboardHeader({
   endSession,
   sessionTime,
   locale,
+  isPrivacyMode,
+  onTogglePrivacy,
   onToggleAnalytics,
   onToggleSettings,
   onToggleGuide,
@@ -100,7 +102,7 @@ export function DashboardHeader({
                 {isStreamPaused ? t("streamPaused") : t("streamActive")}
               </span>
               <span className="text-zinc-400 font-mono text-[10px] tabular-nums">{formatTime(sessionTime)}</span>
-              <span className="text-zinc-500 font-mono text-xs opacity-30">#{session.slug}</span>
+              <span className={`text-zinc-500 font-mono text-xs opacity-30 transition-all ${isPrivacyMode ? "blur-md select-none" : ""}`}>#{session.slug}</span>
             </div>
             
             <div className="flex items-center gap-6">
@@ -137,6 +139,14 @@ export function DashboardHeader({
 
           <div className="flex items-center gap-4">
             <button 
+              onClick={onTogglePrivacy}
+              className={`p-3 rounded-2xl border transition-all ${isPrivacyMode ? "bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-500/20" : "glass border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"}`}
+              title={t("privacyMode")}
+            >
+              <Shield size={20} fill={isPrivacyMode ? "currentColor" : "none"} />
+            </button>
+
+            <button 
               onClick={togglePause} 
               className={`group px-6 py-3 glass border ${isStreamPaused ? "border-green-500/50 text-green-500" : "border-amber-500/50 text-amber-500"} text-xs font-black uppercase tracking-widest rounded-2xl transition-all flex items-center gap-2`}
             >
@@ -167,7 +177,7 @@ export function DashboardHeader({
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-purple-500 transition-all group"
                 >
                   <Send size={14} className="text-zinc-500 group-hover:text-purple-600" />
-                  <span className="text-xs font-bold">{t("submitPage")}</span>
+                  <span className={`text-xs font-bold transition-all ${isPrivacyMode ? "blur-sm select-none" : ""}`}>{t("submitPage")}</span>
                   <Copy size={10} className="opacity-20 group-hover:opacity-100 transition-opacity" />
                 </button>
                 
@@ -179,7 +189,7 @@ export function DashboardHeader({
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-blue-500 transition-all group"
                 >
                   <Monitor size={14} className="text-zinc-500 group-hover:text-blue-600" />
-                  <span className="text-xs font-bold">{t("obsSource")}</span>
+                  <span className={`text-xs font-bold transition-all ${isPrivacyMode ? "blur-sm select-none" : ""}`}>{t("obsSource")}</span>
                   <Copy size={10} className="opacity-20 group-hover:opacity-100 transition-opacity" />
                 </button>
 

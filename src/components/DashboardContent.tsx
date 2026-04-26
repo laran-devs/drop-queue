@@ -81,6 +81,22 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
     }
   );
   const [overlayTheme, setOverlayTheme] = useState(initialSession.overlayTheme || "default");
+  const [isPrivacyMode, setIsPrivacyMode] = useState(false);
+
+  // Sync privacy mode with localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("privacy_mode");
+    if (saved) setIsPrivacyMode(saved === "true");
+  }, []);
+
+  const togglePrivacyMode = () => {
+    const newVal = !isPrivacyMode;
+    setIsPrivacyMode(newVal);
+    localStorage.setItem("privacy_mode", newVal.toString());
+    toast.info(newVal ? t("privacyModeEnabled") : t("privacyModeDisabled"), {
+      icon: newVal ? "🛡️" : "👁️"
+    });
+  };
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sessionMode, setSessionMode] = useState<"STANDARD" | "DUEL">(initialSession.sessionMode as any);
   const [duelTracks, setDuelTracks] = useState<(Track & any)[]>([]);
@@ -650,6 +666,8 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
         endSession={(id) => endSession(id).then(() => router.push("/"))}
         sessionTime={sessionTime}
         locale={locale}
+        isPrivacyMode={isPrivacyMode}
+        onTogglePrivacy={togglePrivacyMode}
         onToggleAnalytics={() => { 
           console.log("[Dashboard] Toggling analytics:", !showAnalytics);
           setShowAnalytics(!showAnalytics); 
@@ -676,6 +694,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
                  evaluations={evaluations}
                  donations={initialSession.donations}
                  accentColor={accentColor}
+                 isPrivacyMode={isPrivacyMode}
                />
                
                {topTracks.length > 0 && (

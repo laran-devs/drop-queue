@@ -11,7 +11,7 @@ interface AnalyticsDashboardProps {
   accentColor: string;
 }
 
-export function AnalyticsDashboard({ tracks, evaluations, donations = [], accentColor }: AnalyticsDashboardProps) {
+export function AnalyticsDashboard({ tracks, evaluations, donations = [], accentColor, isPrivacyMode }: AnalyticsDashboardProps & { isPrivacyMode?: boolean }) {
   // 1. Prepare data for "Tracks vs Scores" chart
   const evaluatedTracks = tracks.filter(t => t.status === "EVALUATED");
   const chartData = evaluatedTracks.map((t, i) => ({
@@ -53,12 +53,12 @@ export function AnalyticsDashboard({ tracks, evaluations, donations = [], accent
                 {stat.icon}
                 <span className="text-[10px] font-black uppercase tracking-widest">{stat.label}</span>
              </div>
-             <div className="text-2xl font-black">{stat.value}</div>
+             <div className={`text-2xl font-black transition-all ${isPrivacyMode ? "blur-md select-none" : ""}`}>{stat.value}</div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div className={`grid grid-cols-1 lg:grid-cols-2 gap-10 transition-all ${isPrivacyMode ? "opacity-20 blur-xl pointer-events-none grayscale" : ""}`}>
         {/* Progress Chart */}
         <div className="glass p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 space-y-6">
           <div className="flex items-center justify-between">

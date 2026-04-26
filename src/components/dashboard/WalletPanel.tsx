@@ -6,11 +6,21 @@ import { Wallet, ArrowUpRight, History, CreditCard, CheckCircle2, Clock, X, Tren
 import { toast } from "sonner";
 import { motion, AnimatePresence, animate, motionValue } from "framer-motion";
 
-export function WalletPanel({ onClose }: { onClose?: () => void }) {
+export function WalletPanel({ onClose, isPrivacyMode: propPrivacyMode }: { onClose?: () => void, isPrivacyMode?: boolean }) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isRequesting, setIsRequesting] = useState(false);
   const [displayBalance, setDisplayBalance] = useState(0);
+  const [localPrivacyMode, setLocalPrivacyMode] = useState(false);
+
+  const isPrivacyMode = propPrivacyMode !== undefined ? propPrivacyMode : localPrivacyMode;
+
+  useEffect(() => {
+    if (propPrivacyMode === undefined) {
+      const saved = localStorage.getItem("privacy_mode");
+      if (saved) setLocalPrivacyMode(saved === "true");
+    }
+  }, [propPrivacyMode]);
 
   useEffect(() => {
     if (data?.balance !== undefined) {
@@ -86,8 +96,8 @@ export function WalletPanel({ onClose }: { onClose?: () => void }) {
             </div>
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 relative z-10">{data?.currency || "RUB"} Balance</span>
             <div className="flex items-baseline gap-2 mt-1 relative z-10">
-              <span className="text-5xl font-black tracking-tighter text-white tabular-nums">
-                {Math.floor(displayBalance).toLocaleString()}
+              <span className={`text-5xl font-black tracking-tighter text-white tabular-nums transition-all duration-500 ${isPrivacyMode ? "blur-xl scale-90" : ""}`}>
+                {isPrivacyMode ? "8888" : Math.floor(displayBalance).toLocaleString()}
               </span>
             </div>
             <div className="absolute bottom-0 left-0 h-1 bg-purple-600 shadow-[0_0_20px_rgba(145,70,255,0.5)] transition-all" style={{ width: `${Math.min((data?.balance || 0) / 500 * 100, 100)}%` }} />
@@ -118,7 +128,7 @@ export function WalletPanel({ onClose }: { onClose?: () => void }) {
                 name="payoutDetails" 
                 type="text" 
                 placeholder="Номер карты или кошелька" 
-                className="w-full bg-zinc-100 dark:bg-zinc-900 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-purple-600 transition-all outline-none"
+                className={`w-full bg-zinc-100 dark:bg-zinc-900 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-purple-600 transition-all outline-none ${isPrivacyMode ? "blur-md" : ""}`}
                 required
               />
             </div>
@@ -151,12 +161,12 @@ export function WalletPanel({ onClose }: { onClose?: () => void }) {
                       <ArrowUpRight size={18} />
                     </div>
                     <div>
-                      <p className="text-sm font-bold">{tx.description || "Priority Bump"}</p>
+                      <p className={`text-sm font-bold ${isPrivacyMode ? "blur-sm" : ""}`}>{tx.description || "Priority Bump"}</p>
                       <p className="text-[10px] text-zinc-500">{new Date(tx.createdAt).toLocaleString('ru-RU')}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-black text-green-600">+{tx.amount} {tx.currency}</p>
+                    <p className={`text-sm font-black text-green-600 ${isPrivacyMode ? "blur-sm" : ""}`}>+{tx.amount} {tx.currency}</p>
                     <p className="text-[10px] text-zinc-400 font-bold uppercase">Успешно</p>
                   </div>
                 </div>
@@ -174,7 +184,7 @@ export function WalletPanel({ onClose }: { onClose?: () => void }) {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-black text-zinc-900 dark:text-zinc-100">-{req.amount} {req.currency}</p>
+                    <p className={`text-sm font-black text-zinc-900 dark:text-zinc-100 ${isPrivacyMode ? "blur-sm" : ""}`}>-{req.amount} {req.currency}</p>
                     <div className="flex items-center gap-1 justify-end">
                       {req.status === 'COMPLETED' ? <CheckCircle2 size={10} className="text-blue-500" /> : <Clock size={10} className="text-amber-500 underline decoration-dotted" />}
                       <p className={`text-[10px] font-black uppercase ${req.status === 'COMPLETED' ? 'text-blue-500' : 'text-amber-500'}`}>{req.status}</p>

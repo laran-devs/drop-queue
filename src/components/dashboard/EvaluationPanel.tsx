@@ -222,21 +222,23 @@ export function EvaluationPanel({
                           <span>{formatTime(duration)}</span>
                         </div>
                         
-                        <div className="relative h-2 w-full group">
+                        <div className="relative h-2 w-full group py-4">
                           <input 
                             type="range"
                             min="0"
                             max={duration || 100}
                             value={currentTime}
                             onChange={handleSeek}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                           />
-                          <div className="h-full w-full bg-zinc-100 dark:bg-zinc-900 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner">
+                          <div className="h-1.5 w-full bg-zinc-100 dark:bg-zinc-900 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner group-hover:h-2 transition-all duration-300">
                             <motion.div 
-                              className="h-full"
-                              style={{ backgroundColor: accentColor, width: `${(currentTime / duration) * 100}%` }}
+                              className="h-full relative"
+                              style={{ backgroundColor: accentColor, width: `${(currentTime / (duration || 1)) * 100}%` }}
                               transition={{ type: "spring", bounce: 0, duration: 0.1 }}
-                            />
+                            >
+                              <div className="absolute right-0 top-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity border-2" style={{ borderColor: accentColor }} />
+                            </motion.div>
                           </div>
                         </div>
                       </div>

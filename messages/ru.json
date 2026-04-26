@@ -144,7 +144,10 @@
     "shareStream": "Поделиться",
     "obsInfo": "Добавь это в OBS как 'Браузер'",
     "copyLink": "скопирована",
-    "streamActive": "В эфире"
+    "streamActive": "В эфире",
+    "privacyModeEnabled": "Режим приватности включен",
+    "privacyModeDisabled": "Режим приватности выключен",
+    "privacyMode": "Режим приватности"
   },
   "Settings": {
     "title": "Настройки сессии",

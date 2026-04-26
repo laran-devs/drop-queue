@@ -144,7 +144,10 @@
     "obsInfo": "Add this to OBS as a Browser Source",
     "copyLink": "copied to clipboard",
     "streamActive": "Live",
-    "comingSoon": "Coming Soon"
+    "comingSoon": "Coming Soon",
+    "privacyModeEnabled": "Privacy Mode Enabled",
+    "privacyModeDisabled": "Privacy Mode Disabled",
+    "privacyMode": "Privacy Mode"
   },
   "Settings": {
     "title": "Session Settings",
