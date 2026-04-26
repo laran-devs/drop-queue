@@ -227,6 +227,7 @@ interface EvaluationPanelProps {
                         ref={ref => { (audioRef as any).current = ref; }}
                         onEnded={handleTrackEnd}
                         src={media.originalUrl} 
+                        autoPlay
                         className="hidden"
                       />
                     </div>

@@ -39,6 +39,7 @@ import { cleanupOrphanedFiles } from "@/app/actions/maintenance-actions";
 
 const TABS = [
   { id: "general", label: "General", icon: Globe },
+  { id: "appearance", label: "Appearance", icon: Palette },
   { id: "privacy", label: "Privacy & Security", icon: Lock },
   { id: "wallet", label: "Wallet & Payouts", icon: WalletIcon },
   { id: "advanced", label: "Advanced", icon: Database },
@@ -254,33 +255,6 @@ function SettingsContent() {
                     </div>
                   </section>
 
-                  {/* Theme */}
-                  <section className="space-y-6">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-600">
-                        <Palette size={18} />
-                      </div>
-                      <h2 className="text-lg font-bold tracking-tight">{t("theme")}</h2>
-                    </div>
-
-                    <div className="flex flex-wrap gap-3">
-                      {themes.map((item) => (
-                        <button
-                          key={item.id}
-                          onClick={() => setTheme(item.id)}
-                          className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all ${
-                            theme === item.id 
-                              ? "bg-white dark:bg-zinc-900 border-zinc-900 dark:border-zinc-50 shadow-md" 
-                              : "glass border-zinc-200 dark:border-zinc-800 opacity-50 hover:opacity-100"
-                          }`}
-                        >
-                          <item.icon size={18} />
-                          <span className="text-xs font-black uppercase tracking-widest">{item.name}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </section>
-                  
                   {/* Notifications */}
                   <section className="space-y-6">
                     <div className="flex items-center gap-3">
@@ -467,6 +441,40 @@ function SettingsContent() {
                     <h2 className="text-lg font-bold tracking-tight">Financial Dashboard</h2>
                   </div>
                   <WalletPanel onClose={() => {}} />
+                </div>
+              )}
+              {activeTab === "appearance" && (
+                <div className="space-y-12">
+                  <header>
+                    <h3 className="text-sm font-black uppercase tracking-[0.3em] text-zinc-400 mb-2">Visual Style</h3>
+                    <p className="text-xs text-zinc-500 lowercase font-bold tracking-widest">customize your experience</p>
+                  </header>
+
+                  <section className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-600">
+                        <Palette size={18} />
+                      </div>
+                      <h2 className="text-lg font-bold tracking-tight">{t("theme")}</h2>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3">
+                      {themes.map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => setTheme(item.id)}
+                          className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all ${
+                            theme === item.id 
+                              ? "bg-white dark:bg-zinc-900 border-zinc-900 dark:border-zinc-50 shadow-md" 
+                              : "glass border-zinc-200 dark:border-zinc-800 opacity-50 hover:opacity-100"
+                          }`}
+                        >
+                          <item.icon size={18} />
+                          <span className="text-xs font-black uppercase tracking-widest">{item.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
                 </div>
               )}
             </motion.div>
