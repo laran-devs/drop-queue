@@ -4,7 +4,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from "react";
 import { RankBadge } from "@/components/RankBadge";
-import { Play, Pause, Volume2 } from "lucide-react";
+import { 
+  Music2, 
+  Languages, 
+  Play, 
+  Pause, 
+  Volume2, 
+  ExternalLink, 
+  MessageSquare, 
+  TrendingUp, 
+  SkipForward, 
+  Ban,
+  PlayCircle
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 const ReactPlayer = dynamic(() => import('react-player').then(mod => mod.default), { ssr: false });
 
