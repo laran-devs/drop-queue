@@ -62,27 +62,17 @@ export function EvaluationPanel({
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLAudioElement>) => {
+    setCurrentTime(e.currentTarget.currentTime);
+  };
 
-    const updateTime = () => setCurrentTime(audio.currentTime);
-    const updateDuration = () => setDuration(audio.duration);
-    const onPlay = () => setIsPlaying(true);
-    const onPause = () => setIsPlaying(false);
+  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLAudioElement>) => {
+    setDuration(e.currentTarget.duration);
+  };
 
-    audio.addEventListener('timeupdate', updateTime);
-    audio.addEventListener('loadedmetadata', updateDuration);
-    audio.addEventListener('play', onPlay);
-    audio.addEventListener('pause', onPause);
-
-    return () => {
-      audio.removeEventListener('timeupdate', updateTime);
-      audio.removeEventListener('loadedmetadata', updateDuration);
-      audio.removeEventListener('play', onPlay);
-      audio.removeEventListener('pause', onPause);
-    };
-  }, [audioRef, playingTrack]);
+  const handlePlayStatus = (status: boolean) => {
+    setIsPlaying(status);
+  };
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -252,7 +242,15 @@ export function EvaluationPanel({
 
                       <audio 
                         key={media.originalUrl}
-                        ref={ref => { (audioRef as any).current = ref; }}
+                        ref={ref => { 
+                          if (ref) {
+                            (audioRef as any).current = ref;
+                          }
+                        }}
+                        onTimeUpdate={handleTimeUpdate}
+                        onLoadedMetadata={handleLoadedMetadata}
+                        onPlay={() => handlePlayStatus(true)}
+                        onPause={() => handlePlayStatus(false)}
                         onEnded={handleTrackEnd}
                         src={media.originalUrl} 
                         autoPlay
