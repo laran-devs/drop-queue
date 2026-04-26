@@ -27,6 +27,22 @@ interface EvaluationPanelProps {
   autoAdvance?: boolean;
 }
 
+export function EvaluationPanel({
+  playingTrack,
+  criteria,
+  scores,
+  setScores,
+  activeTab,
+  setActiveTab,
+  media,
+  audioRef,
+  handleTrackEnd,
+  handleSubmitEvaluation,
+  handleNext,
+  handleSkip,
+  isSubmitting,
+  accentColor,
+  chatVote,
   autoAdvance = true
 }: EvaluationPanelProps) {
   const t = useTranslations("Dashboard");
