@@ -67,6 +67,7 @@ export function EvaluationPanel({
   };
 
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLAudioElement>) => {
+    console.log("[Player] Metadata loaded. Duration:", e.currentTarget.duration);
     setDuration(e.currentTarget.duration);
   };
 
@@ -254,7 +255,7 @@ export function EvaluationPanel({
                         onEnded={handleTrackEnd}
                         src={media.originalUrl} 
                         autoPlay
-                        className="hidden"
+                        className="opacity-0 absolute pointer-events-none"
                       />
                     </div>
                   )}

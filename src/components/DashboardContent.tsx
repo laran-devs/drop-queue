@@ -121,8 +121,10 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   };
 
   const setPlaying = useCallback((trackId: string) => {
+    console.log("[Dashboard] Setting track as playing:", trackId);
     const track = tracks.find(t => t.id === trackId);
     if (track) {
+      console.log("[Dashboard] Emitting track_playing for slug:", initialSession.slug);
       emit("track_playing", { 
         slug: initialSession.slug, 
         trackId, 
@@ -141,7 +143,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       setScores({}); // Reset scores for new track
       startTrack(trackId); // Sync with DB
     }
-  }, [emit, initialSession.slug, tracks]);
+  }, [emit, initialSession.slug, tracks, t]);
 
   const handleNext = useCallback(() => {
     const nextTrack = tracks.find(t => t.status === "QUEUED");
@@ -648,8 +650,16 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
         endSession={(id) => endSession(id).then(() => router.push("/"))}
         sessionTime={sessionTime}
         locale={locale}
-        onToggleAnalytics={() => { setShowAnalytics(!showAnalytics); setShowSettings(false); }}
-        onToggleSettings={() => { setShowSettings(!showSettings); setShowAnalytics(false); }}
+        onToggleAnalytics={() => { 
+          console.log("[Dashboard] Toggling analytics:", !showAnalytics);
+          setShowAnalytics(!showAnalytics); 
+          setShowSettings(false); 
+        }}
+        onToggleSettings={() => { 
+          console.log("[Dashboard] Toggling settings:", !showSettings);
+          setShowSettings(!showSettings); 
+          setShowAnalytics(false); 
+        }}
         onToggleWallet={() => router.push(`/${locale}/settings?tab=wallet`)}
         onToggleGuide={() => setShowGuide(!showGuide)}
         showAnalytics={showAnalytics}

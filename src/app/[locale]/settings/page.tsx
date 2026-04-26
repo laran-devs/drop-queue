@@ -171,10 +171,7 @@ function SettingsContent() {
                 <tab.icon size={18} className={activeTab === tab.id ? "text-purple-600" : "text-zinc-400"} />
                 <span className="text-sm font-bold">{tab.label}</span>
                 {activeTab === tab.id && (
-                  <motion.div 
-                    layoutId="activeTabGeneral"
-                    className="absolute left-0 w-1 h-6 bg-purple-600 rounded-full"
-                  />
+                  <div className="absolute left-0 w-1 h-6 bg-purple-600 rounded-full" />
                 )}
               </button>
             ))}
