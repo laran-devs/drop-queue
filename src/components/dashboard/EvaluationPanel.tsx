@@ -182,43 +182,17 @@ export function EvaluationPanel({
                     />
                   )}
                   {media.type === 'file' && (
-                    <div className="flex flex-col items-center gap-8 w-full py-8 scale-in">
-                      <div className="relative group cursor-pointer" onClick={togglePlay}>
-                        <div className="h-24 w-24 rounded-[3rem] bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-900 dark:text-white shadow-2xl transition-all group-hover:scale-110 group-active:scale-95 border-2 border-white dark:border-zinc-800">
-                          {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
-                        </div>
-                        <div className="absolute -inset-2 bg-gradient-to-tr from-purple-500 to-blue-500 rounded-[3.5rem] opacity-20 blur-xl group-hover:opacity-40 transition-opacity -z-10" />
-                      </div>
-
-                      <div className="w-full space-y-4 px-4">
-                        <div className="flex items-center justify-between text-[10px] font-black tracking-widest text-zinc-400">
-                          <span>{formatTime(currentTime)}</span>
-                          <div className="flex items-center gap-2">
-                            <RankBadge score={chatVote?.avg || 0} />
+                    <div className="flex flex-col items-center justify-center gap-6 w-full py-20 text-center">
+                       <div className="relative">
+                          <div className="h-32 w-32 rounded-[3.5rem] bg-zinc-100 dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:scale-105 transition-transform duration-500 shadow-2xl relative z-10">
+                             <Music2 size={48} strokeWidth={1.5} className={isPlaying ? "animate-bounce" : "opacity-50"} />
                           </div>
-                          <span>{formatTime(duration)}</span>
-                        </div>
-                        
-                        <div className="relative h-2 w-full group py-4">
-                          <input 
-                            type="range"
-                            min="0"
-                            max={duration || 100}
-                            value={currentTime}
-                            onChange={(e) => onSeek(parseFloat(e.target.value))}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-                          />
-                          <div className="h-1.5 w-full bg-zinc-100 dark:bg-zinc-900 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner group-hover:h-2 transition-all duration-300">
-                            <motion.div 
-                              className="h-full relative"
-                              style={{ backgroundColor: accentColor, width: `${(currentTime / (duration || 1)) * 100}%` }}
-                              transition={{ type: "spring", bounce: 0, duration: 0.1 }}
-                            >
-                              <div className="absolute right-0 top-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity border-2" style={{ borderColor: accentColor }} />
-                            </motion.div>
-                          </div>
-                        </div>
-                      </div>
+                          <div className="absolute -inset-4 bg-gradient-to-tr from-purple-500 to-blue-500 rounded-[4rem] opacity-10 blur-2xl -z-10" />
+                       </div>
+                       <div className="space-y-1">
+                          <RankBadge score={chatVote?.avg || 0} />
+                          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mt-4">Playback in the header</p>
+                       </div>
                     </div>
                   )}
                   {media.type === 'link' && (
