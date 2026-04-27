@@ -182,16 +182,48 @@ export function EvaluationPanel({
                     />
                   )}
                   {media.type === 'file' && (
-                    <div className="flex flex-col items-center justify-center gap-6 w-full py-20 text-center">
-                       <div className="relative">
-                          <div className="h-32 w-32 rounded-[3.5rem] bg-zinc-100 dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:scale-105 transition-transform duration-500 shadow-2xl relative z-10">
-                             <Music2 size={48} strokeWidth={1.5} className={isPlaying ? "animate-bounce" : "opacity-50"} />
-                          </div>
-                          <div className="absolute -inset-4 bg-gradient-to-tr from-purple-500 to-blue-500 rounded-[4rem] opacity-10 blur-2xl -z-10" />
+                    <div className="w-full flex flex-col gap-8 py-10 scale-in">
+                       <div className="grid grid-cols-3 gap-4">
+                          {[
+                            { label: "Tempo", value: playingTrack.bpm || "128", unit: "BPM", color: accentColor },
+                            { label: "Key", value: playingTrack.key || "C min", unit: "Scale", color: "#0088ff" },
+                            { label: "Loudness", value: playingTrack.lufs || "-14.2", unit: "LUFS", color: "#ff8800" }
+                          ].map((stat, i) => (
+                             <div key={i} className="glass p-6 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 flex flex-col items-center justify-center gap-1 group hover:scale-[1.02] transition-all">
+                                <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500">{stat.label}</span>
+                                <span className="text-2xl font-black tabular-nums" style={{ color: stat.color }}>{stat.value}</span>
+                                <span className="text-[8px] font-bold text-zinc-600 uppercase tracking-tighter">{stat.unit}</span>
+                             </div>
+                          ))}
                        </div>
-                       <div className="space-y-1">
-                          <RankBadge score={chatVote?.avg || 0} />
-                          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mt-4">Playback in the header</p>
+
+                       <div className="glass p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 space-y-4">
+                          <div className="flex items-center justify-between">
+                             <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full animate-pulse" style={{ backgroundColor: accentColor }} />
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Spectrum Analysis</span>
+                             </div>
+                             <RankBadge score={chatVote?.avg || 0} />
+                          </div>
+                          
+                          <div className="h-16 flex items-end gap-[2px]">
+                             {[...Array(40)].map((_, i) => (
+                                <motion.div 
+                                  key={i}
+                                  initial={{ height: "20%" }}
+                                  animate={{ 
+                                    height: isPlaying ? [`${20 + Math.random() * 80}%`, `${20 + Math.random() * 80}%`] : "20%" 
+                                  }}
+                                  transition={{ 
+                                    repeat: Infinity, 
+                                    duration: 0.5 + Math.random() * 0.5,
+                                    ease: "easeInOut"
+                                  }}
+                                  className="flex-1 rounded-full opacity-40 hover:opacity-100 transition-opacity"
+                                  style={{ backgroundColor: accentColor }}
+                                />
+                             ))}
+                          </div>
                        </div>
                     </div>
                   )}
