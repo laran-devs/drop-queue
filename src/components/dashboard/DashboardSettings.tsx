@@ -260,18 +260,31 @@ export function DashboardSettings({
                    </div>
                    <div className="glass p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 space-y-8">
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <label className="flex items-center justify-between p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 cursor-pointer">
-                           <span className="text-[10px] font-black uppercase">BPM</span>
-                           <button onClick={() => onShowBpmChange(!showBpm)} className="text-purple-600">
-                             {showBpm ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-zinc-500" />}
-                           </button>
-                        </label>
-                        <label className="flex items-center justify-between p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 cursor-pointer">
-                           <span className="text-[10px] font-black uppercase">Key</span>
-                           <button onClick={() => onShowKeyChange(!showKey)} className="text-purple-600">
-                             {showKey ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-zinc-500" />}
-                           </button>
-                        </label>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button 
+                          onClick={() => onShowBpmChange(!showBpm)}
+                          className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
+                            showBpm 
+                              ? "bg-purple-500/10 border-purple-500 text-purple-600 shadow-sm" 
+                              : "bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:border-zinc-400"
+                          }`}
+                        >
+                           <span className="text-[10px] font-black uppercase tracking-widest">BPM</span>
+                           <div className={`h-2 w-2 rounded-full ${showBpm ? "bg-purple-600 shadow-[0_0_8px_rgba(147,51,234,0.5)]" : "bg-zinc-400"}`} />
+                        </button>
+
+                        <button 
+                          onClick={() => onShowKeyChange(!showKey)}
+                          className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
+                            showKey 
+                              ? "bg-blue-500/10 border-blue-500 text-blue-600 shadow-sm" 
+                              : "bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:border-zinc-400"
+                          }`}
+                        >
+                           <span className="text-[10px] font-black uppercase tracking-widest">Key</span>
+                           <div className={`h-2 w-2 rounded-full ${showKey ? "bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.5)]" : "bg-zinc-400"}`} />
+                        </button>
+                     </div>
                      </div>
 
                       <div className={`space-y-4 transition-all ${pendingFields.has("overlayTheme") ? "opacity-50 pointer-events-none" : ""}`}>

@@ -45,7 +45,6 @@ export function OverlayContent({
   const [accentColor, setAccentColor] = useState("#9146ff");
   const [evaluation, setEvaluation] = useState<EvaluationData | null>(null);
   const [isBanger, setIsBanger] = useState(false);
-  const [duelVotes, setDuelVotes] = useState<{ track1Percent: number, track2Percent: number, total: number, track1Votes: number, track2Votes: number } | null>(null);
 
   useEffect(() => {
     const cleanups: (() => void)[] = [];
@@ -116,16 +115,6 @@ export function OverlayContent({
 
     cleanups.push(on("QUEUE_RESUMED", () => {
       setNowPlaying(null);
-    }));
-
-    // 5. Handle Duel Updates
-    cleanups.push(on("DUEL_UPDATE", (data: any) => {
-      setDuelVotes(data);
-    }));
-    
-    // Clear Duel when session mode changes
-    cleanups.push(on("SESSION_MODE_CHANGED", (data: any) => {
-      if (data.mode === "STANDARD") setDuelVotes(null);
     }));
 
     return () => {
@@ -232,35 +221,6 @@ export function OverlayContent({
           )}
         </AnimatePresence>
 
-        {/* MAIN WIDGET OR DUEL BAR */}
-        {duelVotes ? (
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }} 
-            animate={{ scale: 1, opacity: 1 }} 
-            className="w-[700px] h-[100px] rounded-[2rem] bg-black/80 backdrop-blur-3xl overflow-hidden border border-white/10 flex flex-col relative shadow-[0_30px_100px_rgba(0,0,0,0.8)]"
-          >
-             <div className="absolute top-0 left-0 h-3 bg-blue-500 transition-all duration-500 rounded-r-xl" style={{ width: `${duelVotes.track1Percent}%` }} />
-             <div className="absolute top-0 right-0 h-3 bg-red-500 transition-all duration-500 rounded-l-xl" style={{ width: `${duelVotes.track2Percent}%` }} />
-             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 w-1.5 bg-white shadow-[0_0_15px_white] z-10" />
-
-             <div className="flex justify-between items-center h-full px-8 pt-3">
-               <div className="text-blue-500 font-black text-4xl drop-shadow-lg flex items-center gap-4">
-                 <div className="text-xs bg-blue-500/20 px-3 py-1.5 rounded-full uppercase tracking-widest text-blue-300 border border-blue-500/30">!1</div>
-                 {duelVotes.track1Percent}%
-               </div>
-               
-               <div className="flex flex-col items-center">
-                  <span className="text-xl font-black italic text-zinc-400 uppercase tracking-[0.2em]">Versus</span>
-                  <span className="text-[10px] font-bold text-zinc-500 uppercase mt-1">{duelVotes.total} Votes</span>
-               </div>
-
-               <div className="text-red-500 font-black text-4xl drop-shadow-lg flex items-center gap-4">
-                 {duelVotes.track2Percent}%
-                 <div className="text-xs bg-red-500/20 px-3 py-1.5 rounded-full uppercase tracking-widest text-red-300 border border-red-500/30">!2</div>
-               </div>
-             </div>
-          </motion.div>
-        ) : (
         <div className={widgetClasses} style={{ borderColor: isCyber ? "#00ffff" : undefined, borderLeftColor: isMin ? accentColor : undefined }}>
           {isRetro && (
              <div className="bg-[#000080] text-white px-2 py-0.5 flex items-center justify-between text-[10px] font-bold">
@@ -419,7 +379,6 @@ export function OverlayContent({
             )}
           </div>
         </div>
-        )}
 
         {/* CONNECTION STATUS */}
         <AnimatePresence>

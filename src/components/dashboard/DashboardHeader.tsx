@@ -190,35 +190,48 @@ export function DashboardHeader({
           <div className="flex items-center gap-6">
              <div className="flex items-center gap-1.5 p-1.5 bg-white/50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800">
                 {[
-                  { icon: Send, label: t("submitPage"), color: "hover:text-purple-500", onClick: () => copyToClipboard(`${window.location.origin}/${locale}/stream/${session.slug}`, t("submissionLink")) },
-                  { icon: Monitor, label: t("obsSource"), color: "hover:text-blue-500", onClick: () => {
+                  { type: 'button', icon: Send, label: t("submitPage"), color: "hover:text-purple-500", onClick: () => copyToClipboard(`${window.location.origin}/${locale}/stream/${session.slug}`, t("submissionLink")) },
+                  { type: 'button', icon: Monitor, label: t("obsSource"), color: "hover:text-blue-500", onClick: () => {
                     const url = `${window.location.origin}/${locale}/overlay/${session.slug}${session.overlayToken ? `?token=${session.overlayToken}` : ""}`;
                     copyToClipboard(url, t("obsOverlay"));
                   }},
-                  { icon: Share2, label: t("shareStream"), color: "hover:text-amber-500", onClick: () => {
+                  { type: 'button', icon: Share2, label: t("shareStream"), color: "hover:text-amber-500", onClick: () => {
                     const text = t("inviteText", { url: `${window.location.origin}/${locale}/stream/${session.slug}` });
                     copyToClipboard(text, t("inviteMessage"));
-                  }}
-                ].map((item, i) => (
-                  <button 
-                    key={i}
-                    onClick={item.onClick}
-                    className={`p-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-all group flex items-center gap-2 ${item.color}`}
-                    title={item.label}
-                  >
-                    <item.icon size={16} className="text-zinc-400 group-hover:scale-110 transition-transform" />
-                    <span className={`text-[10px] font-black uppercase tracking-widest hidden sm:block ${isPrivacyMode ? "blur-sm" : ""}`}>{item.label}</span>
-                  </button>
-                ))}
-             </div>
+                  }},
+                  { type: 'link', icon: Trophy, label: `${h("hallOfFame")} 🏆`, color: "hover:text-purple-600", href: "/dashboard/hall-of-fame" }
+                ].map((item: any, i) => {
+                  const content = (
+                    <>
+                      <item.icon size={16} className="text-zinc-400 group-hover:scale-110 transition-transform" />
+                      <span className={`text-[10px] font-black uppercase tracking-widest hidden sm:block ${isPrivacyMode && item.type === 'button' ? "blur-sm" : ""}`}>{item.label}</span>
+                    </>
+                  );
 
-             <Link 
-                href="/dashboard/hall-of-fame"
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-500/10 border border-purple-500/10 hover:bg-purple-500/20 transition-all group lg:flex hidden"
-             >
-                <Trophy size={14} className="text-purple-600" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-purple-700">{h("hallOfFame")}</span>
-             </Link>
+                  if (item.type === 'link') {
+                    return (
+                      <Link 
+                        key={i}
+                        href={item.href}
+                        className={`p-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-all group flex items-center gap-2 ${item.color}`}
+                      >
+                        {content}
+                      </Link>
+                    )
+                  }
+
+                  return (
+                    <button 
+                      key={i}
+                      onClick={item.onClick}
+                      className={`p-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-all group flex items-center gap-2 ${item.color}`}
+                      title={item.label}
+                    >
+                      {content}
+                    </button>
+                  );
+                })}
+             </div>
           </div>
 
           <div className="flex items-center gap-2">

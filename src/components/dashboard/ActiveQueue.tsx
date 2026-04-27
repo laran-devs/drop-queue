@@ -28,7 +28,6 @@ interface ActiveQueueProps {
   setPlaying: (trackId: string) => void;
   accentColor: string;
   trackLimit?: number | null;
-  onStartDuel?: () => void;
 }
 
 export function ActiveQueue({ 
@@ -36,8 +35,7 @@ export function ActiveQueue({
   setTracks, 
   setPlaying, 
   accentColor,
-  trackLimit,
-  onStartDuel
+  trackLimit
 }: ActiveQueueProps) {
   const t = useTranslations("Dashboard");
   const [searchQuery, setSearchQuery] = useState("");
@@ -88,14 +86,6 @@ export function ActiveQueue({
           {t("queue")} <span className="opacity-30">({queuedTracks.length})</span>
         </h2>
         <div className="flex gap-2">
-          {onStartDuel && (
-            <button 
-              onClick={onStartDuel} 
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-500/10 border border-zinc-500/20 text-zinc-500 cursor-not-allowed text-[8px] font-black uppercase tracking-widest opacity-50"
-            >
-              ⚔️ {t("duelLabel")} <span className="opacity-50">{t("comingSoon")}</span>
-            </button>
-          )}
           {trackLimit && (
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                <TrendingUp size={10} className="text-zinc-400" />

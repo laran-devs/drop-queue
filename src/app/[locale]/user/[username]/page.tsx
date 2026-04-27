@@ -136,7 +136,6 @@ export default async function ViewerProfilePage({ params }: { params: { username
              {tracks.slice(0, 20).map((t, index) => {
                const evals = t.evaluations;
                const score = evals.length > 0 ? (evals.reduce((a,e) => a + e.score, 0) / evals.length).toFixed(1) : "Pending";
-               const isWinner = t.status === "EVALUATED" && evals.some(e => e.criteriaId.includes("duel-win"));
 
                return (
                  <div key={t.id} className="flex flex-col md:flex-row md:items-center justify-between p-6 rounded-[2rem] bg-zinc-950 border border-zinc-900 hover:border-zinc-800 transition-all gap-4">
@@ -148,7 +147,6 @@ export default async function ViewerProfilePage({ params }: { params: { username
                       </div>
                     </div>
                     <div className="flex items-center gap-6 shrink-0">
-                      {isWinner && <span className="text-[10px] font-black uppercase tracking-widest text-blue-500 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/30">Duel Winner</span>}
                       {t.status === "QUEUED" && <span className="text-[10px] font-black uppercase tracking-widest text-amber-500 border border-amber-500/30 bg-amber-500/10 px-3 py-1 rounded-full">In Queue</span>}
                       <div className="text-right">
                         <span className="text-2xl font-black w-14 inline-block">{score}</span>

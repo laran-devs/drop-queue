@@ -153,43 +153,6 @@ async function startBot(userId: string, channel: string, accessToken: string) {
         }
       }
     }
-
-    // Duel Logic
-    const activeSession = await prisma.streamSession.findFirst({
-      where: { streamerId: userId, status: "ACTIVE" },
-      orderBy: { createdAt: "desc" }
-    });
-
-    if (activeSession?.sessionMode === "DUEL") {
-      if (cmd === '!1' || cmd === '!left' || cmd === '!2' || cmd === '!right') {
-        if (slug) {
-          const duelKey = `duel_votes:${slug}`;
-          const vote = (cmd === '!1' || cmd === '!left') ? '1' : '2';
-          const isNewVote = await redis.hsetnx(duelKey, tags.username!, vote);
-          
-          if (isNewVote === 1) {
-            await redis.expire(duelKey, 3600);
-            const allVotes = await redis.hgetall(duelKey);
-            const votesArray = Object.values(allVotes);
-            const track1Votes = votesArray.filter(v => v === '1').length;
-            const track2Votes = votesArray.filter(v => v === '2').length;
-            const total = track1Votes + track2Votes;
-            const track1Percent = total > 0 ? Math.round((track1Votes / total) * 100) : 50;
-
-            await pubClient.publish("socket:broadcast", JSON.stringify({
-              room: `${slug}:overlay`,
-              event: "DUEL_UPDATE",
-              data: { track1Percent, track2Percent: 100 - track1Percent, total, track1Votes, track2Votes }
-            }));
-            await pubClient.publish("socket:broadcast", JSON.stringify({
-              room: `${slug}:streamer`,
-              event: "DUEL_UPDATE",
-              data: { track1Percent, track2Percent: 100 - track1Percent, total, track1Votes, track2Votes }
-            }));
-          }
-        }
-      }
-    }
   });
 
   try {
