@@ -60,7 +60,12 @@ export function EvaluationPanel({
   isSubmitting,
   accentColor,
   chatVote,
-  autoAdvance = true
+  autoAdvance = true,
+  currentTime,
+  duration,
+  isPlaying,
+  togglePlay,
+  onSeek
 }: EvaluationPanelProps) {
   const t = useTranslations("Dashboard");
   const formatTime = (time: number) => {
