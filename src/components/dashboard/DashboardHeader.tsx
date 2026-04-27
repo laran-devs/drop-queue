@@ -49,6 +49,11 @@ interface DashboardHeaderProps {
   showAnalytics: boolean;
   showSettings: boolean;
   showGuide: boolean;
+  currentTime: number;
+  duration: number;
+  isPlaying: boolean;
+  togglePlay: () => void;
+  onSeek: (time: number) => void;
 }
 
 export function DashboardHeader({
@@ -163,7 +168,16 @@ export function DashboardHeader({
           </div>
         </div>
 
-        <StreamCarousel tracks={tracks} playingTrackId={playingTrackId} accentColor={accentColor} />
+        <StreamCarousel 
+          tracks={tracks} 
+          playingTrackId={playingTrackId} 
+          accentColor={accentColor}
+          currentTime={currentTime}
+          duration={duration}
+          isPlaying={isPlaying}
+          togglePlay={togglePlay}
+          onSeek={onSeek}
+        />
       </section>
 
       {/* STREAMER TOOLKIT (5.1) */}

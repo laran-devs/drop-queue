@@ -37,6 +37,11 @@ interface EvaluationPanelProps {
   accentColor: string;
   chatVote?: { avg: number; total: number };
   autoAdvance?: boolean;
+  currentTime: number;
+  duration: number;
+  isPlaying: boolean;
+  togglePlay: () => void;
+  onSeek: (time: number) => void;
 }
 
 export function EvaluationPanel({
@@ -58,38 +63,6 @@ export function EvaluationPanel({
   autoAdvance = true
 }: EvaluationPanelProps) {
   const t = useTranslations("Dashboard");
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLAudioElement>) => {
-    setCurrentTime(e.currentTarget.currentTime);
-  };
-
-  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLAudioElement>) => {
-    console.log("[Player] Metadata loaded. Duration:", e.currentTarget.duration);
-    setDuration(e.currentTarget.duration);
-  };
-
-  const handlePlayStatus = (status: boolean) => {
-    setIsPlaying(status);
-  };
-
-  const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) audioRef.current.pause();
-      else audioRef.current.play();
-    }
-  };
-
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (audioRef.current) {
-      const time = parseFloat(e.target.value);
-      audioRef.current.currentTime = time;
-      setCurrentTime(time);
-    }
-  };
-
   const formatTime = (time: number) => {
     if (isNaN(time)) return "0:00";
     const mins = Math.floor(time / 60);
@@ -227,7 +200,7 @@ export function EvaluationPanel({
                             min="0"
                             max={duration || 100}
                             value={currentTime}
-                            onChange={handleSeek}
+                            onChange={(e) => onSeek(parseFloat(e.target.value))}
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                           />
                           <div className="h-1.5 w-full bg-zinc-100 dark:bg-zinc-900 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner group-hover:h-2 transition-all duration-300">
@@ -241,23 +214,6 @@ export function EvaluationPanel({
                           </div>
                         </div>
                       </div>
-
-                      <audio 
-                        key={media.originalUrl}
-                        ref={ref => { 
-                          if (ref) {
-                            (audioRef as any).current = ref;
-                          }
-                        }}
-                        onTimeUpdate={handleTimeUpdate}
-                        onLoadedMetadata={handleLoadedMetadata}
-                        onPlay={() => handlePlayStatus(true)}
-                        onPause={() => handlePlayStatus(false)}
-                        onEnded={handleTrackEnd}
-                        src={media.originalUrl} 
-                        autoPlay
-                        className="opacity-0 absolute pointer-events-none"
-                      />
                     </div>
                   )}
                   {media.type === 'link' && (

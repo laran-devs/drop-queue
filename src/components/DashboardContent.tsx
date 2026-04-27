@@ -102,10 +102,36 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   const [sessionMode, setSessionMode] = useState<"STANDARD" | "DUEL">(initialSession.sessionMode as any);
   const [duelTracks, setDuelTracks] = useState<(Track & any)[]>([]);
   const [duelVotes, setDuelVotes] = useState({ track1Percent: 50, track2Percent: 50, track1Votes: 0, track2Votes: 0, total: 0 });
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const audioRef = useRef<HTMLAudioElement>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const compressorRef = useRef<DynamicsCompressorNode | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLAudioElement>) => {
+    setCurrentTime(e.currentTarget.currentTime);
+  };
+
+  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLAudioElement>) => {
+    setDuration(e.currentTarget.duration);
+  };
+
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) audioRef.current.pause();
+      else audioRef.current.play();
+    }
+  };
+
+  const handleSeek = (time: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+      setCurrentTime(time);
+    }
+  };
 
   
   const { emit, on } = useSocket(userId, initialSession.slug);
@@ -669,6 +695,11 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
         locale={locale}
         isPrivacyMode={isPrivacyMode}
         onTogglePrivacy={togglePrivacyMode}
+        currentTime={currentTime}
+        duration={duration}
+        isPlaying={isPlaying}
+        togglePlay={togglePlay}
+        onSeek={handleSeek}
         onToggleAnalytics={() => { 
           const next = !showAnalytics;
           setShowAnalytics(next); 
@@ -819,6 +850,11 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
                accentColor={accentColor}
                chatVote={playingTrack ? chatVotes[playingTrack.id] : null}
                autoAdvance={autoAdvance}
+               currentTime={currentTime}
+               duration={duration}
+               isPlaying={isPlaying}
+               togglePlay={togglePlay}
+               onSeek={handleSeek}
              />
           )}
 
@@ -851,6 +887,20 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
           />
         </div>
       </div>
+      {media?.type === 'file' && (
+        <audio 
+          key={playingTrack?.id}
+          ref={audioRef}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onEnded={handleTrackEnd}
+          src={media.originalUrl} 
+          autoPlay
+          className="opacity-0 absolute pointer-events-none"
+        />
+      )}
     </div>
   );
 }

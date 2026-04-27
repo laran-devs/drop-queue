@@ -5,15 +5,38 @@ import { Track } from "@prisma/client";
 import { Link } from "@/navigation";
 
 
+import { Play, Pause } from "lucide-react";
+
 interface StreamCarouselProps {
   tracks: (Track & { submitter?: { id?: string, name: string | null } | null })[];
   playingTrackId: string | null;
   accentColor: string;
+  currentTime: number;
+  duration: number;
+  isPlaying: boolean;
+  togglePlay: () => void;
+  onSeek: (time: number) => void;
 }
 
-export function StreamCarousel({ tracks, playingTrackId, accentColor }: StreamCarouselProps) {
+export function StreamCarousel({ 
+  tracks, 
+  playingTrackId, 
+  accentColor,
+  currentTime,
+  duration,
+  isPlaying,
+  togglePlay,
+  onSeek
+}: StreamCarouselProps) {
   const currentIndex = tracks.findIndex((t) => t.id === playingTrackId);
   
+  const formatTime = (time: number) => {
+    if (isNaN(time)) return "0:00";
+    const mins = Math.floor(time / 60);
+    const secs = Math.floor(time % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const prevTrack = currentIndex > 0 ? tracks[currentIndex - 1] : null;
   const currentTrack = currentIndex !== -1 ? tracks[currentIndex] : null;
   const nextTrack = currentIndex !== -1 && currentIndex < tracks.length - 1 ? tracks[currentIndex + 1] : null;
@@ -62,15 +85,40 @@ export function StreamCarousel({ tracks, playingTrackId, accentColor }: StreamCa
                 Sent by {currentTrack.submitter.name}
               </Link>
             )}
-            <div className="flex items-center gap-4">
-              <div className="h-1 flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: "100%" }}
-                  transition={{ duration: 30, repeat: Infinity }}
-                  className="h-full" 
-                  style={{ backgroundColor: accentColor }} 
-                />
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={togglePlay}
+                  className="h-12 w-12 rounded-2xl bg-white dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-white shadow-xl hover:scale-105 active:scale-95 transition-all"
+                  style={{ color: isPlaying ? accentColor : 'currentColor' }}
+                >
+                  {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
+                </button>
+
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center justify-between text-[10px] font-black tabular-nums opacity-40">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(duration)}</span>
+                  </div>
+                  <div className="relative h-1.5 w-full group">
+                    <input 
+                      type="range"
+                      min="0"
+                      max={duration || 100}
+                      value={currentTime}
+                      onChange={(e) => onSeek(parseFloat(e.target.value))}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                    />
+                    <div className="h-full w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                      <motion.div 
+                        className="h-full relative" 
+                        style={{ backgroundColor: accentColor, width: `${(currentTime / (duration || 1)) * 100}%` }} 
+                      >
+                         <div className="absolute right-0 top-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-white shadow-lg border-2" style={{ borderColor: accentColor }} />
+                      </motion.div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
