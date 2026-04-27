@@ -14,7 +14,8 @@ import {
   Pause,
   ArrowRight,
   Wallet,
-  User
+  User,
+  Shield
 } from "lucide-react";
 import { Link } from "@/navigation";
 import { toast } from "sonner";
