@@ -74,7 +74,12 @@ export function DashboardHeader({
   onToggleWallet,
   showAnalytics,
   showSettings,
-  showGuide
+  showGuide,
+  currentTime,
+  duration,
+  isPlaying,
+  togglePlay,
+  onSeek
 }: DashboardHeaderProps) {
   const t = useTranslations("Dashboard");
   const h = useTranslations("Header");
