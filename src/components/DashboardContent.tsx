@@ -670,17 +670,30 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
         isPrivacyMode={isPrivacyMode}
         onTogglePrivacy={togglePrivacyMode}
         onToggleAnalytics={() => { 
-          console.log("[Dashboard] Toggling analytics:", !showAnalytics);
-          setShowAnalytics(!showAnalytics); 
-          setShowSettings(false); 
+          const next = !showAnalytics;
+          setShowAnalytics(next); 
+          if (next) {
+            setShowSettings(false); 
+            setShowGuide(false);
+          }
         }}
         onToggleSettings={() => { 
-          console.log("[Dashboard] Toggling settings:", !showSettings);
-          setShowSettings(!showSettings); 
-          setShowAnalytics(false); 
+          const next = !showSettings;
+          setShowSettings(next); 
+          if (next) {
+            setShowAnalytics(false); 
+            setShowGuide(false);
+          }
         }}
         onToggleWallet={() => router.push(`/${locale}/settings?tab=wallet`)}
-        onToggleGuide={() => setShowGuide(!showGuide)}
+        onToggleGuide={() => {
+          const next = !showGuide;
+          setShowGuide(next);
+          if (next) {
+            setShowAnalytics(false);
+            setShowSettings(false);
+          }
+        }}
         showAnalytics={showAnalytics}
         showSettings={showSettings}
         showGuide={showGuide}

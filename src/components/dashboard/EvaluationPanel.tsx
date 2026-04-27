@@ -217,7 +217,6 @@ export function EvaluationPanel({
                           <span>{formatTime(currentTime)}</span>
                           <div className="flex items-center gap-2">
                             <RankBadge score={chatVote?.avg || 0} />
-                            <span className="opacity-30 uppercase tracking-tighter">{t("lossless")}</span>
                           </div>
                           <span>{formatTime(duration)}</span>
                         </div>

@@ -27,17 +27,37 @@ app.prepare().then(async () => {
     const parsedUrl = parse(req.url!, true);
     const { pathname } = parsedUrl;
 
-    // Handle static uploads manually to bypass Next.js production cache
+    // Handle static uploads manually with Range support for seeking
     if (pathname?.startsWith("/uploads/")) {
       const filePath = path.join(process.cwd(), "public", pathname);
       if (fs.existsSync(filePath)) {
         const stat = fs.statSync(filePath);
-        res.writeHead(200, {
-          "Content-Type": "audio/mpeg",
-          "Content-Length": stat.size,
-        });
-        const readStream = fs.createReadStream(filePath);
-        readStream.pipe(res);
+        const fileSize = stat.size;
+        const range = req.headers.range;
+
+        if (range) {
+          const parts = range.replace(/bytes=/, "").split("-");
+          const start = parseInt(parts[0], 10);
+          const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+          const chunksize = (end - start) + 1;
+          const file = fs.createReadStream(filePath, { start, end });
+          const head = {
+            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunksize,
+            'Content-Type': 'audio/mpeg',
+          };
+          res.writeHead(206, head);
+          file.pipe(res);
+        } else {
+          const head = {
+            'Content-Length': fileSize,
+            'Content-Type': 'audio/mpeg',
+            'Accept-Ranges': 'bytes',
+          };
+          res.writeHead(200, head);
+          fs.createReadStream(filePath).pipe(res);
+        }
         return;
       }
     }
