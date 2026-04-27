@@ -197,33 +197,36 @@ export function EvaluationPanel({
                           ))}
                        </div>
 
-                       <div className="glass p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 space-y-4">
-                          <div className="flex items-center justify-between">
-                             <div className="flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full animate-pulse" style={{ backgroundColor: accentColor }} />
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Spectrum Analysis</span>
+                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {[
+                            { label: "Bitrate", value: "320", unit: "kbps", color: accentColor },
+                            { label: "Format", value: ".MP3", unit: "MPEG", color: "#888888" },
+                            { label: "Sample Rate", value: "48.0", unit: "kHz", color: "#00ff88" },
+                            { label: "Energy", value: "87", unit: "%", color: "#ff0088" }
+                          ].map((stat, i) => (
+                             <div key={i} className="glass p-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/5 flex flex-col items-center justify-center gap-1 group hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all">
+                                <span className="text-[7px] font-black uppercase tracking-widest text-zinc-500">{stat.label}</span>
+                                <span className="text-xl font-black tabular-nums" style={{ color: stat.color }}>{stat.value}</span>
+                                <span className="text-[7px] font-bold text-zinc-600 uppercase tracking-tighter">{stat.unit}</span>
                              </div>
-                             <RankBadge score={chatVote?.avg || 0} />
+                          ))}
+                       </div>
+
+                       <div className="glass p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                             <div className="h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-500">
+                                <Music2 size={18} />
+                             </div>
+                             <div>
+                                <h4 className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Dynamic Range</h4>
+                                <div className="flex gap-1 mt-1">
+                                   {[...Array(10)].map((_, i) => (
+                                      <div key={i} className="h-4 w-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800" style={{ backgroundColor: i < 7 ? accentColor : undefined }} />
+                                   ))}
+                                </div>
+                             </div>
                           </div>
-                          
-                          <div className="h-16 flex items-end gap-[2px]">
-                             {[...Array(40)].map((_, i) => (
-                                <motion.div 
-                                  key={i}
-                                  initial={{ height: "20%" }}
-                                  animate={{ 
-                                    height: isPlaying ? [`${20 + Math.random() * 80}%`, `${20 + Math.random() * 80}%`] : "20%" 
-                                  }}
-                                  transition={{ 
-                                    repeat: Infinity, 
-                                    duration: 0.5 + Math.random() * 0.5,
-                                    ease: "easeInOut"
-                                  }}
-                                  className="flex-1 rounded-full opacity-40 hover:opacity-100 transition-opacity"
-                                  style={{ backgroundColor: accentColor }}
-                                />
-                             ))}
-                          </div>
+                          <RankBadge score={chatVote?.avg || 0} />
                        </div>
                     </div>
                   )}
