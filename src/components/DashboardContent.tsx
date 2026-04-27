@@ -24,6 +24,7 @@ import { ActiveQueue } from "./dashboard/ActiveQueue";
 import { EvaluationPanel } from "./dashboard/EvaluationPanel";
 import { DashboardSettings } from "./dashboard/DashboardSettings";
 import { DuelPanel } from "./dashboard/DuelPanel";
+import { SessionSummaryCard } from "./dashboard/SessionSummaryCard";
 import { updateSessionStatus, updateOverlaySettings } from "@/app/actions/session-actions";
 
 interface DashboardContentProps {
