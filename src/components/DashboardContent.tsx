@@ -163,6 +163,18 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
     toast.success(`${label} ${t("copied")}!`);
   };
 
+  const [isGuideDismissed, setIsGuideDismissed] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("guide_dismissed");
+    if (saved) setIsGuideDismissed(saved === "true");
+  }, []);
+
+  const handleDismissGuide = () => {
+    setIsGuideDismissed(true);
+    localStorage.setItem("guide_dismissed", "true");
+  };
+
   const setPlaying = useCallback((trackId: string) => {
     console.log("[Dashboard] Setting track as playing:", trackId);
     const track = tracks.find(t => t.id === trackId);
@@ -796,10 +808,15 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       </AnimatePresence>
 
       <AnimatePresence>
-        {showGuide && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-10">
+        {showGuide && !isGuideDismissed && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-10 group relative">
             <div className="glass p-10 rounded-[2.5rem] border border-purple-500/20 bg-purple-500/5 space-y-8">
-              <h2 className="text-2xl font-black uppercase tracking-tighter">{t("quickSetup")}</h2>
+              <div className="flex items-center justify-between">
+                 <h2 className="text-2xl font-black uppercase tracking-tighter">{t("quickSetup")}</h2>
+                 <button onClick={handleDismissGuide} className="h-10 px-4 rounded-xl border border-purple-500/10 hover:bg-purple-500/10 text-[10px] font-black uppercase tracking-widest transition-all">
+                    {t("dismiss")}
+                 </button>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
                   { step: "01", title: t("setupObs"), desc: t("setupObsDesc") },

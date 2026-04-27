@@ -185,75 +185,69 @@ export function DashboardHeader({
         />
       </section>
 
-      {/* STREAMER TOOLKIT (5.1) */}
       <section className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-6 glass p-6 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-lg bg-zinc-50/50 dark:bg-zinc-950/50">
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">{t("streamerToolkit")}</span>
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => copyToClipboard(`${window.location.origin}/${locale}/stream/${session.slug}`, t("submissionLink"))}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-purple-500 transition-all group"
-                >
-                  <Send size={14} className="text-zinc-500 group-hover:text-purple-600" />
-                  <span className={`text-xs font-bold transition-all ${isPrivacyMode ? "blur-sm select-none" : ""}`}>{t("submitPage")}</span>
-                  <Copy size={10} className="opacity-20 group-hover:opacity-100 transition-opacity" />
-                </button>
-                
-                <button 
-                  onClick={() => {
+        <div className="flex flex-wrap items-center justify-between gap-6 glass p-4 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-lg bg-zinc-50/50 dark:bg-zinc-100/5">
+          <div className="flex items-center gap-6">
+             <div className="flex items-center gap-1.5 p-1.5 bg-white/50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+                {[
+                  { icon: Send, label: t("submitPage"), color: "hover:text-purple-500", onClick: () => copyToClipboard(`${window.location.origin}/${locale}/stream/${session.slug}`, t("submissionLink")) },
+                  { icon: Monitor, label: t("obsSource"), color: "hover:text-blue-500", onClick: () => {
                     const url = `${window.location.origin}/${locale}/overlay/${session.slug}${session.overlayToken ? `?token=${session.overlayToken}` : ""}`;
                     copyToClipboard(url, t("obsOverlay"));
+                  }},
+                  { icon: Share2, label: t("shareStream"), color: "hover:text-amber-500", onClick: () => {
+                    const text = t("inviteText", { url: `${window.location.origin}/${locale}/stream/${session.slug}` });
+                    copyToClipboard(text, t("inviteMessage"));
                   }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-blue-500 transition-all group"
-                >
-                  <Monitor size={14} className="text-zinc-500 group-hover:text-blue-600" />
-                  <span className={`text-xs font-bold transition-all ${isPrivacyMode ? "blur-sm select-none" : ""}`}>{t("obsSource")}</span>
-                  <Copy size={10} className="opacity-20 group-hover:opacity-100 transition-opacity" />
-                </button>
+                ].map((item, i) => (
+                  <button 
+                    key={i}
+                    onClick={item.onClick}
+                    className={`p-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-all group flex items-center gap-2 ${item.color}`}
+                    title={item.label}
+                  >
+                    <item.icon size={16} className="text-zinc-400 group-hover:scale-110 transition-transform" />
+                    <span className={`text-[10px] font-black uppercase tracking-widest hidden sm:block ${isPrivacyMode ? "blur-sm" : ""}`}>{item.label}</span>
+                  </button>
+                ))}
+             </div>
 
-                <Link 
-                  href="/dashboard/hall-of-fame"
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-all group"
-                >
-                  <Trophy size={14} className="text-purple-600" />
-                  <span className="text-xs font-bold text-purple-700">{h("hallOfFame")}</span>
-                </Link>
-              </div>
-            </div>
+             <Link 
+                href="/dashboard/hall-of-fame"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-500/10 border border-purple-500/10 hover:bg-purple-500/20 transition-all group lg:flex hidden"
+             >
+                <Trophy size={14} className="text-purple-600" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-purple-700">{h("hallOfFame")}</span>
+             </Link>
           </div>
 
           <div className="flex items-center gap-2">
-            <button 
-              onClick={() => {
-                const text = t("inviteText", { url: `${window.location.origin}/${locale}/stream/${session.slug}` });
-                copyToClipboard(text, t("inviteMessage"));
-              }}
-              className="px-6 py-2.5 rounded-xl bg-purple-600 text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-purple-500/20 hover:scale-[1.03] active:scale-95 transition-all"
-            >
-              <Share2 size={14} />
-              {t("shareStream")}
-            </button>
-            
-            <div className="h-8 w-px bg-zinc-200 dark:bg-zinc-800 mx-1" />
-
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 bg-white/50 dark:bg-zinc-900/50 p-1 rounded-2xl border border-zinc-200 dark:border-zinc-800">
               {[
-                { icon: Wallet, active: false, toggle: onToggleWallet, color: "text-purple-500" },
-                { icon: BarChart2, active: showAnalytics, toggle: onToggleAnalytics, color: "text-blue-500" },
-                { icon: SettingsIcon, active: showSettings, toggle: onToggleSettings, color: "text-zinc-500" },
-                { icon: HelpCircle, active: showGuide, toggle: onToggleGuide, color: "text-amber-500" }
-              ].map((tool, idx) => (
-                <button 
-                  key={idx}
-                  onClick={tool.toggle}
-                  className={`p-2.5 rounded-xl border transition-all ${tool.active ? "bg-zinc-900 text-white border-zinc-800" : "glass border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"}`}
+                { icon: Wallet, active: false, toggle: onToggleWallet, color: "text-purple-500", label: h("wallet") },
+                { icon: BarChart2, active: showAnalytics, toggle: onToggleAnalytics, color: "text-blue-500", label: t("analytics") },
+                { icon: SettingsIcon, active: showSettings, toggle: onToggleSettings, color: "text-zinc-500", label: t("settings") },
+                { icon: HelpCircle, active: showGuide, toggle: onToggleGuide, color: "text-amber-500", label: t("guide") },
+              ].map((item, i) => (
+                <button
+                  key={i}
+                  onClick={item.toggle}
+                  className={`p-2.5 rounded-xl transition-all flex items-center gap-2 group ${item.active ? "bg-white dark:bg-zinc-800 shadow-sm" : "hover:bg-white/50 dark:hover:bg-zinc-800/50 opacity-60 hover:opacity-100"}`}
+                  title={item.label}
                 >
-                  <tool.icon size={18} />
+                  <item.icon size={16} className={item.active ? item.color : "text-zinc-500 group-hover:scale-110 transition-transform"} />
+                  {item.active && <span className="text-[10px] font-black uppercase tracking-widest lg:block hidden">{item.label}</span>}
                 </button>
               ))}
             </div>
+            
+            <div className="h-6 w-px bg-zinc-200 dark:border-zinc-800 mx-1 lg:block hidden" />
+
+            <Link href={`/${locale}/profile/${session.streamerId}`} className="p-1 rounded-2xl hover:bg-white/50 dark:hover:bg-zinc-800/50 transition-all group lg:block hidden">
+               <div className="h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-500 group-hover:border-purple-500/50 transition-all overflow-hidden">
+                 <User size={20} />
+               </div>
+            </Link>
           </div>
         </div>
       </section>

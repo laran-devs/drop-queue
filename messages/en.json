@@ -147,7 +147,8 @@
     "comingSoon": "Coming Soon",
     "privacyModeEnabled": "Privacy Mode Enabled",
     "privacyModeDisabled": "Privacy Mode Disabled",
-    "privacyMode": "Privacy Mode"
+    "privacyMode": "Privacy Mode",
+    "dismiss": "Dismiss"
   },
   "Settings": {
     "title": "Session Settings",

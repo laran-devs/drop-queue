@@ -147,7 +147,8 @@
     "streamActive": "В эфире",
     "privacyModeEnabled": "Режим приватности включен",
     "privacyModeDisabled": "Режим приватности выключен",
-    "privacyMode": "Режим приватности"
+    "privacyMode": "Режим приватности",
+    "dismiss": "Скрыть"
   },
   "Settings": {
     "title": "Настройки сессии",
