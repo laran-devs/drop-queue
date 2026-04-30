@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { 
   Send, 
   Monitor, 
-  Trophy, 
   Copy, 
   Share2, 
   HelpCircle, 
@@ -21,6 +20,7 @@ import { Link } from "@/navigation";
 import { toast } from "sonner";
 import { StreamCarousel } from "@/components/StreamCarousel";
 import { useTranslations } from "next-intl";
+import { HallOfFameWidget } from "./HallOfFameWidget";
 
 interface DashboardHeaderProps {
   session: {
@@ -198,8 +198,7 @@ export function DashboardHeader({
                   { type: 'button', icon: Share2, label: t("shareStream"), color: "hover:text-amber-500", onClick: () => {
                     const text = t("inviteText", { url: `${window.location.origin}/${locale}/stream/${session.slug}` });
                     copyToClipboard(text, t("inviteMessage"));
-                  }},
-                  { type: 'link', icon: Trophy, label: `${h("hallOfFame")} 🏆`, color: "hover:text-purple-600", href: "/dashboard/hall-of-fame" }
+                  }}
                 ].map((item: any, i) => {
                   const content = (
                     <>
@@ -207,18 +206,6 @@ export function DashboardHeader({
                       <span className={`text-[10px] font-black uppercase tracking-widest hidden sm:block ${isPrivacyMode && item.type === 'button' ? "blur-sm" : ""}`}>{item.label}</span>
                     </>
                   );
-
-                  if (item.type === 'link') {
-                    return (
-                      <Link 
-                        key={i}
-                        href={item.href}
-                        className={`p-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-all group flex items-center gap-2 ${item.color}`}
-                      >
-                        {content}
-                      </Link>
-                    )
-                  }
 
                   return (
                     <button 
@@ -256,6 +243,7 @@ export function DashboardHeader({
             
           </div>
         </div>
+        <HallOfFameWidget />
       </section>
     </div>
   );
