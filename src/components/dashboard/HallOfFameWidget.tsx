@@ -37,7 +37,7 @@ export function HallOfFameWidget() {
         <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500">Hall of Fame</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {/* Top Submitters */}
         <div className="glass p-6 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 space-y-4">
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-900 pb-3">

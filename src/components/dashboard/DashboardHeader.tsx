@@ -240,10 +240,9 @@ export function DashboardHeader({
                 </button>
               ))}
             </div>
-            
+            </div>
           </div>
         </div>
-        <HallOfFameWidget />
       </section>
     </div>
   );

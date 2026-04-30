@@ -24,6 +24,7 @@ import { ActiveQueue } from "./dashboard/ActiveQueue";
 import { EvaluationPanel } from "./dashboard/EvaluationPanel";
 import { DashboardSettings } from "./dashboard/DashboardSettings";
 import { SessionSummaryCard } from "./dashboard/SessionSummaryCard";
+import { HallOfFameWidget } from "./dashboard/HallOfFameWidget";
 import { updateSessionStatus, updateOverlaySettings } from "@/app/actions/session-actions";
 
 interface DashboardContentProps {
@@ -739,45 +740,41 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
         )}
       </AnimatePresence>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-8 space-y-10">
-              <EvaluationPanel 
-                playingTrack={playingTrack}
-                criteria={criteria}
-                scores={scores}
-                setScores={setScores}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                media={media}
-                audioRef={audioRef}
-                handleTrackEnd={handleTrackEnd}
-                handleSubmitEvaluation={handleSubmitEvaluation}
-                handleNext={handleNext}
-                handleSkip={() => {
-                  skipTrack(playingTrack!.id, "skipped").then(() => router.refresh());
-                }}
-                isSubmitting={isSubmitting}
-                accentColor={accentColor}
-                chatVote={playingTrack ? chatVotes[playingTrack.id] : null}
-                autoAdvance={autoAdvance}
-                currentTime={currentTime}
-                duration={duration}
-                isPlaying={isPlaying}
-                togglePlay={togglePlay}
-                onSeek={handleSeek}
-              />
+      <EvaluationPanel 
+        playingTrack={playingTrack}
+        criteria={criteria}
+        scores={scores}
+        setScores={setScores}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        media={media}
+        audioRef={audioRef}
+        handleTrackEnd={handleTrackEnd}
+        handleSubmitEvaluation={handleSubmitEvaluation}
+        handleNext={handleNext}
+        handleSkip={() => {
+          skipTrack(playingTrack!.id, "skipped").then(() => router.refresh());
+        }}
+        isSubmitting={isSubmitting}
+        accentColor={accentColor}
+        chatVote={playingTrack ? chatVotes[playingTrack.id] : null}
+        autoAdvance={autoAdvance}
+        currentTime={currentTime}
+        duration={duration}
+        isPlaying={isPlaying}
+        togglePlay={togglePlay}
+        onSeek={handleSeek}
+      />
 
-        </div>
-
-        <div className="lg:col-span-4 space-y-10">
-          <ActiveQueue 
-            tracks={tracks}
-            setTracks={setTracks}
-            setPlaying={setPlaying}
-            accentColor={accentColor}
-            trackLimit={trackLimit}
-          />
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+        <HallOfFameWidget />
+        <ActiveQueue 
+          tracks={tracks}
+          setTracks={setTracks}
+          setPlaying={setPlaying}
+          accentColor={accentColor}
+          trackLimit={trackLimit}
+        />
       </div>
     </div>
   );
