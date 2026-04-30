@@ -254,13 +254,6 @@ export function DashboardHeader({
               ))}
             </div>
             
-            <div className="h-6 w-px bg-zinc-200 dark:border-zinc-800 mx-1 lg:block hidden" />
-
-            <Link href={`/${locale}/profile/${session.streamerId}`} className="p-1 rounded-2xl hover:bg-white/50 dark:hover:bg-zinc-800/50 transition-all group lg:block hidden">
-               <div className="h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-500 group-hover:border-purple-500/50 transition-all overflow-hidden">
-                 <User size={20} />
-               </div>
-            </Link>
           </div>
         </div>
       </section>
