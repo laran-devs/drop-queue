@@ -48,7 +48,24 @@
     "themeCyberName": "Киберпанк",
     "themeCyberDesc": "Неоновая эстетика с эффектами глитча",
     "themeMinimalName": "Минимализм",
-    "themeMinimalDesc": "Чистый, компактный вид для небольших оверлеев"
+    "themeMinimalDesc": "Чистый, компактный вид для небольших оверлеев",
+    "rateCriteria": "Критерии оценки",
+    "presets": "Шаблоны",
+    "rztTemplate": "Шаблон РЗТ",
+    "simpleTemplate": "Простой (одна оценка)",
+    "custom": "Свой список",
+    "addCriterion": "Добавить критерий",
+    "criterionPlaceholder": "Название...",
+    "rzt": {
+      "rhymes": "Рифмы / Образы",
+      "structure": "Структура / Ритмика",
+      "realization": "Реализация стиля",
+      "individualism": "Индивидуальность / Харизма",
+      "vibe": "Атмосфера / Вайб"
+    },
+    "simple": {
+      "score": "Общая оценка"
+    }
   },
   "Dashboard": {
     "activeSession": "Активная сессия",

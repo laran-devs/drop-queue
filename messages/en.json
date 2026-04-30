@@ -48,7 +48,24 @@
     "themeCyberName": "Cyberpunk",
     "themeCyberDesc": "Neon aesthetics with glitch effects",
     "themeMinimalName": "Minimalism",
-    "themeMinimalDesc": "Clean and compact look for small overlays"
+    "themeMinimalDesc": "Clean and compact look for small overlays",
+    "rateCriteria": "Rate Criteria",
+    "presets": "Presets",
+    "rztTemplate": "RZT Template",
+    "simpleTemplate": "Simple (Single Rating)",
+    "custom": "Custom List",
+    "addCriterion": "Add Criterion",
+    "criterionPlaceholder": "Name...",
+    "rzt": {
+      "rhymes": "Rhymes / Imagery",
+      "structure": "Structure / Rhythm",
+      "realization": "Style Realization",
+      "individualism": "Individuality / Charisma",
+      "vibe": "Atmosphere / Vibe"
+    },
+    "simple": {
+      "score": "Overall Score"
+    }
   },
   "Dashboard": {
     "activeSession": "Active Session",

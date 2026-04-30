@@ -767,55 +767,6 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
                 onSeek={handleSeek}
               />
 
-          <section className="glass p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800">
-            <h2 className="text-sm font-black uppercase tracking-widest mb-6">{t("focusPoints")} <span style={{ color: accentColor }}>&</span></h2>
-            <div className="flex flex-wrap gap-3">
-              {criteria.map((c) => (
-                <div key={c.id} className="group relative">
-                  <div className="px-5 py-2.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
-                    <span className="text-zinc-400">#</span>
-                    {c.name}
-                    <button 
-                      onClick={() => removeCriterion(c.id).then(() => router.refresh())}
-                      className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/10 hover:text-red-500 rounded-lg transition-all"
-                    >
-                      ×
-                    </button>
-                  </div>
-                </div>
-              ))}
-              <div className="flex gap-2">
-                <input 
-                  type="text" 
-                  value={newCriteriaName}
-                  onChange={(e) => setNewCriteriaName(e.target.value)}
-                  placeholder={t("addMetric")}
-                  className="px-5 py-2.5 rounded-2xl bg-white dark:bg-black border border-dashed border-zinc-300 dark:border-zinc-700 text-[10px] uppercase font-black tracking-widest outline-none focus:border-purple-500 transition-all w-32 focus:w-48"
-                  onKeyDown={(e) => e.key === "Enter" && handleAddCriteria()}
-                />
-                <button onClick={handleSavePreset} className="p-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
-                  <Save size={14} />
-                </button>
-                <div className="relative">
-                  <button onClick={() => setShowPresets(!showPresets)} className="p-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
-                    <LayoutTemplate size={14} />
-                  </button>
-                  <AnimatePresence>
-                    {showPresets && (
-                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute right-0 mt-2 p-3 rounded-2xl bg-white dark:bg-zinc-900 shadow-2xl border border-zinc-100 dark:border-zinc-800 z-50 w-48">
-                        <p className="text-[8px] font-black uppercase tracking-widest text-zinc-400 mb-2 px-2">{t("yourPresets")}</p>
-                        {presets.map(p => (
-                          <button key={p.id} onClick={() => handleLoadPreset(p.id)} className="w-full text-left px-3 py-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[10px] font-bold uppercase transition-all">
-                            {p.name}
-                          </button>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-            </div>
-          </section>
         </div>
 
         <div className="lg:col-span-4 space-y-10">

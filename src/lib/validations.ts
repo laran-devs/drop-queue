@@ -9,6 +9,7 @@ export const sessionConfigSchema = z.object({
   allowDirectUploads: z.boolean().default(false),
   overlayTheme: z.string().default("DEFAULT"),
   enableHighScoreSound: z.boolean().default(false),
+  criteria: z.array(z.string()).min(1, "At least one criterion is required").default(["Оценка"]),
 });
 
 export type SessionConfig = z.infer<typeof sessionConfigSchema>;

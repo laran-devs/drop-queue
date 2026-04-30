@@ -11,17 +11,18 @@ import { toast } from "sonner";
 
 export function SetupWizard() {
   const [step, setStep] = useState(1);
+  const [totalSteps] = useState(5);
   const [canSubmit, setCanSubmit] = useState(false);
   const t = useTranslations("Hub");
 
   // Prevent accidental double-click submission when entering the final step
   useEffect(() => {
-    if (step === 4) {
+    if (step === totalSteps) {
       setCanSubmit(false);
       const timer = setTimeout(() => setCanSubmit(true), 1000);
       return () => clearTimeout(timer);
     }
-  }, [step]);
+  }, [step, totalSteps]);
   
   const { register, handleSubmit, watch, setValue, trigger, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(sessionConfigSchema),
@@ -32,8 +33,13 @@ export function SetupWizard() {
       allowDirectUploads: true,
       overlayTheme: "DEFAULT",
       enableHighScoreSound: false,
+      criteria: [t("rzt.rhymes"), t("rzt.structure"), t("rzt.realization"), t("rzt.individualism"), t("rzt.vibe")],
     }
   });
+
+  const [customCriterion, setCustomCriterion] = useState("");
+
+  const criteria = watch("criteria");
 
   const allowedPlatforms = watch("allowedPlatforms");
   const currentTheme = watch("overlayTheme");
@@ -76,9 +82,32 @@ export function SetupWizard() {
       if (!result) return;
     }
     
-    setStep(s => Math.min(s + 1, 4));
+    setStep(s => Math.min(s + 1, totalSteps));
   };
   const prevStep = () => setStep(s => Math.max(s - 1, 1));
+
+  const applyPreset = (preset: "RZT" | "SIMPLE") => {
+    if (preset === "RZT") {
+      setValue("criteria", [t("rzt.rhymes"), t("rzt.structure"), t("rzt.realization"), t("rzt.individualism"), t("rzt.vibe")]);
+    } else {
+      setValue("criteria", [t("simple.score")]);
+    }
+  };
+
+  const addCriterion = () => {
+    if (!customCriterion.trim()) return;
+    if (criteria.includes(customCriterion.trim())) return;
+    setValue("criteria", [...criteria, customCriterion.trim()]);
+    setCustomCriterion("");
+  };
+
+  const removeCriterion = (name: string) => {
+    if (criteria.length <= 1) {
+      toast.error("At least one criterion is required");
+      return;
+    }
+    setValue("criteria", criteria.filter(c => c !== name));
+  };
 
   return (
     <div className="glass p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-2xl space-y-8 max-w-2xl w-full mx-auto overflow-hidden relative">
@@ -87,20 +116,24 @@ export function SetupWizard() {
         <div className="space-y-1">
           <h2 className="text-sm font-black uppercase tracking-[0.2em] text-purple-600">{t("setupBroadcast")}</h2>
           <div className="flex gap-1">
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className={`h-1 w-8 rounded-full transition-all ${step >= i ? 'bg-purple-600' : 'bg-zinc-100 dark:bg-zinc-800'}`} />
             ))}
           </div>
         </div>
-        <span className="text-[10px] font-black opacity-20 uppercase tracking-widest">{t("stepOf")} {step}/4</span>
+        <span className="text-[10px] font-black opacity-20 uppercase tracking-widest">{t("stepOf")} {step}/{totalSteps}</span>
       </div>
 
       <form 
         onSubmit={handleSubmit(onSubmit)} 
         onKeyDown={(e) => {
-          if (e.key === "Enter" && step < 4) {
+          if (e.key === "Enter" && step < totalSteps) {
             e.preventDefault();
-            nextStep();
+            if (step === 3 && customCriterion.trim()) {
+              addCriterion();
+            } else {
+              nextStep();
+            }
           }
         }}
         className="space-y-8"
@@ -166,6 +199,68 @@ export function SetupWizard() {
         )}
 
         {step === 3 && (
+          <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="space-y-4">
+              <label className="text-xs font-black uppercase tracking-widest text-zinc-500">{t("presets")}</label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => applyPreset("RZT")}
+                  className="p-6 rounded-[1.5rem] border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:border-purple-500/50 transition-all text-left group"
+                >
+                  <h4 className="text-xs font-black uppercase tracking-widest mb-1 group-hover:text-purple-500 transition-colors">{t("rztTemplate")}</h4>
+                  <p className="text-[10px] text-zinc-400">5 {t("rateCriteria")}</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyPreset("SIMPLE")}
+                  className="p-6 rounded-[1.5rem] border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:border-purple-500/50 transition-all text-left group"
+                >
+                  <h4 className="text-xs font-black uppercase tracking-widest mb-1 group-hover:text-purple-500 transition-colors">{t("simpleTemplate")}</h4>
+                  <p className="text-[10px] text-zinc-400">1 {t("rateCriteria")}</p>
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <label className="text-xs font-black uppercase tracking-widest text-zinc-500">{t("custom")}</label>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {criteria.map((c: string) => (
+                  <div key={c} className="group relative">
+                    <div className="px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                      {c}
+                      <button 
+                        type="button"
+                        onClick={() => removeCriterion(c)}
+                        className="text-zinc-400 hover:text-red-500 transition-colors"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input 
+                  type="text"
+                  value={customCriterion}
+                  onChange={(e) => setCustomCriterion(e.target.value)}
+                  placeholder={t("criterionPlaceholder")}
+                  className="flex-1 bg-zinc-50 dark:bg-zinc-900 border border-dashed border-zinc-300 dark:border-zinc-700 px-6 py-4 rounded-2xl outline-none text-xs font-bold focus:border-purple-500 transition-all"
+                />
+                <button 
+                  type="button"
+                  onClick={addCriterion}
+                  className="px-6 py-4 bg-zinc-100 dark:bg-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+                >
+                  {t("addCriterion")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 4 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
             <label className="text-xs font-black uppercase tracking-widest text-zinc-500">{t("allowedPlatforms")}</label>
             <div className="space-y-2">
@@ -201,7 +296,7 @@ export function SetupWizard() {
           </div>
         )}
 
-        {step === 4 && (
+        {step === 5 && (
           <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
             <div className="space-y-4">
               <label className="text-xs font-black uppercase tracking-widest text-zinc-500">{t("overlayThemeLabel")}</label>
@@ -256,7 +351,7 @@ export function SetupWizard() {
             </button>
           )}
           
-          {step < 4 ? (
+          {step < totalSteps ? (
             <button 
               type="button" 
               onClick={nextStep}

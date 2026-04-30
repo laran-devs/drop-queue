@@ -22,6 +22,7 @@ export async function createSession(formData: FormData) {
     allowDirectUploads: formData.get("allowDirectUploads") === "true",
     overlayTheme: formData.get("overlayTheme") as string,
     enableHighScoreSound: formData.get("enableHighScoreSound") === "true",
+    criteria: JSON.parse(formData.get("criteria") as string || '["Оценка"]'),
   };
 
   const validated = sessionConfigSchema.parse(rawData);
@@ -41,13 +42,21 @@ export async function createSession(formData: FormData) {
     }
   });
 
+  const { criteria: criteriaNames, ...sessionData } = validated;
+
   const newSession = await prisma.streamSession.create({
     data: {
-      ...validated,
+      ...sessionData,
       slug,
       overlayToken: nanoid(12),
       streamerId: session.user.id,
       status: "ACTIVE",
+      criteria: {
+        create: criteriaNames.map(name => ({
+          name,
+          streamerId: session.user.id!
+        }))
+      }
     },
   });
 
