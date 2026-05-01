@@ -262,8 +262,9 @@ export function EvaluationPanel({
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
           <button
             onClick={handleSubmitEvaluation}
             className="flex-[3] py-5 rounded-3xl text-white font-black uppercase tracking-widest shadow-2xl transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3 relative overflow-hidden group"
