@@ -240,7 +240,6 @@ export function DashboardHeader({
                 </button>
               ))}
             </div>
-            </div>
           </div>
         </div>
       </section>
