@@ -177,7 +177,7 @@ export function EvaluationPanel({
                         url={media.originalUrl} 
                         width="100%" 
                         height="100%" 
-                        playing={true} 
+                        playing={isPlaying} 
                         controls={true}
                         onEnded={handleTrackEnd}
                       />

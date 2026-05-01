@@ -200,6 +200,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
       })));
       setActiveTab("player");
       setScores({}); // Reset scores for new track
+      setIsPlaying(true); // Force play state
       startTrack(trackId); // Sync with DB
     }
   }, [emit, initialSession.slug, tracks, t]);
@@ -342,6 +343,20 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
     if (!playingTrack) return null;
     return getMediaInfo(playingTrack.url, playingTrack.filePath);
   }, [playingTrack]);
+
+  // Autoplay when media changes
+  useEffect(() => {
+    if (media?.url && audioRef.current) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          if (error.name !== "AbortError") {
+            console.error("Autoplay failed:", error);
+          }
+        });
+      }
+    }
+  }, [media?.url]);
 
   const handleColorChange = async (color: string) => {
     setAccentColor(color);
