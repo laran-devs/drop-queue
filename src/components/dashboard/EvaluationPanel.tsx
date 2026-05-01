@@ -262,9 +262,8 @@ export function EvaluationPanel({
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
           <button
             onClick={handleSubmitEvaluation}
             className="flex-[3] py-5 rounded-3xl text-white font-black uppercase tracking-widest shadow-2xl transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3 relative overflow-hidden group"
@@ -284,21 +283,22 @@ export function EvaluationPanel({
             )}
           </button>
         
-        <div className="flex flex-[1] gap-2">
-          <button
-            onClick={handleNext}
-            className="flex-1 glass border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs font-black uppercase tracking-widest rounded-3xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all active:scale-95 flex items-center justify-center gap-2"
-          >
-            {t("skip")}
-          </button>
-          <button
-            onClick={handleSkip}
-            className="px-6 glass border border-red-500/30 text-red-500 text-xs font-black uppercase tracking-widest rounded-3xl hover:bg-red-500/10 transition-all flex items-center justify-center group"
-          >
-            <Ban size={16} className="group-hover:rotate-45 transition-transform" />
-          </button>
+          <div className="flex flex-[1] gap-2">
+            <button
+              onClick={handleNext}
+              className="flex-1 glass border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs font-black uppercase tracking-widest rounded-3xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all active:scale-95 flex items-center justify-center gap-2"
+            >
+              {t("skip")}
+            </button>
+            <button
+              onClick={handleSkip}
+              className="px-6 glass border border-red-500/30 text-red-500 text-xs font-black uppercase tracking-widest rounded-3xl hover:bg-red-500/10 transition-all flex items-center justify-center group"
+            >
+              <Ban size={16} className="group-hover:rotate-45 transition-transform" />
+            </button>
+          </div>
         </div>
-        </>
+      </>
       )}
     </div>
   );
