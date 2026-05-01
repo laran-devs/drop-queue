@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 export function HallOfFameWidget() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [expandedSubmitters, setExpandedSubmitters] = useState(false);
+  const [expandedHits, setExpandedHits] = useState(false);
 
   useEffect(() => {
     getHallOfFameData().then(res => {
@@ -26,29 +28,53 @@ export function HallOfFameWidget() {
 
   if (!data || (data.sessions.length === 0 && data.topSubmitters.length === 0)) return null;
 
+  const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+  const allHits = data.sessions.flatMap((s: any) => s.topTracks).sort((a: any, b: any) => b.averageScore - a.averageScore).slice(0, 10);
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="w-full space-y-6"
     >
-      <div className="flex items-center gap-3 px-2">
-        <Trophy size={16} className="text-amber-500" />
-        <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500">Hall of Fame</h2>
+      <div className="flex items-center justify-between px-2">
+        <div className="flex items-center gap-3">
+          <Trophy size={16} className="text-amber-500" />
+          <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500">Hall of Fame</h2>
+        </div>
+        <span className="text-[10px] font-black uppercase tracking-widest text-purple-600 bg-purple-500/10 px-3 py-1 rounded-full">
+          {currentMonth} Season
+        </span>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
         {/* Top Submitters */}
-        <div className="glass p-6 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 space-y-4">
+        <div className="glass p-6 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 space-y-4 overflow-hidden">
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-900 pb-3">
             <div className="flex items-center gap-2">
               <Users size={14} className="text-purple-500" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Top Submitters</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">Monthly Top</span>
             </div>
+            {data.topSubmitters.length > 3 && (
+              <button 
+                onClick={() => setExpandedSubmitters(!expandedSubmitters)}
+                className="text-[8px] font-black uppercase tracking-widest text-zinc-400 hover:text-purple-500 transition-colors"
+              >
+                {expandedSubmitters ? "Show Less" : `View Top ${data.topSubmitters.length}`}
+              </button>
+            )}
           </div>
-          <div className="space-y-3">
-            {data.topSubmitters.map((s: any, i: number) => (
-              <div key={s.name} className="flex items-center justify-between group">
+          <motion.div 
+            animate={{ height: "auto" }}
+            className="space-y-3"
+          >
+            {(expandedSubmitters ? data.topSubmitters : data.topSubmitters.slice(0, 3)).map((s: any, i: number) => (
+              <motion.div 
+                key={s.name}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center justify-between group"
+              >
                 <div className="flex items-center gap-3">
                   <span className={`text-[10px] font-black w-4 ${i === 0 ? "text-amber-500" : "text-zinc-400"}`}>#{i + 1}</span>
                   <span className="text-sm font-bold group-hover:text-purple-500 transition-colors">{s.name}</span>
@@ -57,22 +83,41 @@ export function HallOfFameWidget() {
                   <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{s.count} HITS</span>
                   <span className="text-xs font-black text-purple-600">{s.avg.toFixed(1)}</span>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+            {data.topSubmitters.length === 0 && (
+              <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest text-center py-4">No data this month</p>
+            )}
+          </motion.div>
         </div>
 
         {/* Latest Bangers */}
-        <div className="glass p-6 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 space-y-4">
+        <div className="glass p-6 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/5 space-y-4 overflow-hidden">
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-900 pb-3">
             <div className="flex items-center gap-2">
               <Star size={14} className="text-amber-500" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Recent Bangers</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">Recent Hits</span>
             </div>
+            {allHits.length > 3 && (
+              <button 
+                onClick={() => setExpandedHits(!expandedHits)}
+                className="text-[8px] font-black uppercase tracking-widest text-zinc-400 hover:text-purple-500 transition-colors"
+              >
+                {expandedHits ? "Show Less" : `View Top ${allHits.length}`}
+              </button>
+            )}
           </div>
-          <div className="space-y-3">
-            {data.sessions[0]?.topTracks.slice(0, 3).map((t: any) => (
-              <div key={t.id} className="flex items-center justify-between group">
+          <motion.div 
+            animate={{ height: "auto" }}
+            className="space-y-3"
+          >
+            {(expandedHits ? allHits : allHits.slice(0, 3)).map((t: any, i: number) => (
+              <motion.div 
+                key={t.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center justify-between group"
+              >
                 <div className="flex items-center gap-3 overflow-hidden">
                   <Music size={12} className="text-zinc-400 shrink-0" />
                   <span className="text-sm font-bold truncate group-hover:text-purple-500 transition-colors">{t.title}</span>
@@ -81,12 +126,12 @@ export function HallOfFameWidget() {
                   <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{t.submitterName}</span>
                   <span className="text-xs font-black text-amber-500">{t.averageScore.toFixed(1)}</span>
                 </div>
-              </div>
+              </motion.div>
             ))}
-            {data.sessions.length === 0 && (
+            {allHits.length === 0 && (
               <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest text-center py-4">No records yet</p>
             )}
-          </div>
+          </motion.div>
         </div>
       </div>
     </motion.div>

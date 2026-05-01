@@ -9,11 +9,15 @@ export async function getHallOfFameData() {
   if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   try {
-    // Fetch sessions with top tracks
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Fetch sessions with top tracks from last 30 days
     const sessionsWithTops = await prisma.streamSession.findMany({
       where: {
         streamerId: session.user.id,
         topTracks: { some: {} },
+        endedAt: { gte: thirtyDaysAgo }
       },
       include: {
         topTracks: {
@@ -21,17 +25,13 @@ export async function getHallOfFameData() {
         }
       },
       orderBy: { endedAt: "desc" },
-      take: 5 // Only latest 5 sessions for the widget
+      take: 10 
     });
 
-    // Calculate Top Submitters (Overall)
+    // Calculate Top Submitters (Last 30 Days)
     const submitterStats = new Map();
-    const allSessions = await prisma.streamSession.findMany({
-      where: { streamerId: session.user.id, topTracks: { some: {} } },
-      include: { topTracks: true }
-    });
-
-    allSessions.forEach(s => {
+    
+    sessionsWithTops.forEach(s => {
       s.topTracks.forEach(t => {
          const stats = submitterStats.get(t.submitterName) || { totalScore: 0, count: 0 };
          stats.totalScore += t.averageScore;
@@ -47,7 +47,7 @@ export async function getHallOfFameData() {
          count: stats.count
       }))
       .sort((a, b) => b.avg - a.avg)
-      .slice(0, 3); // Top 3 for widget
+      .slice(0, 10); // Top 10
 
     return { 
       success: true, 
