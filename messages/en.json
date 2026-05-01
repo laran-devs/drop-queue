@@ -119,6 +119,8 @@
     "anonymous": "Anonymous",
     "noMoreTracks": "No more tracks in queue",
     "trackFinished": "Track playback finished",
+    "noTrackPlaying": "No track playing",
+    "selectFromQueue": "Select a track from the queue to start evaluation",
     "newTrackSubmitted": "New track submitted",
     "autoAdvancing": "Auto-advancing to next track...",
     "newTrackSubmission": "New Track Submission!",

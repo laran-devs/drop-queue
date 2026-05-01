@@ -75,10 +75,20 @@ export function EvaluationPanel({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
   
-  if (!playingTrack) return null;
-
   return (
-    <div className="glass p-6 sm:p-10 rounded-3xl sm:rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-xl bg-white/5 backdrop-blur-3xl">
+    <div className="glass p-6 sm:p-10 rounded-3xl sm:rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-xl bg-white/5 backdrop-blur-3xl min-h-[500px] flex flex-col">
+      {!playingTrack ? (
+        <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4 opacity-50">
+          <div className="h-20 w-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+             <Music2 size={32} className="text-zinc-400" />
+          </div>
+          <div className="space-y-1">
+             <h3 className="text-lg font-black uppercase tracking-tighter text-zinc-400">{t("noTrackPlaying")}</h3>
+             <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{t("selectFromQueue")}</p>
+          </div>
+        </div>
+      ) : (
+        <>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 mb-8 sm:mb-12">
         {/* Rating Section */}
         <div className="space-y-6">
@@ -288,7 +298,8 @@ export function EvaluationPanel({
             <Ban size={16} className="group-hover:rotate-45 transition-transform" />
           </button>
         </div>
-      </div>
+        </>
+      )}
     </div>
   );
 }

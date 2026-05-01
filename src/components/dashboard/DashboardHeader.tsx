@@ -105,71 +105,73 @@ export function DashboardHeader({
       <section className="relative glass p-10 rounded-[3rem] border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden bg-white/5">
         <div className="absolute -top-40 -right-40 h-96 w-96 blur-[120px] rounded-full opacity-20" style={{ backgroundColor: accentColor }} />
         
-        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center gap-2">
-                <span className={`h-1.5 w-1.5 rounded-full ${isStreamPaused ? "bg-amber-500" : "bg-red-500 animate-pulse"}`} />
-                {isStreamPaused ? t("streamPaused") : t("streamActive")}
-              </span>
-              <span className="text-zinc-400 font-mono text-[10px] tabular-nums">{formatTime(sessionTime)}</span>
-              <span className={`text-zinc-500 font-mono text-xs opacity-30 transition-all ${isPrivacyMode ? "blur-md select-none" : ""}`}>#{session.slug}</span>
-            </div>
-            
-            <div className="flex items-center gap-6">
-              <div className="relative h-16 w-16 shrink-0">
-                {session.streamer?.image ? (
-                  <img 
-                    src={session.streamer.image} 
-                    alt={session.streamer.name || "Streamer"} 
-                    referrerPolicy="no-referrer"
-                    className="h-full w-full rounded-2xl border-2 border-white dark:border-zinc-800 shadow-xl object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                      const parent = (e.target as HTMLImageElement).parentElement;
-                      if (parent) {
-                        const fallback = parent.querySelector('.avatar-fallback');
-                        if (fallback) (fallback as HTMLElement).style.display = 'flex';
-                      }
-                    }}
-                  />
-                ) : null}
-                <div 
-                  className="avatar-fallback h-full w-full rounded-2xl border-2 border-white dark:border-zinc-800 shadow-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400"
-                  style={{ display: session.streamer?.image ? 'none' : 'flex' }}
-                >
-                  <User size={24} />
-                </div>
-                <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-lg bg-green-500 border-2 border-white dark:border-zinc-800 flex items-center justify-center">
-                  <div className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                </div>
+        <div className="relative z-10 flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-8 mb-12">
+          <div className="flex items-center gap-6 flex-1 min-w-0">
+            <div className="relative h-20 w-20 shrink-0">
+              {session.streamer?.image ? (
+                <img 
+                  src={session.streamer.image} 
+                  alt={session.streamer.name || "Streamer"} 
+                  referrerPolicy="no-referrer"
+                  className="h-full w-full rounded-2xl border-2 border-white dark:border-zinc-800 shadow-xl object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                    const parent = (e.target as HTMLImageElement).parentElement;
+                    if (parent) {
+                      const fallback = parent.querySelector('.avatar-fallback');
+                      if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                    }
+                  }}
+                />
+              ) : null}
+              <div 
+                className="avatar-fallback h-full w-full rounded-2xl border-2 border-white dark:border-zinc-800 shadow-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400"
+                style={{ display: session.streamer?.image ? 'none' : 'flex' }}
+              >
+                <User size={24} />
               </div>
-              <h1 className="text-5xl font-black tracking-tighter">{session.title}</h1>
+              <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-lg bg-green-500 border-2 border-white dark:border-zinc-800 flex items-center justify-center">
+                <div className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+              </div>
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-3 mb-2 flex-wrap">
+                <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center gap-2">
+                  <span className={`h-1.5 w-1.5 rounded-full ${isStreamPaused ? "bg-amber-500" : "bg-red-500 animate-pulse"}`} />
+                  {isStreamPaused ? t("streamPaused") : t("streamActive")}
+                </span>
+                <span className="text-zinc-400 font-mono text-[10px] tabular-nums whitespace-nowrap">{formatTime(sessionTime)}</span>
+                <span className={`text-zinc-500 font-mono text-xs opacity-30 transition-all ${isPrivacyMode ? "blur-md select-none" : ""} hidden sm:block`}>#{session.slug}</span>
+              </div>
+              <h1 className="text-4xl sm:text-5xl font-black tracking-tighter truncate">{session.title}</h1>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 shrink-0">
             <button 
               onClick={onTogglePrivacy}
-              className={`p-3 rounded-2xl border transition-all ${isPrivacyMode ? "bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-500/20" : "glass border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"}`}
+              className={`p-4 rounded-2xl border transition-all ${isPrivacyMode ? "bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-500/20" : "glass border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"}`}
               title={t("privacyMode")}
             >
               <Shield size={20} fill={isPrivacyMode ? "currentColor" : "none"} />
             </button>
 
-            <button 
-              onClick={togglePause} 
-              className={`group px-6 py-3 glass border ${isStreamPaused ? "border-green-500/50 text-green-500" : "border-amber-500/50 text-amber-500"} text-xs font-black uppercase tracking-widest rounded-2xl transition-all flex items-center gap-2`}
-            >
-              {isStreamPaused ? <Play size={14} /> : <Pause size={14} />}
-              {isStreamPaused ? t("resumeStream") : t("pauseStream")}
-            </button>
-            <button 
-              onClick={() => endSession(session.id)} 
-              className="px-6 py-3 glass border border-red-500/20 text-red-500 text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-red-500/10 transition-all active:scale-95"
-            >
-              {t("endSession")}
-            </button>
+            <div className="flex items-center gap-2 p-1.5 glass rounded-2xl border border-zinc-200 dark:border-zinc-800">
+              <button 
+                onClick={togglePause} 
+                className={`min-w-[160px] px-6 py-3 border ${isStreamPaused ? "bg-green-500/10 border-green-500/50 text-green-500" : "bg-amber-500/10 border-amber-500/50 text-amber-500"} text-[10px] font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95`}
+              >
+                {isStreamPaused ? <Play size={14} /> : <Pause size={14} />}
+                {isStreamPaused ? t("resumeStream") : t("pauseStream")}
+              </button>
+              <button 
+                onClick={() => endSession(session.id)} 
+                className="px-6 py-3 bg-red-500/5 border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-red-500/10 transition-all active:scale-95"
+              >
+                {t("endSession")}
+              </button>
+            </div>
           </div>
         </div>
 

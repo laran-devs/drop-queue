@@ -119,8 +119,18 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
 
   const togglePlay = () => {
     if (audioRef.current) {
-      if (isPlaying) audioRef.current.pause();
-      else audioRef.current.play();
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            if (error.name !== "AbortError") {
+              console.error("Playback error:", error);
+            }
+          });
+        }
+      }
     }
   };
 
@@ -588,7 +598,7 @@ export function DashboardContent({ session: initialSession, userId }: DashboardC
   };
 
   return (
-    <div className="space-y-12 pb-24">
+    <div className="max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8 space-y-10 pb-24">
       <DashboardHeader 
         session={initialSession}
         tracks={tracks}

@@ -120,6 +120,8 @@
     "anonymous": "Аноним",
     "noMoreTracks": "Больше нет треков в очереди",
     "trackFinished": "Воспроизведение завершено",
+    "noTrackPlaying": "Трек не выбран",
+    "selectFromQueue": "Выберите трек из очереди, чтобы начать оценку",
     "newTrackSubmitted": "Новый трек добавлен",
     "autoAdvancing": "Переходим к следующему треку...",
     "newTrackSubmission": "Новый трек!",
