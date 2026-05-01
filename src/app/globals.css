@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-outfit);
+  --font-sans: var(--font-manrope);
   --font-mono: var(--font-mono);
   
   --color-purple-50: #f5f3ff;
